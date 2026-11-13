@@ -130,7 +130,8 @@ export default function AdminSeasonModal({
               <strong>
                 {activeSeason.clubName} {activeSeason.teamName}
               </strong>
-              . Existing dates are preserved.
+              . Existing dates and major US holidays (Thanksgiving, Christmas Eve/Day, New
+              Year&apos;s Eve/Day, Easter, July 4) are skipped.
             </p>
 
             <div className="grid grid-cols-2 gap-3">

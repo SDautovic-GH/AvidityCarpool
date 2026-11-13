@@ -65,8 +65,43 @@ export function getLegSummary(practice, leg, allPlayers) {
 }
 
 /**
+ * Returns true for major US holidays that typically cancel youth sports practices
+ * (Thanksgiving, Christmas Eve/Day, New Year's Eve/Day, Easter Sunday, July 4).
+ */
+export function isMajorUSHoliday(dt) {
+  const y = dt.getFullYear();
+  const m = dt.getMonth() + 1;
+  const d = dt.getDate();
+  const dow = dt.getDay();
+
+  if ((m === 1 && d === 1) || (m === 7 && d === 4)) return true;
+  if (m === 12 && (d === 24 || d === 25 || d === 31)) return true;
+  if (m === 11 && dow === 4 && d >= 22 && d <= 28) return true; // Thanksgiving
+
+  // Easter Sunday (Gregorian algorithm)
+  const a = y % 19;
+  const b = Math.floor(y / 100);
+  const c = y % 100;
+  const d1 = Math.floor(b / 4);
+  const e = b % 4;
+  const f = Math.floor((b + 8) / 25);
+  const g = Math.floor((b - f + 1) / 3);
+  const h = (19 * a + b - d1 - g + 15) % 30;
+  const i = Math.floor(c / 4);
+  const k = c % 4;
+  const l = (32 + 2 * e + 2 * i - h - k) % 7;
+  const m1 = Math.floor((a + 11 * h + 22 * l) / 451);
+  const easterMonth = Math.floor((h + l - 7 * m1 + 114) / 31);
+  const easterDay = ((h + l - 7 * m1 + 114) % 31) + 1;
+  if (m === easterMonth && d === easterDay) return true;
+
+  return false;
+}
+
+/**
  * Generates Tue (7:15-9:15 PM St. John's Prep), Thu (7:15-9:15 PM St. John's Prep),
- * and Sun (5:00-7:00 PM DIS) practices between startDate and endDate (YYYY-MM-DD).
+ * and Sun (5:00-7:00 PM DIS) practices between startDate and endDate (YYYY-MM-DD),
+ * skipping major US holidays.
  */
 export function generateSeasonPractices(startDate, endDate) {
   const [sy, sm, sd] = startDate.split('-').map(Number);
@@ -77,7 +112,7 @@ export function generateSeasonPractices(startDate, endDate) {
 
   while (cur <= end) {
     const dow = cur.getDay(); // 0=Sun, 2=Tue, 4=Thu
-    if (dow === 2 || dow === 4 || dow === 0) {
+    if ((dow === 2 || dow === 4 || dow === 0) && !isMajorUSHoliday(cur)) {
       const isoDate = `${cur.getFullYear()}-${String(cur.getMonth() + 1).padStart(2, '0')}-${String(cur.getDate()).padStart(2, '0')}`;
       const isSunday = dow === 0;
       results.push({
