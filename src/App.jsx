@@ -171,9 +171,11 @@ export default function App() {
       <header className="sticky top-0 z-30 bg-slate-950/90 backdrop-blur-md border-b border-slate-800/80">
         <div className="max-w-4xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white font-extrabold text-sm shrink-0">
-              AC
-            </div>
+            <img
+              src="/volleyball.svg"
+              alt="Avidity Carpool"
+              className="w-9 h-9 rounded-xl shrink-0"
+            />
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 <h1 className="text-base sm:text-lg font-extrabold tracking-tight truncate">
