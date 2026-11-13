@@ -257,8 +257,8 @@ export default function AdminRoster({
                 key={player.id}
                 className="rounded-2xl bg-slate-900 border border-slate-800 overflow-hidden"
               >
-                <div className="flex items-center justify-between gap-3 px-4 py-3 bg-slate-950/50 border-b border-slate-800/80">
-                  <div className="flex items-center gap-2.5 min-w-0">
+                <div className="flex items-start sm:items-center justify-between gap-2.5 px-3.5 sm:px-4 py-3 bg-slate-950/50 border-b border-slate-800/80">
+                  <div className="flex items-center gap-2.5 min-w-0 flex-1">
                     <span
                       className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0 ${getAvatarColor(
                         player.name
@@ -296,8 +296,8 @@ export default function AdminRoster({
                         </button>
                       </div>
                     ) : (
-                      <div className="flex items-center gap-1.5 min-w-0">
-                        <span className="text-sm font-bold text-slate-100 truncate">
+                      <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1 min-w-0">
+                        <span className="text-sm font-bold text-slate-100 leading-snug">
                           {player.name}
                         </span>
                         {player.jerseyNumber && (
@@ -349,10 +349,10 @@ export default function AdminRoster({
                       return (
                         <div
                           key={parent.id}
-                          className="px-4 py-3 flex flex-wrap items-center justify-between gap-2"
+                          className="px-3.5 sm:px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5"
                         >
                           <div className="min-w-0">
-                            <div className="flex flex-wrap items-center gap-2">
+                            <div className="flex flex-wrap items-center gap-1.5">
                               <span className="text-sm font-semibold text-slate-100">
                                 {parent.name}
                               </span>
