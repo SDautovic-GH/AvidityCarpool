@@ -179,7 +179,7 @@ export default function App() {
             className="flex items-center gap-2.5 min-w-0 text-left text-inherit cursor-pointer focus:outline-none"
           >
             <img
-              src="/volleyball.svg"
+              src="/volleyball.svg?v=3"
               alt="Avidity Carpool"
               className="w-9 h-9 rounded-xl shrink-0"
             />
