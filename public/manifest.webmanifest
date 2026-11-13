@@ -1,6 +1,6 @@
 {
   "name": "Avidity Carpool",
-  "short_name": "Avidity",
+  "short_name": "Avidity Carpool",
   "description": "Team practice carpool & schedule coordinator for Avidity Volleyball.",
   "start_url": "/",
   "display": "standalone",
