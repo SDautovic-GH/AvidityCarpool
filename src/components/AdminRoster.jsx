@@ -19,8 +19,11 @@ const EMPTY_FORM = {
 export default function AdminRoster({
   players,
   parents,
+  currentParent,
   currentParentEmail,
+  isAdmin,
   onSavePlayerAndParent,
+  onUpdateMyProfile,
   onUpdatePlayerName,
   onUpsertPlayerOnly,
   onRemoveParent,
@@ -36,6 +39,33 @@ export default function AdminRoster({
   const [importOpen, setImportOpen] = useState(false);
   const [importText, setImportText] = useState('');
   const [importing, setImporting] = useState(false);
+  const [editingSelf, setEditingSelf] = useState(false);
+  const [selfPhone, setSelfPhone] = useState('');
+  const [selfAddress, setSelfAddress] = useState('');
+  const [selfSeats, setSelfSeats] = useState(4);
+  const [savingSelf, setSavingSelf] = useState(false);
+
+  const openEditSelf = () => {
+    setSelfPhone(currentParent?.phone || '');
+    setSelfAddress(currentParent?.address || '');
+    setSelfSeats(currentParent?.defaultSeats ?? 4);
+    setEditingSelf(true);
+  };
+
+  const handleSaveSelf = async (e) => {
+    e.preventDefault();
+    setSavingSelf(true);
+    try {
+      await onUpdateMyProfile({
+        phone: selfPhone,
+        address: selfAddress,
+        defaultSeats: currentParent?.canDrive !== false ? selfSeats : undefined,
+      });
+      setEditingSelf(false);
+    } finally {
+      setSavingSelf(false);
+    }
+  };
 
   const openAddNewFamily = () => {
     setForm({ ...EMPTY_FORM, playerId: '__new__' });
@@ -155,16 +185,25 @@ export default function AdminRoster({
         <div>
           <h2 className="text-base font-bold text-slate-100 flex items-center gap-2">
             <Users className="w-4 h-4 text-blue-400" />
-            Team Roster &amp; Parents
+            Team Roster &amp; Contacts
           </h2>
           <p className="text-xs text-slate-400 mt-0.5">
             {players.length} {players.length === 1 ? 'player' : 'players'} · {parents.length}{' '}
-            {parents.length === 1 ? 'parent' : 'parents'}. Adding families saves quietly — no
-            emails are sent until you share the app link.
+            {parents.length === 1 ? 'parent' : 'parents'} · Tap any phone number to call or address
+            for directions.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          {onOpenSeasonModal && (
+          {currentParent && !isAdmin && (
+            <button
+              onClick={openEditSelf}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition"
+            >
+              <Pencil className="w-3.5 h-3.5" />
+              Edit My Info
+            </button>
+          )}
+          {isAdmin && onOpenSeasonModal && (
             <button
               onClick={onOpenSeasonModal}
               className="px-3.5 py-2 rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
@@ -172,20 +211,33 @@ export default function AdminRoster({
               Season &amp; Schedule
             </button>
           )}
-          <button
-            onClick={() => setImportOpen(true)}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
-          >
-            <Upload className="w-3.5 h-3.5" />
-            Bulk Import
-          </button>
-          <button
-            onClick={openAddNewFamily}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition"
-          >
-            <UserPlus className="w-3.5 h-3.5" />
-            Add Family / Parent
-          </button>
+          {isAdmin && (
+            <>
+              <button
+                onClick={() => setImportOpen(true)}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
+              >
+                <Upload className="w-3.5 h-3.5" />
+                Bulk Import
+              </button>
+              <button
+                onClick={openAddNewFamily}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition"
+              >
+                <UserPlus className="w-3.5 h-3.5" />
+                Add Family / Parent
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+
+      <div className="rounded-2xl bg-slate-900 border border-slate-800 px-4 py-3 text-xs text-slate-300 flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <span className="text-slate-400 font-semibold">Coaches:</span> Ashley Krugh, Hannah Mullarkey
+        </div>
+        <div>
+          <span className="text-slate-400 font-semibold">Schedule:</span> Tue &amp; Thu 7:15–9:15 PM (SJP) · Sun 5:00–7:00 PM (DIS)
         </div>
       </div>
 
@@ -253,28 +305,32 @@ export default function AdminRoster({
                             #{player.jerseyNumber}
                           </span>
                         )}
-                        <button
-                          onClick={() => {
-                            setEditingPlayerId(player.id);
-                            setPlayerNameDraft(player.name);
-                            setPlayerJerseyDraft(player.jerseyNumber || '');
-                          }}
-                          className="p-1 rounded-full text-slate-500 hover:text-slate-200 hover:bg-slate-800 transition"
-                          title="Edit player name & jersey #"
-                        >
-                          <Pencil className="w-3 h-3" />
-                        </button>
+                        {isAdmin && (
+                          <button
+                            onClick={() => {
+                              setEditingPlayerId(player.id);
+                              setPlayerNameDraft(player.name);
+                              setPlayerJerseyDraft(player.jerseyNumber || '');
+                            }}
+                            className="p-1 rounded-full text-slate-500 hover:text-slate-200 hover:bg-slate-800 transition"
+                            title="Edit player name & jersey #"
+                          >
+                            <Pencil className="w-3 h-3" />
+                          </button>
+                        )}
                       </div>
                     )}
                   </div>
 
-                  <button
-                    onClick={() => openAddParentToPlayer(player.id)}
-                    className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition shrink-0"
-                  >
-                    <Plus className="w-3 h-3" />
-                    Add Parent
-                  </button>
+                  {isAdmin && (
+                    <button
+                      onClick={() => openAddParentToPlayer(player.id)}
+                      className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition shrink-0"
+                    >
+                      <Plus className="w-3 h-3" />
+                      Add Parent
+                    </button>
+                  )}
                 </div>
 
                 <div className="divide-y divide-slate-800/70">
@@ -346,36 +402,48 @@ export default function AdminRoster({
                           </div>
 
                           <div className="flex items-center gap-1.5">
-                            <button
-                              onClick={() => openEditParent(parent)}
-                              className="px-3 py-1 rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
-                            >
-                              Edit
-                            </button>
-                            <button
-                              onClick={() => onSendResetEmail(parent.email || parent.id)}
-                              className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
-                              title="Send password reset email"
-                            >
-                              <KeyRound className="w-3 h-3" />
-                              Reset Password
-                            </button>
-                            {!isSelf && (
+                            {!isAdmin && isSelf && (
                               <button
-                                onClick={() => {
-                                  if (
-                                    window.confirm(
-                                      `Remove ${parent.name} (${parent.email || parent.id}) from this season?`
-                                    )
-                                  ) {
-                                    onRemoveParent(parent.id);
-                                  }
-                                }}
-                                className="p-1.5 rounded-full text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition"
-                                title="Remove parent"
+                                onClick={openEditSelf}
+                                className="px-3 py-1 rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
                               >
-                                <Trash2 className="w-3.5 h-3.5" />
+                                Update
                               </button>
+                            )}
+                            {isAdmin && (
+                              <>
+                                <button
+                                  onClick={() => openEditParent(parent)}
+                                  className="px-3 py-1 rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
+                                >
+                                  Edit
+                                </button>
+                                <button
+                                  onClick={() => onSendResetEmail(parent.email || parent.id)}
+                                  className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
+                                  title="Send password reset email"
+                                >
+                                  <KeyRound className="w-3 h-3" />
+                                  Reset Password
+                                </button>
+                                {!isSelf && (
+                                  <button
+                                    onClick={() => {
+                                      if (
+                                        window.confirm(
+                                          `Remove ${parent.name} (${parent.email || parent.id}) from this season?`
+                                        )
+                                      ) {
+                                        onRemoveParent(parent.id);
+                                      }
+                                    }}
+                                    className="p-1.5 rounded-full text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition"
+                                    title="Remove parent"
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                  </button>
+                                )}
+                              </>
                             )}
                           </div>
                         </div>
@@ -637,6 +705,85 @@ export default function AdminRoster({
                   className="px-5 py-2 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white transition"
                 >
                   {importing ? 'Importing...' : 'Import Families'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {editingSelf && currentParent && (
+        <div
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-950/75 backdrop-blur-xs p-0 sm:p-4"
+          onClick={(e) => e.target === e.currentTarget && setEditingSelf(false)}
+        >
+          <div className="w-full max-w-md rounded-t-2xl sm:rounded-2xl bg-slate-900 border border-slate-800 shadow-2xl overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-800">
+              <h3 className="text-base font-bold text-slate-100">Update My Info</h3>
+              <button
+                onClick={() => setEditingSelf(false)}
+                className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-800 hover:text-slate-100 transition"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <form onSubmit={handleSaveSelf} className="p-5 space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  Phone Number
+                </label>
+                <input
+                  type="tel"
+                  value={selfPhone}
+                  onChange={(e) => setSelfPhone(e.target.value)}
+                  placeholder="(555) 123-4567"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-slate-100 focus:outline-none focus:border-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  Home Address
+                </label>
+                <input
+                  type="text"
+                  value={selfAddress}
+                  onChange={(e) => setSelfAddress(e.target.value)}
+                  placeholder="123 Main St, Melrose, MA 02176"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-slate-100 focus:outline-none focus:border-blue-500"
+                />
+              </div>
+              {currentParent.canDrive !== false && (
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                    Default Carpool Seats
+                  </label>
+                  <select
+                    value={selfSeats}
+                    onChange={(e) => setSelfSeats(Number(e.target.value))}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-slate-100 focus:outline-none focus:border-blue-500"
+                  >
+                    {[1, 2, 3, 4, 5, 6, 7].map((n) => (
+                      <option key={n} value={n}>
+                        {n === 1 ? '1 (Solo)' : `${n} seats`}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setEditingSelf(false)}
+                  className="px-4 py-2 rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={savingSelf}
+                  className="px-5 py-2 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white transition"
+                >
+                  {savingSelf ? 'Saving...' : 'Save'}
                 </button>
               </div>
             </form>

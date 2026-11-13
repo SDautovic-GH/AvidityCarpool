@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Calendar, Car, LogOut, Phone, Plus, Trophy, Users } from 'lucide-react';
+import { Calendar, Car, LogOut, Plus, Trophy, Users } from 'lucide-react';
 import {
   auth,
   isFirebaseConfigured,
@@ -14,7 +14,6 @@ import DriveModal from './components/DriveModal';
 import AssignModal from './components/AssignModal';
 import AdminRoster from './components/AdminRoster';
 import AdminSeasonModal from './components/AdminSeasonModal';
-import TeamDirectory from './components/TeamDirectory';
 import TournamentsView from './components/TournamentsView';
 
 export default function App() {
@@ -257,32 +256,19 @@ export default function App() {
               Tournaments
             </button>
             <button
-              onClick={() => setTab('directory')}
+              onClick={() => setTab('roster')}
               className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold transition ${
-                tab === 'directory'
+                tab === 'roster'
                   ? 'bg-blue-600 text-white'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              <Phone className="w-3.5 h-3.5" />
-              Directory
+              <Users className="w-3.5 h-3.5" />
+              Team
             </button>
-            {isAdmin && (
-              <button
-                onClick={() => setTab('roster')}
-                className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold transition ${
-                  tab === 'roster'
-                    ? 'bg-blue-600 text-white'
-                    : 'text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                <Users className="w-3.5 h-3.5" />
-                Team Roster
-              </button>
-            )}
           </div>
 
-          {tab !== 'roster' && tab !== 'directory' && tab !== 'tournaments' && pastCount > 0 && (
+          {tab !== 'roster' && tab !== 'tournaments' && pastCount > 0 && (
             <button
               onClick={() => setShowPast((v) => !v)}
               className="px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 transition"
@@ -332,22 +318,18 @@ export default function App() {
               )
             }
           />
-        ) : tab === 'directory' ? (
-          <TeamDirectory
-            players={players}
-            parents={parents}
-            currentParent={currentParent}
-            onUpdateMyProfile={(payload) =>
-              runAction(() => updateMyProfile(payload), 'Your contact info updated')
-            }
-          />
-        ) : tab === 'roster' && isAdmin ? (
+        ) : tab === 'roster' ? (
           <AdminRoster
             players={players}
             parents={parents}
+            currentParent={currentParent}
             currentParentEmail={user.email}
+            isAdmin={isAdmin}
             onSavePlayerAndParent={(payload) =>
               runAction(() => savePlayerAndParent(payload), 'Roster updated')
+            }
+            onUpdateMyProfile={(payload) =>
+              runAction(() => updateMyProfile(payload), 'Your contact info updated')
             }
             onUpdatePlayerName={(id, name, jerseyNumber) =>
               runAction(() => updatePlayerName(id, name, jerseyNumber), 'Player updated')
