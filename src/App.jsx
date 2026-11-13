@@ -423,8 +423,8 @@ export default function App() {
               { id: 'roster', label: 'Team', icon: Users },
             ];
             return (
-              <div className="w-full sm:w-auto overflow-x-auto no-scrollbar">
-                <div className="relative min-w-full sm:min-w-0 inline-flex items-center justify-between sm:justify-start gap-0.5 sm:gap-1 p-1 rounded-full bg-slate-900 border border-slate-800">
+              <div className="w-full sm:w-auto">
+                <div className="relative w-full sm:w-auto inline-flex items-center justify-between sm:justify-start gap-0.5 sm:gap-1 p-1 rounded-full bg-slate-900 border border-slate-800">
                   <div
                     aria-hidden="true"
                     className="absolute top-1 bottom-1 left-0 rounded-full bg-blue-600 transition-all duration-200 ease-out"
@@ -440,14 +440,7 @@ export default function App() {
                       ref={(el) => {
                         tabRefs.current[id] = el;
                       }}
-                      onClick={(e) => {
-                        setTab(id);
-                        e.currentTarget.scrollIntoView({
-                          behavior: 'smooth',
-                          inline: 'center',
-                          block: 'nearest',
-                        });
-                      }}
+                      onClick={() => setTab(id)}
                       className={`relative z-10 inline-flex items-center justify-center gap-1 sm:gap-1.5 px-2 sm:px-4 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold whitespace-nowrap shrink-0 transition-colors ${
                         tab === id ? 'text-white' : 'text-slate-400 hover:text-slate-200'
                       }`}
