@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Check, MapPin, MessageSquare } from 'lucide-react';
+import { Check, MapPin, MessageSquare, Pencil, Trash2 } from 'lucide-react';
 import CarRow from './CarRow';
 import { getMapUrl } from '../utils/maps';
 import {
@@ -33,10 +33,20 @@ export default function PracticeCard({
   onTakeOver,
   onAdminRemoveRider,
   onUpdateNotes,
+  onUpdatePractice,
+  onDeletePractice,
 }) {
   const [activeLeg, setActiveLeg] = useState('to');
   const [editingNote, setEditingNote] = useState(false);
   const [noteDraft, setNoteDraft] = useState('');
+  const [editingPractice, setEditingPractice] = useState(false);
+  const [practiceDraft, setPracticeDraft] = useState({
+    isoDate: practice.isoDate,
+    timeLabel: practice.timeLabel,
+    location: practice.location,
+    address: practice.address || '',
+    status: practice.status || 'scheduled',
+  });
 
   const myPlayerId = currentParent?.playerId || '';
   const myParentId = currentParent?.id || '';
@@ -237,8 +247,128 @@ export default function PracticeCard({
               + I can drive
             </button>
           )}
+          {isAdmin && (
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => {
+                  setPracticeDraft({
+                    isoDate: practice.isoDate,
+                    timeLabel: practice.timeLabel,
+                    location: practice.location,
+                    address: practice.address || '',
+                    status: practice.status || 'scheduled',
+                  });
+                  setEditingPractice((v) => !v);
+                }}
+                className="p-1.5 rounded-full text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition"
+                title="Edit / reschedule practice"
+              >
+                <Pencil className="w-3.5 h-3.5" />
+              </button>
+              <button
+                onClick={() => {
+                  if (
+                    window.confirm(
+                      `Remove practice on ${fullDay}, ${month} ${dateNum}?`
+                    )
+                  ) {
+                    onDeletePractice?.(practice.id);
+                  }
+                }}
+                className="p-1.5 rounded-full text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition"
+                title="Remove practice"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
         </div>
       </div>
+
+      {practice.status === 'cancelled' && (
+        <div className="rounded-xl bg-rose-500/10 border border-rose-500/30 px-3 py-1.5 text-xs font-semibold text-rose-300">
+          Cancelled
+        </div>
+      )}
+
+      {editingPractice && isAdmin && (
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            onUpdatePractice?.(practice.id, practiceDraft);
+            setEditingPractice(false);
+          }}
+          className="rounded-xl bg-slate-950 border border-slate-800 p-3 space-y-2.5"
+        >
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <input
+              type="date"
+              required
+              value={practiceDraft.isoDate}
+              onChange={(e) =>
+                setPracticeDraft((d) => ({ ...d, isoDate: e.target.value }))
+              }
+              className="px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs text-slate-100 focus:outline-none focus:border-blue-500"
+            />
+            <input
+              type="text"
+              required
+              value={practiceDraft.timeLabel}
+              onChange={(e) =>
+                setPracticeDraft((d) => ({ ...d, timeLabel: e.target.value }))
+              }
+              placeholder="7:15 – 9:15 PM"
+              className="px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs text-slate-100 focus:outline-none focus:border-blue-500"
+            />
+            <select
+              value={practiceDraft.status}
+              onChange={(e) =>
+                setPracticeDraft((d) => ({ ...d, status: e.target.value }))
+              }
+              className="px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs text-slate-100 focus:outline-none focus:border-blue-500"
+            >
+              <option value="scheduled">Scheduled</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <input
+              type="text"
+              required
+              value={practiceDraft.location}
+              onChange={(e) =>
+                setPracticeDraft((d) => ({ ...d, location: e.target.value }))
+              }
+              placeholder="Location"
+              className="px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs text-slate-100 focus:outline-none focus:border-blue-500"
+            />
+            <input
+              type="text"
+              value={practiceDraft.address}
+              onChange={(e) =>
+                setPracticeDraft((d) => ({ ...d, address: e.target.value }))
+              }
+              placeholder="Address"
+              className="px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs text-slate-100 focus:outline-none focus:border-blue-500"
+            />
+          </div>
+          <div className="flex justify-end gap-2">
+            <button
+              type="button"
+              onClick={() => setEditingPractice(false)}
+              className="px-3 py-1 rounded-full text-xs font-semibold bg-slate-800 text-slate-300"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-1 rounded-full text-xs font-semibold bg-blue-600 text-white"
+            >
+              Save Changes
+            </button>
+          </div>
+        </form>
+      )}
 
       <div className="flex flex-wrap items-center justify-between gap-2">
         <a

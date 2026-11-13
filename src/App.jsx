@@ -68,6 +68,8 @@ export default function App() {
     joinBothWays,
     leaveCar,
     updatePracticeNotes,
+    updatePracticeDetails,
+    deletePractice,
     savePlayerAndParent,
     updateMyProfile,
     updatePlayerName,
@@ -425,6 +427,15 @@ export default function App() {
               }
               onUpdateNotes={(practiceId, notes) =>
                 runAction(() => updatePracticeNotes(practiceId, notes), 'Note saved')
+              }
+              onUpdatePractice={(practiceId, details) =>
+                runAction(
+                  () => updatePracticeDetails(practiceId, details),
+                  'Practice updated'
+                )
+              }
+              onDeletePractice={(practiceId) =>
+                runAction(() => deletePractice(practiceId), 'Practice removed')
               }
             />
           ))

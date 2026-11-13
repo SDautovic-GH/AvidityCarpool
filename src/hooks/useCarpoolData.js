@@ -270,6 +270,23 @@ export function useCarpoolData(user) {
     });
   }
 
+  async function updatePracticeDetails(practiceId, { isoDate, timeLabel, location, address, status }) {
+    if (!activeSeasonId) return;
+    await updateDoc(doc(db, 'seasons', activeSeasonId, 'practices', practiceId), {
+      isoDate: isoDate.trim(),
+      timeLabel: timeLabel.trim(),
+      location: location.trim(),
+      address: (address || '').trim(),
+      status: status || 'scheduled',
+      updatedAt: serverTimestamp(),
+    });
+  }
+
+  async function deletePractice(practiceId) {
+    if (!activeSeasonId) return;
+    await deleteDoc(doc(db, 'seasons', activeSeasonId, 'practices', practiceId));
+  }
+
   // Admin: Roster & Season Actions
   async function savePlayerAndParent({
     existingParentId,
@@ -502,6 +519,8 @@ export function useCarpoolData(user) {
     joinBothWays,
     leaveCar,
     updatePracticeNotes,
+    updatePracticeDetails,
+    deletePractice,
     savePlayerAndParent,
     updateMyProfile,
     updatePlayerName,
