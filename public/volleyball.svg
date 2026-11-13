@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <defs>
     <clipPath id="ball-clip">
-      <circle cx="32" cy="32" r="22" />
+      <circle cx="32" cy="32" r="29" />
     </clipPath>
     <radialGradient id="ball-shade" cx="36%" cy="30%" r="70%">
       <stop offset="0%" stop-color="#ffffff" />
@@ -9,22 +9,19 @@
       <stop offset="100%" stop-color="#cbd5e1" />
     </radialGradient>
     <g id="sector">
-      <!-- Main dividing seam from center to perimeter -->
-      <path d="M 32 32 Q 43 27, 54 32" />
-      <!-- Two clean ribs starting on the previous seam and ending at the rim -->
-      <path d="M 26.5 27.5 Q 37 19, 49.5 19.5" />
-      <path d="M 22.8 20.5 Q 32 14, 42.5 12.5" />
+      <path d="M 32 32 Q 46 25, 61 32" />
+      <path d="M 24.8 26.1 Q 38 15, 55 15.6" />
+      <path d="M 19.9 16.9 Q 32 8.5, 45.8 6.4" />
     </g>
   </defs>
 
-  <rect width="64" height="64" rx="16" fill="#3b1557" />
-  <circle cx="32" cy="32" r="22" fill="url(#ball-shade)" />
+  <circle cx="32" cy="32" r="29" fill="url(#ball-shade)" />
 
-  <g clip-path="url(#ball-clip)" fill="none" stroke="#3b1557" stroke-width="2.1" stroke-linecap="round">
+  <g clip-path="url(#ball-clip)" fill="none" stroke="#101528" stroke-width="2.4" stroke-linecap="round">
     <use href="#sector" />
     <use href="#sector" transform="rotate(120 32 32)" />
     <use href="#sector" transform="rotate(240 32 32)" />
   </g>
 
-  <circle cx="32" cy="32" r="22" fill="none" stroke="#3b1557" stroke-width="2.1" />
+  <circle cx="32" cy="32" r="29" fill="none" stroke="#101528" stroke-width="2.4" />
 </svg>
