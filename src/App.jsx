@@ -230,52 +230,46 @@ export default function App() {
         </div>
 
         <div className="max-w-4xl mx-auto px-3 sm:px-4 pb-2.5 sm:pb-3 flex items-center justify-between gap-2 flex-wrap">
-          <div className="w-full sm:w-auto flex items-center p-1 rounded-full bg-slate-900 border border-slate-800 overflow-x-auto no-scrollbar">
-            <button
-              onClick={() => setTab('all')}
-              className={`flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-4 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold whitespace-nowrap transition ${
-                tab === 'all'
-                  ? 'bg-blue-600 text-white'
-                  : 'text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              <Calendar className="w-3.5 h-3.5 shrink-0" />
-              <span>Practices</span>
-            </button>
-            <button
-              onClick={() => setTab('my-drives')}
-              className={`flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-4 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold whitespace-nowrap transition ${
-                tab === 'my-drives'
-                  ? 'bg-blue-600 text-white'
-                  : 'text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              <Car className="w-3.5 h-3.5 shrink-0" />
-              <span>My Drives</span>
-            </button>
-            <button
-              onClick={() => setTab('tournaments')}
-              className={`flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-4 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold whitespace-nowrap transition ${
-                tab === 'tournaments'
-                  ? 'bg-blue-600 text-white'
-                  : 'text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              <Trophy className="w-3.5 h-3.5 shrink-0" />
-              <span>Events</span>
-            </button>
-            <button
-              onClick={() => setTab('roster')}
-              className={`flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-4 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold whitespace-nowrap transition ${
-                tab === 'roster'
-                  ? 'bg-blue-600 text-white'
-                  : 'text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              <Users className="w-3.5 h-3.5 shrink-0" />
-              <span>Team</span>
-            </button>
-          </div>
+          {(() => {
+            const tabs = [
+              { id: 'all', label: 'Practices', icon: Calendar },
+              { id: 'my-drives', label: 'My Drives', icon: Car },
+              { id: 'tournaments', label: 'Events', icon: Trophy },
+              { id: 'roster', label: 'Team', icon: Users },
+            ];
+            const activeIndex = Math.max(
+              0,
+              tabs.findIndex((t) => t.id === tab)
+            );
+            return (
+              <div className="relative w-full sm:w-auto grid grid-cols-4 p-1 rounded-full bg-slate-900 border border-slate-800">
+                <div
+                  aria-hidden="true"
+                  className="absolute top-1 bottom-1 left-1 w-[calc((100%-8px)/4)] rounded-full bg-blue-600 transition-transform duration-200 ease-out"
+                  style={{ transform: `translateX(${activeIndex * 100}%)` }}
+                />
+                {tabs.map(({ id, label, icon: Icon }) => (
+                  <button
+                    key={id}
+                    onClick={(e) => {
+                      setTab(id);
+                      e.currentTarget.scrollIntoView({
+                        behavior: 'smooth',
+                        inline: 'center',
+                        block: 'nearest',
+                      });
+                    }}
+                    className={`relative z-10 inline-flex items-center justify-center gap-1.5 px-2 sm:px-4 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold whitespace-nowrap transition-colors ${
+                      tab === id ? 'text-white' : 'text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    <Icon className="w-3.5 h-3.5 shrink-0" />
+                    <span>{label}</span>
+                  </button>
+                ))}
+              </div>
+            );
+          })()}
 
           {tab !== 'roster' && tab !== 'tournaments' && pastCount > 0 && (
             <button
