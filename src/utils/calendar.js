@@ -186,7 +186,11 @@ export function formatPracticeShareText(practice, players) {
     formatLeg('to', '→ TO'),
     formatLeg('from', '← FROM'),
   ];
-  if (practice.notes) lines.push(`Note: ${practice.notes}`);
+  if (practice.notes) {
+    lines.push(
+      `Note: ${practice.notes}${practice.notesAuthor ? ` — ${practice.notesAuthor}` : ''}`
+    );
+  }
   return lines.join('\n');
 }
 

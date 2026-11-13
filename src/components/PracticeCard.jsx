@@ -451,7 +451,12 @@ export default function PracticeCard({
         <div className="flex items-start justify-between gap-2 rounded-xl bg-slate-950/70 border border-slate-800/90 px-3 py-2 text-xs text-slate-300">
           <div className="flex items-start gap-2 min-w-0">
             <MessageSquare className="w-3.5 h-3.5 text-blue-400 shrink-0 mt-0.5" />
-            <span className="break-words">{practice.notes}</span>
+            <div className="min-w-0 break-words">
+              <span>{practice.notes}</span>
+              {practice.notesAuthor && (
+                <span className="text-slate-400"> — {practice.notesAuthor}</span>
+              )}
+            </div>
           </div>
           {onUpdateNotes && (
             <button

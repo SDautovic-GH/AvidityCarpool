@@ -262,10 +262,12 @@ export function useCarpoolData(user) {
     });
   }
 
-  async function updatePracticeNotes(practiceId, notes) {
+  async function updatePracticeNotes(practiceId, notes, authorName = '') {
     if (!activeSeasonId) return;
+    const trimmed = (notes || '').trim();
     await updateDoc(doc(db, 'seasons', activeSeasonId, 'practices', practiceId), {
-      notes: (notes || '').trim(),
+      notes: trimmed,
+      notesAuthor: trimmed ? (authorName || '').trim() : '',
       updatedAt: serverTimestamp(),
     });
   }

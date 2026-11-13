@@ -513,7 +513,15 @@ export default function App() {
                     runAction(() => leaveCar(practiceId, leg, carId, playerId))
                   }
                   onUpdateNotes={(practiceId, notes) =>
-                    runAction(() => updatePracticeNotes(practiceId, notes), 'Note saved')
+                    runAction(
+                      () =>
+                        updatePracticeNotes(
+                          practiceId,
+                          notes,
+                          currentParent?.name || user?.email || ''
+                        ),
+                      'Note saved'
+                    )
                   }
                   onUpdatePractice={(practiceId, details) =>
                     runAction(
