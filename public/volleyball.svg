@@ -1,17 +1,29 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="16" fill="#3b1557" />
-  <circle cx="32" cy="32" r="21" fill="#ffffff" />
-  <g fill="none" stroke="#3b1557" stroke-width="2.6" stroke-linecap="round">
-    <circle cx="32" cy="32" r="21" />
-    <path d="M32 32 C30 22, 34 15, 42 13" />
-    <path d="M23 23 C28 18, 35 17, 48 21" />
-    <path d="M16 19 C23 15, 31 15, 40 16" />
-    <path d="M32 32 C24 38, 17 38, 12 33" />
-    <path d="M27 38 C24 44, 24 49, 27 52" />
-    <path d="M20 39 C17 44, 17 47, 19 49" />
-    <path d="M32 32 C40 36, 47 35, 52 29" />
-    <path d="M39 36 C42 42, 41 48, 36 52" />
-    <path d="M45 35 C48 40, 48 45, 45 48" />
-  </g>
-</svg>
+  <defs>
+    <clipPath id="ball-clip">
+      <circle cx="32" cy="32" r="22" />
+    </clipPath>
+    <radialGradient id="ball-shade" cx="38%" cy="32%" r="68%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="72%" stop-color="#f1f5f9" />
+      <stop offset="100%" stop-color="#cbd5e1" />
+    </radialGradient>
+    <g id="panel-sector">
+      <path d="M 32 32 Q 40 24, 54 22" />
+      <path d="M 25 22 Q 36 16, 52 16" />
+      <path d="M 21 15 Q 34 11, 48 11" />
+    </g>
+  </defs>
 
+  <rect width="64" height="64" rx="16" fill="#3b1557" />
+
+  <circle cx="32" cy="32" r="22" fill="url(#ball-shade)" />
+
+  <g clip-path="url(#ball-clip)" fill="none" stroke="#3b1557" stroke-width="2.2" stroke-linecap="round">
+    <use href="#panel-sector" />
+    <use href="#panel-sector" transform="rotate(120 32 32)" />
+    <use href="#panel-sector" transform="rotate(240 32 32)" />
+  </g>
+
+  <circle cx="32" cy="32" r="22" fill="none" stroke="#3b1557" stroke-width="2.2" />
+</svg>
