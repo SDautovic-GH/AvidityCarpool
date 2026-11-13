@@ -215,10 +215,47 @@ export default function PracticeCard({
 
   const notesList = getPracticeNotes(practice);
 
+  const adminPracticeActions = isAdmin ? (
+    <div className="flex items-center gap-1 shrink-0">
+      <button
+        onClick={() => {
+          setPracticeDraft({
+            isoDate: practice.isoDate,
+            timeLabel: practice.timeLabel,
+            location: practice.location,
+            address: practice.address || '',
+            status: practice.status || 'scheduled',
+          });
+          setEditingPractice((v) => !v);
+        }}
+        className="p-1.5 rounded-full text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition"
+        title="Edit / reschedule practice"
+      >
+        <Pencil className="w-3.5 h-3.5" />
+      </button>
+      <button
+        onClick={() => {
+          if (
+            window.confirm(
+              `Remove practice on ${fullDay}, ${month} ${dateNum}?`
+            )
+          ) {
+            onDeletePractice?.(practice.id);
+          }
+        }}
+        className="p-1.5 rounded-full text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition"
+        title="Remove practice"
+      >
+        <Trash2 className="w-3.5 h-3.5" />
+      </button>
+    </div>
+  ) : null;
+
   return (
     <div className="rounded-2xl bg-slate-900 border border-slate-800 p-4 space-y-3.5 min-w-0 overflow-hidden">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5">
-        <div className="flex items-center gap-3 min-w-0">
+        <div className="flex items-start sm:items-center justify-between gap-3 min-w-0">
+          <div className="flex items-center gap-3 min-w-0">
           <div
             className={`relative w-11 h-11 rounded-xl ${
               isSatisfied ? 'bg-emerald-500/15' : 'bg-slate-950'
@@ -258,9 +295,11 @@ export default function PracticeCard({
               {practice.timeLabel} • {goingCount}/{players.length} going
             </div>
           </div>
+          </div>
+          <div className="sm:hidden">{adminPracticeActions}</div>
         </div>
 
-        <div className="flex items-center justify-between sm:justify-end gap-2 shrink-0">
+        <div className="flex items-center justify-start sm:justify-end gap-2 shrink-0">
           {myPlayer &&
             (isReadOnly ? (
               <span
@@ -292,41 +331,7 @@ export default function PracticeCard({
               + I can drive
             </button>
           )}
-          {isAdmin && (
-            <div className="flex items-center gap-1">
-              <button
-                onClick={() => {
-                  setPracticeDraft({
-                    isoDate: practice.isoDate,
-                    timeLabel: practice.timeLabel,
-                    location: practice.location,
-                    address: practice.address || '',
-                    status: practice.status || 'scheduled',
-                  });
-                  setEditingPractice((v) => !v);
-                }}
-                className="p-1.5 rounded-full text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition"
-                title="Edit / reschedule practice"
-              >
-                <Pencil className="w-3.5 h-3.5" />
-              </button>
-              <button
-                onClick={() => {
-                  if (
-                    window.confirm(
-                      `Remove practice on ${fullDay}, ${month} ${dateNum}?`
-                    )
-                  ) {
-                    onDeletePractice?.(practice.id);
-                  }
-                }}
-                className="p-1.5 rounded-full text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition"
-                title="Remove practice"
-              >
-                <Trash2 className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          )}
+          <div className="hidden sm:flex">{adminPracticeActions}</div>
         </div>
       </div>
 
