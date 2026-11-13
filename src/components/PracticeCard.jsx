@@ -22,6 +22,7 @@ const TONE_DOT = {
 export default function PracticeCard({
   practice,
   isFirstUpcoming,
+  isPast = false,
   players,
   currentParent,
   isAdmin,
@@ -55,6 +56,7 @@ export default function PracticeCard({
 
   const myPlayerId = currentParent?.playerId || '';
   const myParentId = currentParent?.id || '';
+  const isReadOnly = Boolean(isPast && !isAdmin);
   const canDrive = currentParent?.canDrive !== false;
   const myPlayer = players.find((pl) => pl.id === myPlayerId);
   const shortNames = getShortPlayerNames(players);
@@ -124,7 +126,7 @@ export default function PracticeCard({
                 {summary.text}
               </span>
             </div>
-            {canDrive && !isDrivingThisLeg && needsMoreDrivers && (
+            {!isReadOnly && canDrive && !isDrivingThisLeg && needsMoreDrivers && (
               <button
                 onClick={() => onOpenDriveModal(practice.id, leg)}
                 className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition"
@@ -150,6 +152,7 @@ export default function PracticeCard({
                 players={players}
                 currentParent={currentParent}
                 isAdmin={isAdmin}
+                isReadOnly={isReadOnly}
                 onJoin={onJoin}
                 onJoinBoth={onJoinBoth}
                 onLeave={onLeave}
@@ -197,7 +200,7 @@ export default function PracticeCard({
             )}
           </div>
 
-          {!isDesktop && canDrive && !isDrivingThisLeg && needsMoreDrivers && (
+          {!isReadOnly && !isDesktop && canDrive && !isDrivingThisLeg && needsMoreDrivers && (
             <button
               onClick={() => onOpenDriveModal(practice.id, leg)}
               className="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition shrink-0"
@@ -261,19 +264,30 @@ export default function PracticeCard({
         </div>
 
         <div className="flex items-center justify-between sm:justify-end gap-2 shrink-0">
-          {myPlayer && (
-            <button
-              onClick={() => onToggleAttendance(practice.id, myPlayer.id)}
-              className={`whitespace-nowrap px-2.5 py-1 rounded-full text-xs font-medium transition ${
-                isOut
-                  ? 'bg-rose-500/15 text-rose-400'
-                  : 'bg-slate-800 hover:bg-slate-700 text-slate-100'
-              }`}
-            >
-              {shortNameOf(myPlayer)}: {isOut ? 'Out' : 'Going'}
-            </button>
-          )}
-          {canDrive && !drivesBoth && (
+          {myPlayer &&
+            (isReadOnly ? (
+              <span
+                className={`whitespace-nowrap px-2.5 py-1 rounded-full text-xs font-medium ${
+                  isOut
+                    ? 'bg-rose-500/15 text-rose-400'
+                    : 'bg-slate-800 text-slate-300'
+                }`}
+              >
+                {shortNameOf(myPlayer)}: {isOut ? 'Out' : 'Going'}
+              </span>
+            ) : (
+              <button
+                onClick={() => onToggleAttendance(practice.id, myPlayer.id)}
+                className={`whitespace-nowrap px-2.5 py-1 rounded-full text-xs font-medium transition ${
+                  isOut
+                    ? 'bg-rose-500/15 text-rose-400'
+                    : 'bg-slate-800 hover:bg-slate-700 text-slate-100'
+                }`}
+              >
+                {shortNameOf(myPlayer)}: {isOut ? 'Out' : 'Going'}
+              </button>
+            ))}
+          {!isReadOnly && canDrive && !drivesBoth && (
             <button
               onClick={() => onOpenDriveModal(practice.id, 'both')}
               className="hidden md:inline-flex px-3 py-1 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition"
@@ -425,7 +439,8 @@ export default function PracticeCard({
       {notesList.length > 0 && (
         <div className="rounded-xl bg-slate-950/70 border border-slate-800/90 px-3 py-2 space-y-1.5 text-xs text-slate-300">
           {notesList.map((note) => {
-            const canDelete = isAdmin || (note.authorId && note.authorId === myParentId);
+            const canDelete =
+              !isReadOnly && (isAdmin || (note.authorId && note.authorId === myParentId));
             return (
               <div key={note.id} className="flex items-start justify-between gap-2">
                 <div className="flex items-start gap-2 min-w-0">
@@ -488,7 +503,7 @@ export default function PracticeCard({
         </form>
       ) : (
         <div className="flex flex-wrap items-center gap-2">
-          {onAddNote && (
+          {!isReadOnly && onAddNote && (
             <button
               onClick={() => {
                 setNoteDraft('');

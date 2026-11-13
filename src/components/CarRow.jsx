@@ -8,6 +8,7 @@ export default function CarRow({
   players,
   currentParent,
   isAdmin,
+  isReadOnly = false,
   onJoin,
   onJoinBoth,
   onLeave,
@@ -108,7 +109,7 @@ export default function CarRow({
         </div>
 
         <div className="flex items-center gap-1.5 shrink-0">
-          {!isNeedsSub && !isDrivingThisLeg && isMyKidGoing && !myKidCurrentCar && !isFull && (
+          {!isReadOnly && !isNeedsSub && !isDrivingThisLeg && isMyKidGoing && !myKidCurrentCar && !isFull && (
             <>
               <button
                 onClick={() => onJoin(practice.id, leg, car.id)}
@@ -127,7 +128,7 @@ export default function CarRow({
             </>
           )}
 
-          {!isMyDrive && isNeedsSub && canDrive && (
+          {!isReadOnly && !isMyDrive && isNeedsSub && canDrive && (
             <button
               onClick={() => onTakeOver(practice.id, leg, car.id)}
               className="px-3 py-1.5 rounded-full text-xs font-semibold bg-amber-400 hover:bg-amber-300 text-slate-950 transition"
@@ -177,7 +178,7 @@ export default function CarRow({
               {isMyKidInCar && (
                 <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-sm font-semibold bg-blue-500/20 text-blue-400">
                   {getPlayerName(myPlayerId)}
-                  {!isMyDrive && (
+                  {!isReadOnly && !isMyDrive && (
                     <button
                       onClick={() => onLeave(practice.id, leg, car.id)}
                       title="Leave car"
@@ -192,7 +193,7 @@ export default function CarRow({
           )}
         </div>
 
-        {isMyDrive && (
+        {!isReadOnly && isMyDrive && (
           <div className="flex items-center gap-1.5 shrink-0">
             <button
               onClick={() => onToggleNeedSub(practice.id, leg, car.id)}

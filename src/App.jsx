@@ -513,6 +513,7 @@ export default function App() {
                   key={practice.id}
                   practice={practice}
                   isFirstUpcoming={practice.id === firstUpcomingId}
+                  isPast={practice.isoDate < todayIso}
                   players={carpoolPlayers}
                   currentParent={currentParent}
                   isAdmin={isAdmin}
