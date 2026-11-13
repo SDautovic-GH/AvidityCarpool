@@ -24,6 +24,23 @@ export default function App() {
 
   const [tab, setTab] = useState('all'); // 'all' | 'my-drives' | 'tournaments' | 'roster'
   const [onlyNeedsDriver, setOnlyNeedsDriver] = useState(false);
+  const [zoomPct, setZoomPct] = useState(() => {
+    try {
+      const saved = Number(localStorage.getItem('avidity_zoom_pct'));
+      return saved >= 80 && saved <= 130 ? saved : 100;
+    } catch {
+      return 100;
+    }
+  });
+
+  useEffect(() => {
+    document.documentElement.style.fontSize = `${zoomPct}%`;
+    try {
+      localStorage.setItem('avidity_zoom_pct', String(zoomPct));
+    } catch {
+      // ignore storage errors
+    }
+  }, [zoomPct]);
   const tabRefs = useRef({});
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0, ready: false });
 
@@ -281,7 +298,38 @@ export default function App() {
             </div>
           </button>
 
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <div
+              className="inline-flex items-center rounded-full bg-slate-900 border border-slate-800 text-[11px] font-semibold text-slate-300"
+              title="App zoom"
+            >
+              <button
+                type="button"
+                onClick={() => setZoomPct((z) => Math.max(80, z - 10))}
+                disabled={zoomPct <= 80}
+                className="px-2 py-1.5 rounded-l-full hover:bg-slate-800 disabled:opacity-40 transition"
+                aria-label="Zoom out"
+              >
+                −
+              </button>
+              <button
+                type="button"
+                onClick={() => setZoomPct(100)}
+                className="px-1 py-1.5 tabular-nums hover:text-white transition"
+                title="Reset zoom to 100%"
+              >
+                {zoomPct}%
+              </button>
+              <button
+                type="button"
+                onClick={() => setZoomPct((z) => Math.min(130, z + 10))}
+                disabled={zoomPct >= 130}
+                className="px-2 py-1.5 rounded-r-full hover:bg-slate-800 disabled:opacity-40 transition"
+                aria-label="Zoom in"
+              >
+                +
+              </button>
+            </div>
             {seasons.length > 1 && (
               <select
                 value={activeSeasonId || ''}
