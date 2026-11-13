@@ -103,7 +103,9 @@ export default function App() {
     batchCreateTournaments,
   } = useCarpoolData(user);
 
-  const todayIso = new Date().toISOString().slice(0, 10);
+  const now = new Date();
+  const todayIso = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  const hasAutoScrolledRef = useRef(false);
 
   const carpoolPlayers = useMemo(() => {
     const melrosePlayerIds = new Set(
@@ -161,6 +163,30 @@ export default function App() {
     () => practices.find((p) => p.isoDate >= todayIso)?.id || null,
     [practices, todayIso]
   );
+
+  const closestPracticeId = useMemo(() => {
+    if (firstUpcomingId) return firstUpcomingId;
+    if (!practices.length) return null;
+    const todayMs = new Date(`${todayIso}T12:00:00`).getTime();
+    let best = practices[0];
+    let bestDiff = Math.abs(new Date(`${best.isoDate}T12:00:00`).getTime() - todayMs);
+    for (const p of practices) {
+      const diff = Math.abs(new Date(`${p.isoDate}T12:00:00`).getTime() - todayMs);
+      if (diff < bestDiff) {
+        best = p;
+        bestDiff = diff;
+      }
+    }
+    return best.id;
+  }, [practices, firstUpcomingId, todayIso]);
+
+  useEffect(() => {
+    if (hasAutoScrolledRef.current || loading || tab !== 'all' || !closestPracticeId) return;
+    const el = document.getElementById(`practice-${closestPracticeId}`);
+    if (!el) return;
+    hasAutoScrolledRef.current = true;
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, [loading, tab, closestPracticeId, visiblePractices]);
 
   const shortPlayerNames = useMemo(() => getShortPlayerNames(players), [players]);
 
