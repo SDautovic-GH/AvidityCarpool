@@ -325,10 +325,11 @@ export default function AdminRoster({
                   {isAdmin && (
                     <button
                       onClick={() => openAddParentToPlayer(player.id)}
-                      className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition shrink-0"
+                      className="inline-flex items-center gap-1 px-2.5 sm:px-3 py-1 rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition shrink-0"
                     >
                       <Plus className="w-3 h-3" />
-                      Add Parent
+                      <span className="hidden sm:inline">Add Parent</span>
+                      <span className="sm:hidden">Parent</span>
                     </button>
                   )}
                 </div>

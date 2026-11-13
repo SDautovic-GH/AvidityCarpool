@@ -167,21 +167,21 @@ export default function App() {
     : null;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 pb-20">
-      <header className="sticky top-0 z-30 bg-slate-950/90 backdrop-blur-md border-b border-slate-800/80">
-        <div className="max-w-4xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+    <div className="min-h-screen bg-slate-950 text-slate-100 pb-28 overflow-x-hidden">
+      <header className="sticky top-0 z-30 bg-slate-950/90 backdrop-blur-md border-b border-slate-800/80 pt-[env(safe-area-inset-top)]">
+        <div className="max-w-4xl mx-auto px-3 sm:px-4 py-2.5 sm:py-3 flex items-center justify-between gap-2">
           <button
             type="button"
             onClick={() => {
               setTab('all');
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
-            className="flex items-center gap-2.5 min-w-0 text-left text-inherit cursor-pointer focus:outline-none"
+            className="flex items-center gap-2.5 min-w-0 flex-1 text-left text-inherit cursor-pointer focus:outline-none"
           >
             <img
               src="/volleyball.svg?v=4"
               alt="Avidity Carpool"
-              className="w-9 h-9 shrink-0"
+              className="w-8 h-8 sm:w-9 sm:h-9 shrink-0"
             />
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
@@ -191,7 +191,7 @@ export default function App() {
                     : 'Avidity Carpool'}
                 </h1>
                 {activeSeason?.label && (
-                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-slate-800 text-slate-300">
+                  <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-slate-800 text-slate-300">
                     {activeSeason.label}
                   </span>
                 )}
@@ -203,12 +203,12 @@ export default function App() {
             </div>
           </button>
 
-          <div className="flex items-center gap-2">
-            {(seasons.length > 1 || isAdmin) && (
+          <div className="flex items-center gap-2 shrink-0">
+            {seasons.length > 1 && (
               <select
                 value={activeSeasonId || ''}
                 onChange={(e) => setActiveSeasonId(e.target.value)}
-                className="px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-xs font-semibold text-slate-200 focus:outline-none focus:border-blue-500"
+                className="px-2.5 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-xs font-semibold text-slate-200 focus:outline-none focus:border-blue-500 max-w-[140px] sm:max-w-none"
               >
                 {seasons.map((s) => (
                   <option key={s.id} value={s.id}>
@@ -220,7 +220,7 @@ export default function App() {
 
             <button
               onClick={() => signOut(auth)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 transition"
+              className="inline-flex items-center gap-1.5 p-2 sm:px-3 sm:py-1.5 rounded-full text-xs font-semibold bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 transition"
               title="Sign Out"
             >
               <LogOut className="w-3.5 h-3.5" />
@@ -229,51 +229,51 @@ export default function App() {
           </div>
         </div>
 
-        <div className="max-w-4xl mx-auto px-4 pb-3 flex items-center justify-between gap-2 flex-wrap">
-          <div className="inline-flex p-1 rounded-full bg-slate-900 border border-slate-800">
+        <div className="max-w-4xl mx-auto px-3 sm:px-4 pb-2.5 sm:pb-3 flex items-center justify-between gap-2 flex-wrap">
+          <div className="w-full sm:w-auto flex items-center p-1 rounded-full bg-slate-900 border border-slate-800 overflow-x-auto no-scrollbar">
             <button
               onClick={() => setTab('all')}
-              className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold transition ${
+              className={`flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-4 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold whitespace-nowrap transition ${
                 tab === 'all'
                   ? 'bg-blue-600 text-white'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              <Calendar className="w-3.5 h-3.5" />
-              All Practices
+              <Calendar className="w-3.5 h-3.5 shrink-0" />
+              <span>Practices</span>
             </button>
             <button
               onClick={() => setTab('my-drives')}
-              className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold transition ${
+              className={`flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-4 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold whitespace-nowrap transition ${
                 tab === 'my-drives'
                   ? 'bg-blue-600 text-white'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              <Car className="w-3.5 h-3.5" />
-              My Drives
+              <Car className="w-3.5 h-3.5 shrink-0" />
+              <span>My Drives</span>
             </button>
             <button
               onClick={() => setTab('tournaments')}
-              className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold transition ${
+              className={`flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-4 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold whitespace-nowrap transition ${
                 tab === 'tournaments'
                   ? 'bg-blue-600 text-white'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              <Trophy className="w-3.5 h-3.5" />
-              Tournaments
+              <Trophy className="w-3.5 h-3.5 shrink-0" />
+              <span>Events</span>
             </button>
             <button
               onClick={() => setTab('roster')}
-              className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold transition ${
+              className={`flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-4 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold whitespace-nowrap transition ${
                 tab === 'roster'
                   ? 'bg-blue-600 text-white'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              <Users className="w-3.5 h-3.5" />
-              Team
+              <Users className="w-3.5 h-3.5 shrink-0" />
+              <span>Team</span>
             </button>
           </div>
 
