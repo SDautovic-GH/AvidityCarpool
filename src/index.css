@@ -1,5 +1,26 @@
 @import "tailwindcss";
 
+@theme {
+  /* Apple Sports Midnight Obsidian palette (inspired by MHS) */
+  --color-slate-950: #070913;
+  --color-slate-900: #101528;
+  --color-slate-800: #17203c;
+  --color-slate-700: #243054;
+  --color-blue-600: #0071e3;
+  --color-blue-500: #2997ff;
+}
+
 :root {
   color-scheme: dark;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+  background: radial-gradient(1200px 600px at 50% -10%, rgba(41, 151, 255, 0.08), transparent 65%), #070913;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Subtle Apple-style hairline depth on elevated cards */
+.rounded-2xl.bg-slate-900 {
+  box-shadow: 0 8px 24px -12px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
