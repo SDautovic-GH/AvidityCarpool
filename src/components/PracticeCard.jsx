@@ -513,23 +513,23 @@ export default function PracticeCard({
         <div className="grid grid-cols-2 gap-1 p-1 rounded-full bg-slate-950 border border-slate-800">
           <button
             onClick={() => setActiveLeg('to')}
-            className={`flex items-center justify-center gap-2 py-1.5 rounded-full text-xs font-semibold transition ${
+            className={`flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold whitespace-nowrap transition ${
               activeLeg === 'to'
                 ? 'bg-slate-800 text-slate-100 shadow-sm'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            <span className={`w-2 h-2 rounded-full ${TONE_DOT[toSum.tone]}`} /> → To Practice
+            <span className={`w-2 h-2 rounded-full shrink-0 ${TONE_DOT[toSum.tone]}`} /> → To Practice
           </button>
           <button
             onClick={() => setActiveLeg('from')}
-            className={`flex items-center justify-center gap-2 py-1.5 rounded-full text-xs font-semibold transition ${
+            className={`flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold whitespace-nowrap transition ${
               activeLeg === 'from'
                 ? 'bg-slate-800 text-slate-100 shadow-sm'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            <span className={`w-2 h-2 rounded-full ${TONE_DOT[fromSum.tone]}`} /> ← From Practice
+            <span className={`w-2 h-2 rounded-full shrink-0 ${TONE_DOT[fromSum.tone]}`} /> ← From Practice
           </button>
         </div>
         {renderLegBody(activeLeg, false)}

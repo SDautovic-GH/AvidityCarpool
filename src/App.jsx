@@ -340,7 +340,7 @@ export default function App() {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 pt-5 space-y-4">
+      <main className="w-full max-w-4xl mx-auto px-3 sm:px-4 pt-5 space-y-4">
         {loading ? (
           <div className="py-12 text-center text-sm text-slate-400">
             Loading carpool schedule...
