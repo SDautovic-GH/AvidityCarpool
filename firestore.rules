@@ -1,0 +1,292 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: admins
+    // Document ID: {email} (lowercase email address, seeded in Firebase Console)
+    // Fields: none required (existence grants global admin privileges)
+    // Access: readable by the signed-in user for their own email only; never writable from client.
+    //
+    // Collection: config
+    // Document ID: app (optional bootstrap config document)
+    // Fields:
+    //   - activeSeasonId: string (optional, 1..128 chars)
+    //   - clubName: string (optional, 1..100 chars)
+    //   - updatedAt: timestamp (optional)
+    //
+    // Collection: seasons
+    // Document ID: {seasonId}
+    // Fields:
+    //   - clubName: string (required, 1..100 chars)
+    //   - teamName: string (required, 1..100 chars)
+    //   - label: string (required, 1..100 chars)
+    //   - status: string (required, 'active' | 'archived')
+    //   - createdAt: timestamp (required, immutable)
+    //
+    // Subcollection: seasons/{seasonId}/players
+    // Document ID: {playerId}
+    // Fields:
+    //   - name: string (required, 1..100 chars)
+    //   - createdAt: timestamp (required, immutable)
+    //
+    // Subcollection: seasons/{seasonId}/parents
+    // Document ID: {parentId} (lowercase email address)
+    // Fields:
+    //   - name: string (required, 1..100 chars)
+    //   - email: string (required, valid lowercase email, must equal parentId, immutable)
+    //   - playerId: string (required, 0..128 chars)
+    //   - canDrive: bool (required)
+    //   - defaultSeats: int (required, 1..7)
+    //   - role: string (required, 'admin' | 'parent')
+    //   - phone: string (optional, 0..40 chars)
+    //   - address: string (optional, 0..300 chars)
+    //   - createdAt: timestamp (required, immutable)
+    //
+    // Subcollection: seasons/{seasonId}/practices
+    // Document ID: {practiceId}
+    // Fields:
+    //   - isoDate: string (required, YYYY-MM-DD prefix, 10..30 chars, immutable for non-admins)
+    //   - timeLabel: string (required, 1..50 chars, immutable for non-admins)
+    //   - location: string (required, 1..150 chars, immutable for non-admins)
+    //   - address: string (required, 0..300 chars, immutable for non-admins)
+    //   - status: string (required, 1..30 chars, immutable for non-admins)
+    //   - absentPlayerIds: list (required, max 100 items)
+    //   - legs: map (required, keys: 'to', 'from' - each a list, max 50 items)
+    //   - notes: string (optional, 0..500 chars)
+    //   - createdAt: timestamp (optional, immutable)
+    //   - updatedAt: timestamp (optional)
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+
+    // Require Firebase Auth with an email address (email_verified not required for Email+Password signup)
+    function isAuthenticated() {
+      return request.auth != null &&
+             request.auth.token.email != null &&
+             request.auth.token.email is string &&
+             request.auth.token.email.size() > 0;
+    }
+
+    // Normalized lowercase email of the signed-in user
+    function authEmail() {
+      return request.auth.token.email.lower();
+    }
+
+    // Check if user is in the top-level admins/{email} allowlist
+    function isGlobalAdmin() {
+      return isAuthenticated() &&
+             exists(/databases/$(database)/documents/admins/$(authEmail()));
+    }
+
+    // Check if the parent season document exists
+    function seasonExists(seasonId) {
+      return exists(/databases/$(database)/documents/seasons/$(seasonId));
+    }
+
+    // Check if user is registered in seasons/{seasonId}/parents/{email}
+    function isParentInSeason(seasonId) {
+      return isAuthenticated() &&
+             exists(/databases/$(database)/documents/seasons/$(seasonId)/parents/$(authEmail()));
+    }
+
+    // Check if user has role == 'admin' in seasons/{seasonId}/parents/{email}
+    function isParentAdmin(seasonId) {
+      return isParentInSeason(seasonId) &&
+             get(/databases/$(database)/documents/seasons/$(seasonId)/parents/$(authEmail())).data.role == 'admin';
+    }
+
+    // Authorized to read a season and its subcollections
+    function isSeasonMember(seasonId) {
+      return isGlobalAdmin() || isParentInSeason(seasonId);
+    }
+
+    // Authorized to administer a season (global admin or season parent admin)
+    function isSeasonAdmin(seasonId) {
+      return isGlobalAdmin() || isParentAdmin(seasonId);
+    }
+
+    // Validate required fields exist
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    // Validate document contains only allowed fields
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    // Validate immutable fields have not changed on update
+    function areImmutableFieldsUnchanged(fields) {
+      return !request.resource.data.diff(resource.data).affectedKeys().hasAny(fields);
+    }
+
+    // Validate string length
+    function validString(val, minLen, maxLen) {
+      return val is string && val.size() >= minLen && val.size() <= maxLen;
+    }
+
+    // Validate email format
+    function isValidEmail(email) {
+      return email is string &&
+             email.size() <= 254 &&
+             email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    // Validate list type and max size
+    function isValidList(val, maxSize) {
+      return val is list && val.size() <= maxSize;
+    }
+
+    // ===============================================================
+    // Domain Validators (Called in BOTH create and update)
+    // ===============================================================
+
+    function isValidConfig(data) {
+      return hasOnlyAllowedFields(['activeSeasonId', 'clubName', 'updatedAt']) &&
+             (!('activeSeasonId' in data) || validString(data.activeSeasonId, 1, 128)) &&
+             (!('clubName' in data) || validString(data.clubName, 1, 100)) &&
+             (!('updatedAt' in data) || data.updatedAt is timestamp);
+    }
+
+    function isValidSeason(data) {
+      return hasRequiredFields(['clubName', 'teamName', 'label', 'status', 'createdAt']) &&
+             hasOnlyAllowedFields(['clubName', 'teamName', 'label', 'status', 'createdAt']) &&
+             validString(data.clubName, 1, 100) &&
+             validString(data.teamName, 1, 100) &&
+             validString(data.label, 1, 100) &&
+             data.status in ['active', 'archived'] &&
+             data.createdAt is timestamp;
+    }
+
+    function isValidPlayer(data) {
+      return hasRequiredFields(['name', 'createdAt']) &&
+             hasOnlyAllowedFields(['name', 'createdAt']) &&
+             validString(data.name, 1, 100) &&
+             data.createdAt is timestamp;
+    }
+
+    function isValidParent(data, parentId) {
+      return hasRequiredFields(['name', 'email', 'playerId', 'canDrive', 'defaultSeats', 'role', 'createdAt']) &&
+             hasOnlyAllowedFields(['name', 'email', 'playerId', 'canDrive', 'defaultSeats', 'role', 'phone', 'address', 'createdAt']) &&
+             validString(data.name, 1, 100) &&
+             isValidEmail(data.email) &&
+             data.email == data.email.lower() &&
+             data.email == parentId &&
+             validString(data.playerId, 0, 128) &&
+             data.canDrive is bool &&
+             data.defaultSeats is int && data.defaultSeats >= 1 && data.defaultSeats <= 7 &&
+             data.role in ['admin', 'parent'] &&
+             (!('phone' in data) || validString(data.phone, 0, 40)) &&
+             (!('address' in data) || validString(data.address, 0, 300)) &&
+             data.createdAt is timestamp;
+    }
+
+    function isValidPractice(data) {
+      return hasRequiredFields(['isoDate', 'timeLabel', 'location', 'address', 'status', 'absentPlayerIds', 'legs']) &&
+             hasOnlyAllowedFields(['isoDate', 'timeLabel', 'location', 'address', 'status', 'absentPlayerIds', 'legs', 'notes', 'createdAt', 'updatedAt']) &&
+             validString(data.isoDate, 10, 30) &&
+             data.isoDate.matches("^\\d{4}-\\d{2}-\\d{2}.*") &&
+             validString(data.timeLabel, 1, 50) &&
+             validString(data.location, 1, 150) &&
+             validString(data.address, 0, 300) &&
+             validString(data.status, 1, 30) &&
+             isValidList(data.absentPlayerIds, 100) &&
+             data.legs is map &&
+             data.legs.keys().hasAll(['to', 'from']) &&
+             data.legs.keys().hasOnly(['to', 'from']) &&
+             isValidList(data.legs.to, 50) &&
+             isValidList(data.legs.from, 50) &&
+             (!('notes' in data) || validString(data.notes, 0, 500)) &&
+             (!('createdAt' in data) || data.createdAt is timestamp) &&
+             (!('updatedAt' in data) || data.updatedAt is timestamp);
+    }
+
+    // ===============================================================
+    // Collection Rules
+    // ===============================================================
+
+    // Default deny at root
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Global admin allowlist: user may read their own email doc only; never writable from client
+    match /admins/{email} {
+      allow read: if isAuthenticated() && email == authEmail();
+      allow write: if false;
+    }
+
+    // Optional bootstrap config document
+    match /config/app {
+      allow read: if isAuthenticated();
+      allow create, update: if isGlobalAdmin() && isValidConfig(request.resource.data);
+      allow delete: if isGlobalAdmin();
+    }
+
+    // Seasons and subcollections
+    match /seasons/{seasonId} {
+      allow read: if isSeasonMember(seasonId);
+      allow create: if isGlobalAdmin() && isValidSeason(request.resource.data);
+      allow update: if isSeasonAdmin(seasonId) &&
+                       isValidSeason(request.resource.data) &&
+                       areImmutableFieldsUnchanged(['createdAt']);
+      allow delete: if isSeasonAdmin(seasonId);
+
+      // Players subcollection
+      match /players/{playerId} {
+        allow read: if isSeasonMember(seasonId);
+        allow create: if isSeasonAdmin(seasonId) &&
+                         seasonExists(seasonId) &&
+                         isValidPlayer(request.resource.data);
+        allow update: if isSeasonAdmin(seasonId) &&
+                         isValidPlayer(request.resource.data) &&
+                         areImmutableFieldsUnchanged(['createdAt']);
+        allow delete: if isSeasonAdmin(seasonId);
+      }
+
+      // Parents subcollection (doc ID is lowercase email)
+      match /parents/{parentId} {
+        allow read: if isSeasonMember(seasonId);
+        allow create: if isSeasonAdmin(seasonId) &&
+                         seasonExists(seasonId) &&
+                         isValidParent(request.resource.data, parentId);
+        allow update: if isValidParent(request.resource.data, parentId) &&
+                         areImmutableFieldsUnchanged(['createdAt', 'email']) &&
+                         (
+                           isSeasonAdmin(seasonId) ||
+                           (
+                             isParentInSeason(seasonId) &&
+                             parentId == authEmail() &&
+                             request.resource.data.diff(resource.data).affectedKeys().hasOnly(['phone', 'address', 'name', 'defaultSeats'])
+                           )
+                         );
+        allow delete: if isSeasonAdmin(seasonId);
+      }
+
+      // Practices subcollection
+      match /practices/{practiceId} {
+        allow read: if isSeasonMember(seasonId);
+        allow create: if isSeasonAdmin(seasonId) &&
+                         seasonExists(seasonId) &&
+                         isValidPractice(request.resource.data);
+        allow update: if isValidPractice(request.resource.data) &&
+                         areImmutableFieldsUnchanged(['createdAt']) &&
+                         (
+                           isSeasonAdmin(seasonId) ||
+                           (
+                             isParentInSeason(seasonId) &&
+                             request.resource.data.diff(resource.data).affectedKeys().hasOnly(['absentPlayerIds', 'legs', 'notes', 'updatedAt'])
+                           )
+                         );
+        allow delete: if isSeasonAdmin(seasonId);
+      }
+    }
+  }
+}
