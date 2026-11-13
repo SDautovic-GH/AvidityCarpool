@@ -151,6 +151,8 @@ export default function App() {
     [practices, todayIso]
   );
 
+  const shortPlayerNames = useMemo(() => getShortPlayerNames(players), [players]);
+
   const runAction = async (fn, successMsg) => {
     try {
       await fn();
@@ -195,7 +197,6 @@ export default function App() {
   }
 
   const myPlayer = players.find((pl) => pl.id === currentParent?.playerId);
-  const shortPlayerNames = useMemo(() => getShortPlayerNames(players), [players]);
   const myPlayerShortName = myPlayer ? shortPlayerNames[myPlayer.id] || myPlayer.name : '';
   const activeDrivePractice = driveModal
     ? practices.find((p) => p.id === driveModal.practiceId)
