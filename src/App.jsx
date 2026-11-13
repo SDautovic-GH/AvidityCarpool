@@ -170,7 +170,14 @@ export default function App() {
     <div className="min-h-screen bg-slate-950 text-slate-100 pb-20">
       <header className="sticky top-0 z-30 bg-slate-950/90 backdrop-blur-md border-b border-slate-800/80">
         <div className="max-w-4xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5 min-w-0">
+          <button
+            type="button"
+            onClick={() => {
+              setTab('all');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            className="flex items-center gap-2.5 min-w-0 text-left text-inherit cursor-pointer focus:outline-none"
+          >
             <img
               src="/volleyball.svg"
               alt="Avidity Carpool"
@@ -178,7 +185,7 @@ export default function App() {
             />
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-base sm:text-lg font-extrabold tracking-tight truncate">
+                <h1 className="text-base sm:text-lg font-extrabold tracking-tight truncate text-slate-100">
                   {activeSeason
                     ? `${activeSeason.clubName} ${activeSeason.teamName}`
                     : 'Avidity Carpool'}
@@ -194,7 +201,7 @@ export default function App() {
                 {myPlayer ? ` · ${myPlayer.name}'s parent` : ''}
               </p>
             </div>
-          </div>
+          </button>
 
           <div className="flex items-center gap-2">
             {(seasons.length > 1 || isAdmin) && (
