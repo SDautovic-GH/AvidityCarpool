@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Calendar, Car, LogOut, Plus, Trophy, Users } from 'lucide-react';
 import {
   auth,
@@ -20,7 +20,24 @@ export default function App() {
   const [user, setUser] = useState(null);
   const [authReady, setAuthReady] = useState(!isFirebaseConfigured);
 
-  const [tab, setTab] = useState('all'); // 'all' | 'my-drives' | 'roster'
+  const [tab, setTab] = useState('all'); // 'all' | 'my-drives' | 'tournaments' | 'roster'
+  const tabRefs = useRef({});
+  const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0, ready: false });
+
+  useLayoutEffect(() => {
+    const updateIndicator = () => {
+      const el = tabRefs.current[tab];
+      if (!el) return;
+      setIndicatorStyle({
+        left: el.offsetLeft,
+        width: el.offsetWidth,
+        ready: true,
+      });
+    };
+    updateIndicator();
+    window.addEventListener('resize', updateIndicator);
+    return () => window.removeEventListener('resize', updateIndicator);
+  }, [tab, user]);
   const [showPast, setShowPast] = useState(false);
   const [driveModal, setDriveModal] = useState(null); // { practiceId, defaultDirection }
   const [assignModal, setAssignModal] = useState(null); // { practiceId, leg, playerId }
@@ -237,36 +254,41 @@ export default function App() {
               { id: 'tournaments', label: 'Events', icon: Trophy },
               { id: 'roster', label: 'Team', icon: Users },
             ];
-            const activeIndex = Math.max(
-              0,
-              tabs.findIndex((t) => t.id === tab)
-            );
             return (
-              <div className="relative w-full sm:w-auto grid grid-cols-4 p-1 rounded-full bg-slate-900 border border-slate-800">
-                <div
-                  aria-hidden="true"
-                  className="absolute top-1 bottom-1 left-1 w-[calc((100%-8px)/4)] rounded-full bg-blue-600 transition-transform duration-200 ease-out"
-                  style={{ transform: `translateX(${activeIndex * 100}%)` }}
-                />
-                {tabs.map(({ id, label, icon: Icon }) => (
-                  <button
-                    key={id}
-                    onClick={(e) => {
-                      setTab(id);
-                      e.currentTarget.scrollIntoView({
-                        behavior: 'smooth',
-                        inline: 'center',
-                        block: 'nearest',
-                      });
+              <div className="w-full sm:w-auto overflow-x-auto no-scrollbar">
+                <div className="relative inline-flex items-center gap-1 p-1 rounded-full bg-slate-900 border border-slate-800">
+                  <div
+                    aria-hidden="true"
+                    className="absolute top-1 bottom-1 left-0 rounded-full bg-blue-600 transition-all duration-200 ease-out"
+                    style={{
+                      transform: `translateX(${indicatorStyle.left}px)`,
+                      width: `${indicatorStyle.width}px`,
+                      opacity: indicatorStyle.ready ? 1 : 0,
                     }}
-                    className={`relative z-10 inline-flex items-center justify-center gap-1.5 px-2 sm:px-4 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold whitespace-nowrap transition-colors ${
-                      tab === id ? 'text-white' : 'text-slate-400 hover:text-slate-200'
-                    }`}
-                  >
-                    <Icon className="w-3.5 h-3.5 shrink-0" />
-                    <span>{label}</span>
-                  </button>
-                ))}
+                  />
+                  {tabs.map(({ id, label, icon: Icon }) => (
+                    <button
+                      key={id}
+                      ref={(el) => {
+                        tabRefs.current[id] = el;
+                      }}
+                      onClick={(e) => {
+                        setTab(id);
+                        e.currentTarget.scrollIntoView({
+                          behavior: 'smooth',
+                          inline: 'center',
+                          block: 'nearest',
+                        });
+                      }}
+                      className={`relative z-10 inline-flex items-center justify-center gap-1.5 px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 transition-colors ${
+                        tab === id ? 'text-white' : 'text-slate-400 hover:text-slate-200'
+                      }`}
+                    >
+                      <Icon className="w-3.5 h-3.5 shrink-0" />
+                      <span>{label}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
             );
           })()}
