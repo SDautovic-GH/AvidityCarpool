@@ -38,3 +38,4 @@
 | **Assign an Unassigned Player** | Click the player's **`Name +`** pill under *Still need a ride* on a practice card |
 | **Generate Tue/Thu/Sun Practices** | **Team Roster → Season & Schedule → Generate Practices** |
 | **Start Next Year's Season** | **Team Roster → Season & Schedule → New Season** |
+

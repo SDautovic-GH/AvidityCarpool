@@ -7,7 +7,7 @@ export const DEFAULT_FACILITIES = [
   {
     key: 'dis',
     name: 'DIS (Danvers Indoor Sports)',
-    address: '150 Andover St, Danvers, MA 01923',
+    address: '150R Andover St, Danvers, MA 01923',
   },
 ];
 
@@ -85,7 +85,7 @@ export function generateSeasonPractices(startDate, endDate) {
         isoDate,
         timeLabel: isSunday ? '5:00 – 7:00 PM' : '7:15 – 9:15 PM',
         location: isSunday ? 'DIS (Danvers Indoor Sports)' : "St. John's Prep",
-        address: isSunday ? '150 Andover St, Danvers, MA 01923' : '72 Spring St, Danvers, MA 01923',
+        address: isSunday ? '150R Andover St, Danvers, MA 01923' : '72 Spring St, Danvers, MA 01923',
         status: 'scheduled',
         absentPlayerIds: [],
         legs: { to: [], from: [] },

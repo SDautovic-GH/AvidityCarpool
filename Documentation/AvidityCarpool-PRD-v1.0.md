@@ -76,3 +76,4 @@
 3. **Practice Notes:** Any signed-in parent or admin can add/edit an inline note per practice (up to 500 chars) for pickup spot details or schedule reminders.
 4. **Team Directory:** Read-only team contact list for all signed-in parents with tap-to-call (`tel:`) phone links, tap-for-directions address links, and **Edit My Info** self-service updates.
 5. **Admin Roster & Season Management:** Silent family/player creation, multiple parents per player, `canDrive` pool toggle, 1-tap password reset email, admin rider assignment (`AssignModal`), new season creation with selective player/parent carryover, and 1-click Tue/Thu/Sun schedule generation.
+

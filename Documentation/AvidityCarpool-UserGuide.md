@@ -80,3 +80,4 @@ Tap the **Directory** tab at the top to:
 ## Quick Tips
 - **My Drives Tab:** Tap **My Drives** at the top to see only the practices where you are scheduled to drive.
 - **Two Parents, One Player:** Both parents can have their own login linked to the same player so whoever is handling practice that day can sign up to drive or claim a ride.
+

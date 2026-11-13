@@ -378,11 +378,10 @@ export default function AdminRoster({
                 <input
                   type="email"
                   required
-                  disabled={Boolean(form.existingParentId)}
                   value={form.email}
                   onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
                   placeholder="parent@example.com"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-slate-100 disabled:opacity-50 focus:outline-none focus:border-blue-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-slate-100 focus:outline-none focus:border-blue-500"
                 />
               </div>
 
