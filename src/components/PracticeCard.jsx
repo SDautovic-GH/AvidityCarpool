@@ -520,9 +520,13 @@ export default function PracticeCard({
       </div>
 
       {/* Desktop: Side-by-side To/From */}
-      <div className="hidden md:grid md:grid-cols-2 gap-6 pt-1">
-        {renderLegBody('to', true)}
-        {renderLegBody('from', true)}
+      <div className="hidden md:grid md:grid-cols-2 gap-4 pt-1">
+        <div className="rounded-xl bg-slate-950/55 border border-slate-800/80 p-3.5">
+          {renderLegBody('to', true)}
+        </div>
+        <div className="rounded-xl bg-slate-950/55 border border-slate-800/80 p-3.5">
+          {renderLegBody('from', true)}
+        </div>
       </div>
     </div>
   );
