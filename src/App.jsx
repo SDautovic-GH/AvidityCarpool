@@ -1,5 +1,5 @@
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { Calendar, CalendarPlus, Car, LogOut, Plus, Trophy, Users } from 'lucide-react';
+import { Calendar, CalendarPlus, Car, LogOut, MoreHorizontal, Plus, Trophy, Users } from 'lucide-react';
 import {
   auth,
   isFirebaseConfigured,
@@ -24,6 +24,7 @@ export default function App() {
 
   const [tab, setTab] = useState('all'); // 'all' | 'my-drives' | 'tournaments' | 'roster'
   const [onlyNeedsDriver, setOnlyNeedsDriver] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [zoomPct, setZoomPct] = useState(() => {
     try {
       const saved = Number(localStorage.getItem('avidity_zoom_pct'));
@@ -273,60 +274,136 @@ export default function App() {
             </div>
           </button>
 
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            <div
-              className="inline-flex items-center rounded-full bg-slate-900 border border-slate-800 text-[11px] font-semibold text-slate-300"
-              title="App zoom"
-            >
-              <button
-                type="button"
-                onClick={() => setZoomPct((z) => Math.max(80, z - 10))}
-                disabled={zoomPct <= 80}
-                className="px-2 py-1.5 rounded-l-full hover:bg-slate-800 disabled:opacity-40 transition"
-                aria-label="Zoom out"
+          <div className="relative flex items-center gap-2 shrink-0">
+            <div className="hidden sm:flex items-center gap-2">
+              <div
+                className="inline-flex items-center rounded-full bg-slate-900 border border-slate-800 text-[11px] font-semibold text-slate-300"
+                title="App zoom"
               >
-                −
-              </button>
+                <button
+                  type="button"
+                  onClick={() => setZoomPct((z) => Math.max(80, z - 10))}
+                  disabled={zoomPct <= 80}
+                  className="px-2 py-1.5 rounded-l-full hover:bg-slate-800 disabled:opacity-40 transition"
+                  aria-label="Zoom out"
+                >
+                  −
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setZoomPct(100)}
+                  className="px-1 py-1.5 tabular-nums hover:text-white transition"
+                  title="Reset zoom to 100%"
+                >
+                  {zoomPct}%
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setZoomPct((z) => Math.min(130, z + 10))}
+                  disabled={zoomPct >= 130}
+                  className="px-2 py-1.5 rounded-r-full hover:bg-slate-800 disabled:opacity-40 transition"
+                  aria-label="Zoom in"
+                >
+                  +
+                </button>
+              </div>
+              {seasons.length > 1 && (
+                <select
+                  value={activeSeasonId || ''}
+                  onChange={(e) => setActiveSeasonId(e.target.value)}
+                  className="px-2.5 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-xs font-semibold text-slate-200 focus:outline-none focus:border-blue-500"
+                >
+                  {seasons.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.teamName} ({s.label})
+                    </option>
+                  ))}
+                </select>
+              )}
               <button
-                type="button"
-                onClick={() => setZoomPct(100)}
-                className="px-1 py-1.5 tabular-nums hover:text-white transition"
-                title="Reset zoom to 100%"
+                onClick={() => signOut(auth)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 transition"
+                title="Sign Out"
               >
-                {zoomPct}%
-              </button>
-              <button
-                type="button"
-                onClick={() => setZoomPct((z) => Math.min(130, z + 10))}
-                disabled={zoomPct >= 130}
-                className="px-2 py-1.5 rounded-r-full hover:bg-slate-800 disabled:opacity-40 transition"
-                aria-label="Zoom in"
-              >
-                +
+                <LogOut className="w-3.5 h-3.5" />
+                <span>Sign Out</span>
               </button>
             </div>
-            {seasons.length > 1 && (
-              <select
-                value={activeSeasonId || ''}
-                onChange={(e) => setActiveSeasonId(e.target.value)}
-                className="px-2.5 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-xs font-semibold text-slate-200 focus:outline-none focus:border-blue-500 max-w-[140px] sm:max-w-none"
-              >
-                {seasons.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.teamName} ({s.label})
-                  </option>
-                ))}
-              </select>
-            )}
 
             <button
-              onClick={() => signOut(auth)}
-              className="inline-flex items-center gap-1.5 p-2 sm:px-3 sm:py-1.5 rounded-full text-xs font-semibold bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 transition"
-              title="Sign Out"
+              type="button"
+              onClick={() => setMenuOpen((v) => !v)}
+              className="sm:hidden w-8 h-8 rounded-full bg-slate-900 hover:bg-slate-800 border border-slate-800 flex items-center justify-center text-slate-300 transition"
+              aria-label="Menu"
             >
-              <LogOut className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Sign Out</span>
+              <MoreHorizontal className="w-4 h-4" />
             </button>
+
+            {menuOpen && (
+              <>
+                <div
+                  className="fixed inset-0 z-40 sm:hidden"
+                  onClick={() => setMenuOpen(false)}
+                />
+                <div className="sm:hidden absolute right-0 top-10 z-50 w-52 rounded-2xl bg-slate-900 border border-slate-800 p-3 shadow-2xl space-y-2.5">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-xs font-semibold text-slate-400">Zoom</span>
+                    <div className="inline-flex items-center rounded-full bg-slate-950 border border-slate-800 text-[11px] font-semibold text-slate-200">
+                      <button
+                        type="button"
+                        onClick={() => setZoomPct((z) => Math.max(80, z - 10))}
+                        disabled={zoomPct <= 80}
+                        className="px-2 py-1 rounded-l-full hover:bg-slate-800 disabled:opacity-40"
+                      >
+                        −
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setZoomPct(100)}
+                        className="px-1.5 py-1 tabular-nums"
+                      >
+                        {zoomPct}%
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setZoomPct((z) => Math.min(130, z + 10))}
+                        disabled={zoomPct >= 130}
+                        className="px-2 py-1 rounded-r-full hover:bg-slate-800 disabled:opacity-40"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                  {seasons.length > 1 && (
+                    <select
+                      value={activeSeasonId || ''}
+                      onChange={(e) => {
+                        setActiveSeasonId(e.target.value);
+                        setMenuOpen(false);
+                      }}
+                      className="w-full px-2.5 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-xs font-semibold text-slate-200"
+                    >
+                      {seasons.map((s) => (
+                        <option key={s.id} value={s.id}>
+                          {s.teamName} ({s.label})
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMenuOpen(false);
+                      signOut(auth);
+                    }}
+                    className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                    Sign Out
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
 
@@ -364,7 +441,7 @@ export default function App() {
                           block: 'nearest',
                         });
                       }}
-                      className={`relative z-10 inline-flex items-center justify-center gap-1 sm:gap-1.5 px-2.5 sm:px-4 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold whitespace-nowrap shrink-0 transition-colors ${
+                      className={`relative z-10 inline-flex items-center justify-center gap-1 sm:gap-1.5 px-2 sm:px-4 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold whitespace-nowrap shrink-0 transition-colors ${
                         tab === id ? 'text-white' : 'text-slate-400 hover:text-slate-200'
                       }`}
                     >
