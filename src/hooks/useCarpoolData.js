@@ -334,12 +334,35 @@ export function useCarpoolData(user) {
     await updateDoc(parentRef, updates);
   }
 
-  async function updatePlayerName(playerId, name) {
-    await setDoc(
-      doc(db, 'seasons', activeSeasonId, 'players', playerId),
-      { name: name.trim() },
-      { merge: true }
-    );
+  async function updatePlayerName(playerId, name, jerseyNumber = '') {
+    await updateDoc(doc(db, 'seasons', activeSeasonId, 'players', playerId), {
+      name: name.trim(),
+      jerseyNumber: String(jerseyNumber || '').trim(),
+    });
+  }
+
+  async function upsertPlayerOnly({ name, jerseyNumber = '' }) {
+    if (!activeSeasonId) return;
+    const cleanName = name.trim();
+    const cleanJersey = String(jerseyNumber || '').trim();
+    const lower = cleanName.toLowerCase();
+    const existing = players.find((pl) => {
+      const ex = (pl.name || '').trim().toLowerCase();
+      return ex === lower || lower.startsWith(ex + ' ') || ex.slice(0, 4) === lower.slice(0, 4);
+    });
+    if (existing) {
+      await updateDoc(doc(db, 'seasons', activeSeasonId, 'players', existing.id), {
+        name: cleanName,
+        jerseyNumber: cleanJersey,
+      });
+    } else {
+      const pRef = doc(collection(db, 'seasons', activeSeasonId, 'players'));
+      await setDoc(pRef, {
+        name: cleanName,
+        jerseyNumber: cleanJersey,
+        createdAt: serverTimestamp(),
+      });
+    }
   }
 
   async function removeParent(parentId) {
@@ -371,6 +394,7 @@ export function useCarpoolData(user) {
       .forEach((pl) => {
         batch.set(doc(db, 'seasons', seasonId, 'players', pl.id), {
           name: pl.name,
+          jerseyNumber: pl.jerseyNumber || '',
           createdAt: serverTimestamp(),
         });
       });
@@ -481,6 +505,7 @@ export function useCarpoolData(user) {
     savePlayerAndParent,
     updateMyProfile,
     updatePlayerName,
+    upsertPlayerOnly,
     removeParent,
     createSeason,
     batchCreatePractices,

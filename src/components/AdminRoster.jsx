@@ -22,6 +22,7 @@ export default function AdminRoster({
   currentParentEmail,
   onSavePlayerAndParent,
   onUpdatePlayerName,
+  onUpsertPlayerOnly,
   onRemoveParent,
   onSendResetEmail,
   onOpenSeasonModal,
@@ -31,6 +32,7 @@ export default function AdminRoster({
   const [saving, setSaving] = useState(false);
   const [editingPlayerId, setEditingPlayerId] = useState(null);
   const [playerNameDraft, setPlayerNameDraft] = useState('');
+  const [playerJerseyDraft, setPlayerJerseyDraft] = useState('');
   const [importOpen, setImportOpen] = useState(false);
   const [importText, setImportText] = useState('');
   const [importing, setImporting] = useState(false);
@@ -89,7 +91,7 @@ export default function AdminRoster({
 
   const handleSavePlayerName = async (playerId) => {
     if (!playerNameDraft.trim()) return;
-    await onUpdatePlayerName(playerId, playerNameDraft.trim());
+    await onUpdatePlayerName(playerId, playerNameDraft.trim(), playerJerseyDraft.trim());
     setEditingPlayerId(null);
   };
 
@@ -110,6 +112,10 @@ export default function AdminRoster({
         const parts = (line.includes('|') ? line.split('|') : line.split('\t')).map((s) =>
           s.trim()
         );
+        if (parts.length === 2 && /^\d+$/.test(parts[0]) && parts[1] && onUpsertPlayerOnly) {
+          await onUpsertPlayerOnly({ name: parts[1], jerseyNumber: parts[0] });
+          continue;
+        }
         const [playerName, parentName, rawEmail = '', phone = '', address = '', rawSeats = '4'] =
           parts;
         if (!playerName || !parentName) continue;
@@ -209,7 +215,14 @@ export default function AdminRoster({
                       {getInitials(player.name)}
                     </span>
                     {isEditingName ? (
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <input
+                          type="text"
+                          value={playerJerseyDraft}
+                          onChange={(e) => setPlayerJerseyDraft(e.target.value)}
+                          placeholder="#"
+                          className="w-12 px-2 py-1 rounded-lg bg-slate-900 border border-slate-700 text-sm text-slate-100 text-center focus:outline-none focus:border-blue-500"
+                        />
                         <input
                           type="text"
                           value={playerNameDraft}
@@ -235,13 +248,19 @@ export default function AdminRoster({
                         <span className="text-sm font-bold text-slate-100 truncate">
                           {player.name}
                         </span>
+                        {player.jerseyNumber && (
+                          <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-slate-800 text-blue-300 shrink-0">
+                            #{player.jerseyNumber}
+                          </span>
+                        )}
                         <button
                           onClick={() => {
                             setEditingPlayerId(player.id);
                             setPlayerNameDraft(player.name);
+                            setPlayerJerseyDraft(player.jerseyNumber || '');
                           }}
                           className="p-1 rounded-full text-slate-500 hover:text-slate-200 hover:bg-slate-800 transition"
-                          title="Edit player name"
+                          title="Edit player name & jersey #"
                         >
                           <Pencil className="w-3 h-3" />
                         </button>

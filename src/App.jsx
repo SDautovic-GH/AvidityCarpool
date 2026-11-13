@@ -71,6 +71,7 @@ export default function App() {
     savePlayerAndParent,
     updateMyProfile,
     updatePlayerName,
+    upsertPlayerOnly,
     removeParent,
     createSeason,
     batchCreatePractices,
@@ -346,8 +347,11 @@ export default function App() {
             onSavePlayerAndParent={(payload) =>
               runAction(() => savePlayerAndParent(payload), 'Roster updated')
             }
-            onUpdatePlayerName={(id, name) =>
-              runAction(() => updatePlayerName(id, name), 'Player name updated')
+            onUpdatePlayerName={(id, name, jerseyNumber) =>
+              runAction(() => updatePlayerName(id, name, jerseyNumber), 'Player updated')
+            }
+            onUpsertPlayerOnly={(payload) =>
+              runAction(() => upsertPlayerOnly(payload), 'Players imported')
             }
             onRemoveParent={(parentId) =>
               runAction(() => removeParent(parentId), 'Parent removed')

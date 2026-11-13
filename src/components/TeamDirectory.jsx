@@ -92,6 +92,11 @@ export default function TeamDirectory({
                     {getInitials(player.name)}
                   </span>
                   <span className="text-sm font-bold text-slate-100">{player.name}</span>
+                  {player.jerseyNumber && (
+                    <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-slate-800 text-blue-300">
+                      #{player.jerseyNumber}
+                    </span>
+                  )}
                 </div>
 
                 <div className="divide-y divide-slate-800/70">

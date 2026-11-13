@@ -31,6 +31,7 @@ service cloud.firestore {
     // Document ID: {playerId}
     // Fields:
     //   - name: string (required, 1..100 chars)
+    //   - jerseyNumber: string (optional, 0..10 chars)
     //   - createdAt: timestamp (required, immutable)
     //
     // Subcollection: seasons/{seasonId}/parents
@@ -177,8 +178,9 @@ service cloud.firestore {
 
     function isValidPlayer(data) {
       return hasRequiredFields(['name', 'createdAt']) &&
-             hasOnlyAllowedFields(['name', 'createdAt']) &&
+             hasOnlyAllowedFields(['name', 'jerseyNumber', 'createdAt']) &&
              validString(data.name, 1, 100) &&
+             (!('jerseyNumber' in data) || validString(data.jerseyNumber, 0, 10)) &&
              data.createdAt is timestamp;
     }
 
