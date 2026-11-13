@@ -1,4 +1,10 @@
-import { formatPracticeDate, getGoingPlayers, getShortPlayerNames, getUnassignedPlayers } from './schedule';
+import {
+  formatPracticeDate,
+  getGoingPlayers,
+  getPracticeNotes,
+  getShortPlayerNames,
+  getUnassignedPlayers,
+} from './schedule';
 
 function pad2(n) {
   return String(n).padStart(2, '0');
@@ -108,7 +114,9 @@ export function exportMyDrivesIcs(practices, parentId, players) {
         const riders = (fromCar.riderIds || []).map((id) => playerMap[id] || 'Rider');
         descParts.push(`From Practice: ${riders.length ? riders.join(', ') : 'No riders yet'}`);
       }
-      if (p.notes) descParts.push(`Note: ${p.notes}`);
+      getPracticeNotes(p).forEach((n) => {
+        descParts.push(`Note: ${n.text}${n.authorName ? ` — ${n.authorName}` : ''}`);
+      });
 
       return {
         uid: `drive-${p.id}-${parentId}`,
@@ -186,11 +194,9 @@ export function formatPracticeShareText(practice, players) {
     formatLeg('to', '→ TO'),
     formatLeg('from', '← FROM'),
   ];
-  if (practice.notes) {
-    lines.push(
-      `Note: ${practice.notes}${practice.notesAuthor ? ` — ${practice.notesAuthor}` : ''}`
-    );
-  }
+  getPracticeNotes(practice).forEach((n) => {
+    lines.push(`Note: ${n.text}${n.authorName ? ` — ${n.authorName}` : ''}`);
+  });
   return lines.join('\n');
 }
 

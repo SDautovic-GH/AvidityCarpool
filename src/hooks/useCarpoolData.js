@@ -262,13 +262,38 @@ export function useCarpoolData(user) {
     });
   }
 
-  async function updatePracticeNotes(practiceId, notes, authorName = '') {
-    if (!activeSeasonId) return;
-    const trimmed = (notes || '').trim();
-    await updateDoc(doc(db, 'seasons', activeSeasonId, 'practices', practiceId), {
-      notes: trimmed,
-      notesAuthor: trimmed ? (authorName || '').trim() : '',
-      updatedAt: serverTimestamp(),
+  async function addPracticeNote(practiceId, text, authorParent, fallbackEmail = '') {
+    const trimmed = (text || '').trim();
+    if (!trimmed) return;
+    await updatePracticeTx(practiceId, (p) => {
+      const existing = Array.isArray(p.notesList) ? [...p.notesList] : [];
+      if (existing.length === 0 && p.notes && p.notes.trim()) {
+        existing.push({
+          id: `note_legacy_${Date.now()}`,
+          text: p.notes.trim(),
+          authorName: p.notesAuthor || '',
+          authorId: '',
+        });
+      }
+      existing.push({
+        id: `note_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+        text: trimmed,
+        authorName: (authorParent?.name || fallbackEmail || '').trim(),
+        authorId: authorParent?.id || '',
+      });
+      return { notesList: existing, notes: '', notesAuthor: '' };
+    });
+  }
+
+  async function deletePracticeNote(practiceId, noteId) {
+    await updatePracticeTx(practiceId, (p) => {
+      if (noteId === 'legacy') {
+        return { notes: '', notesAuthor: '' };
+      }
+      const next = (Array.isArray(p.notesList) ? p.notesList : []).filter(
+        (n) => n.id !== noteId
+      );
+      return { notesList: next };
     });
   }
 
@@ -520,7 +545,8 @@ export function useCarpoolData(user) {
     joinCar,
     joinBothWays,
     leaveCar,
-    updatePracticeNotes,
+    addPracticeNote,
+    deletePracticeNote,
     updatePracticeDetails,
     deletePractice,
     savePlayerAndParent,

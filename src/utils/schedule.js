@@ -189,3 +189,19 @@ export function getShortPlayerNames(players = []) {
   }
   return result;
 }
+
+export function getPracticeNotes(practice) {
+  const list = Array.isArray(practice?.notesList) ? practice.notesList : [];
+  if (list.length > 0) return list;
+  if (practice?.notes && practice.notes.trim()) {
+    return [
+      {
+        id: 'legacy',
+        text: practice.notes.trim(),
+        authorName: practice.notesAuthor || '',
+        authorId: '',
+      },
+    ];
+  }
+  return [];
+}

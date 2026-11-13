@@ -87,7 +87,8 @@ export default function App() {
     joinCar,
     joinBothWays,
     leaveCar,
-    updatePracticeNotes,
+    addPracticeNote,
+    deletePracticeNote,
     updatePracticeDetails,
     deletePractice,
     savePlayerAndParent,
@@ -512,15 +513,22 @@ export default function App() {
                   onAdminRemoveRider={(practiceId, leg, carId, playerId) =>
                     runAction(() => leaveCar(practiceId, leg, carId, playerId))
                   }
-                  onUpdateNotes={(practiceId, notes) =>
+                  onAddNote={(practiceId, text) =>
                     runAction(
                       () =>
-                        updatePracticeNotes(
+                        addPracticeNote(
                           practiceId,
-                          notes,
-                          currentParent?.name || user?.email || ''
+                          text,
+                          currentParent,
+                          user?.email || ''
                         ),
-                      'Note saved'
+                      'Note added'
+                    )
+                  }
+                  onDeleteNote={(practiceId, noteId) =>
+                    runAction(
+                      () => deletePracticeNote(practiceId, noteId),
+                      'Note removed'
                     )
                   }
                   onUpdatePractice={(practiceId, details) =>
