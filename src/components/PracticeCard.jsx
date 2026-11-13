@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Check, MapPin, MessageSquare, Pencil, Trash2 } from 'lucide-react';
+import { Check, MapPin, MessageSquare, Pencil, Share2, Trash2 } from 'lucide-react';
 import CarRow from './CarRow';
+import { formatPracticeShareText } from '../utils/calendar';
 import { getMapUrl } from '../utils/maps';
 import {
   formatPracticeDate,
@@ -35,6 +36,7 @@ export default function PracticeCard({
   onUpdateNotes,
   onUpdatePractice,
   onDeletePractice,
+  onToast,
 }) {
   const [activeLeg, setActiveLeg] = useState('to');
   const [editingNote, setEditingNote] = useState(false);
@@ -73,6 +75,24 @@ export default function PracticeCard({
       : drivesFrom
         ? "You're driving From Practice"
         : null;
+
+  async function handleShare() {
+    const text = formatPracticeShareText(practice, players);
+    if (navigator.share) {
+      try {
+        await navigator.share({ text });
+        return;
+      } catch (err) {
+        if (err?.name === 'AbortError') return;
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(text);
+      onToast?.('Carpool summary copied');
+    } catch {
+      onToast?.('Could not copy summary');
+    }
+  }
 
   const renderLegBody = (leg, isDesktop) => {
     const cars = practice.legs?.[leg] || [];
@@ -438,9 +458,11 @@ export default function PracticeCard({
             </button>
           )}
         </div>
-      ) : (
-        onUpdateNotes && (
-          <div>
+      ) : null}
+
+      {!editingNote && (
+        <div className="flex flex-wrap items-center gap-2">
+          {!practice.notes && onUpdateNotes && (
             <button
               onClick={() => {
                 setNoteDraft('');
@@ -451,8 +473,16 @@ export default function PracticeCard({
               <MessageSquare className="w-3 h-3" />
               + Note
             </button>
-          </div>
-        )
+          )}
+          <button
+            onClick={handleShare}
+            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-800/70 hover:bg-slate-800 text-slate-400 hover:text-slate-200 transition"
+            title="Share or copy carpool summary"
+          >
+            <Share2 className="w-3 h-3" />
+            Share
+          </button>
+        </div>
       )}
 
       {/* Mobile: Segmented To/From tabs */}

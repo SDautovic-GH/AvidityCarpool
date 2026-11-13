@@ -1,7 +1,15 @@
 import React, { useState } from 'react';
 import { formatPracticeDate } from '../utils/schedule';
 
-export default function DriveModal({ practice, currentParent, playerName, onClose, onConfirm }) {
+export default function DriveModal({
+  practice,
+  currentParent,
+  playerName,
+  defaultDirection,
+  upcomingSameWeekdayCount = 0,
+  onClose,
+  onConfirm,
+}) {
   const drivesTo = (practice.legs?.to || []).some(
     (c) => c.driverParentId === currentParent.id
   );
@@ -9,9 +17,16 @@ export default function DriveModal({ practice, currentParent, playerName, onClos
     (c) => c.driverParentId === currentParent.id
   );
 
-  const initialDir = drivesTo && !drivesFrom ? 'from' : !drivesTo && drivesFrom ? 'to' : 'both';
+  const fallbackDir = drivesTo && !drivesFrom ? 'from' : !drivesTo && drivesFrom ? 'to' : 'both';
+  const initialDir =
+    defaultDirection === 'to' && !drivesTo
+      ? 'to'
+      : defaultDirection === 'from' && !drivesFrom
+        ? 'from'
+        : fallbackDir;
   const [direction, setDirection] = useState(initialDir);
   const [seats, setSeats] = useState(currentParent.defaultSeats || 4);
+  const [repeatSameWeekday, setRepeatSameWeekday] = useState(false);
   const [busy, setBusy] = useState(false);
 
   const { month, dateNum, fullDay } = formatPracticeDate(practice.isoDate);
@@ -36,7 +51,7 @@ export default function DriveModal({ practice, currentParent, playerName, onClos
   async function handleSubmit() {
     setBusy(true);
     try {
-      await onConfirm(practice.id, direction, seats);
+      await onConfirm(practice.id, direction, seats, repeatSameWeekday);
       onClose();
     } finally {
       setBusy(false);
@@ -100,6 +115,21 @@ export default function DriveModal({ practice, currentParent, playerName, onClos
             </button>
           </div>
         </div>
+
+        {upcomingSameWeekdayCount > 0 && (
+          <label className="flex items-start gap-2.5 rounded-xl bg-slate-950/70 border border-slate-800 px-3 py-2.5 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={repeatSameWeekday}
+              onChange={(e) => setRepeatSameWeekday(e.target.checked)}
+              className="mt-0.5 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
+            />
+            <span className="text-xs text-slate-300 leading-relaxed">
+              Repeat for all <strong className="text-slate-100">{upcomingSameWeekdayCount + 1}</strong> upcoming{' '}
+              <strong className="text-slate-100">{fullDay}</strong> practices this season
+            </span>
+          </label>
+        )}
 
         <button
           disabled={busy}

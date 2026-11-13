@@ -1,5 +1,5 @@
-import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { Calendar, Car, LogOut, Plus, Trophy, Users } from 'lucide-react';
+import React, { Suspense, lazy, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { Calendar, CalendarPlus, Car, LogOut, Plus, Trophy, Users } from 'lucide-react';
 import {
   auth,
   isFirebaseConfigured,
@@ -12,15 +12,19 @@ import AuthScreen from './components/AuthScreen';
 import PracticeCard from './components/PracticeCard';
 import DriveModal from './components/DriveModal';
 import AssignModal from './components/AssignModal';
-import AdminRoster from './components/AdminRoster';
-import AdminSeasonModal from './components/AdminSeasonModal';
-import TournamentsView from './components/TournamentsView';
+import { exportMyDrivesIcs } from './utils/calendar';
+import { getLegSummary } from './utils/schedule';
+
+const AdminRoster = lazy(() => import('./components/AdminRoster'));
+const AdminSeasonModal = lazy(() => import('./components/AdminSeasonModal'));
+const TournamentsView = lazy(() => import('./components/TournamentsView'));
 
 export default function App() {
   const [user, setUser] = useState(null);
   const [authReady, setAuthReady] = useState(!isFirebaseConfigured);
 
   const [tab, setTab] = useState('all'); // 'all' | 'my-drives' | 'tournaments' | 'roster'
+  const [onlyNeedsDriver, setOnlyNeedsDriver] = useState(false);
   const tabRefs = useRef({});
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0, ready: false });
 
@@ -100,6 +104,17 @@ export default function App() {
 
   const todayIso = new Date().toISOString().slice(0, 10);
 
+  const needsDriverCount = useMemo(
+    () =>
+      practices.filter((p) => {
+        if (p.isoDate < todayIso || p.status === 'cancelled') return false;
+        const toSum = getLegSummary(p, 'to', players);
+        const fromSum = getLegSummary(p, 'from', players);
+        return toSum.tone !== 'success' || fromSum.tone !== 'success';
+      }).length,
+    [practices, players, todayIso]
+  );
+
   const visiblePractices = useMemo(() => {
     const myParentId = currentParent?.id || '';
     let list = practices;
@@ -114,10 +129,17 @@ export default function App() {
           (p.legs?.to || []).some((c) => c.driverParentId === myParentId) ||
           (p.legs?.from || []).some((c) => c.driverParentId === myParentId)
       );
+    } else if (tab === 'all' && onlyNeedsDriver) {
+      list = list.filter((p) => {
+        if (p.status === 'cancelled') return false;
+        const toSum = getLegSummary(p, 'to', players);
+        const fromSum = getLegSummary(p, 'from', players);
+        return toSum.tone !== 'success' || fromSum.tone !== 'success';
+      });
     }
 
     return list;
-  }, [practices, showPast, tab, currentParent, todayIso]);
+  }, [practices, showPast, tab, currentParent, todayIso, onlyNeedsDriver, players]);
 
   const pastCount = useMemo(
     () => practices.filter((p) => p.isoDate < todayIso).length,
@@ -327,24 +349,27 @@ export default function App() {
             </button>
           </div>
         ) : tab === 'tournaments' ? (
-          <TournamentsView
-            tournaments={tournaments}
-            isAdmin={isAdmin}
-            onSaveTournament={(payload) =>
-              runAction(() => saveTournament(payload), 'Tournament saved')
-            }
-            onDeleteTournament={(id) =>
-              runAction(() => deleteTournament(id), 'Tournament removed')
-            }
-            onSeedTournaments={(list) =>
-              runAction(
-                () => batchCreateTournaments(list),
-                `Added ${list.length} tournaments`
-              )
-            }
-          />
+          <Suspense fallback={<div className="py-12 text-center text-sm text-slate-400">Loading events...</div>}>
+            <TournamentsView
+              tournaments={tournaments}
+              isAdmin={isAdmin}
+              onSaveTournament={(payload) =>
+                runAction(() => saveTournament(payload), 'Tournament saved')
+              }
+              onDeleteTournament={(id) =>
+                runAction(() => deleteTournament(id), 'Tournament removed')
+              }
+              onSeedTournaments={(list) =>
+                runAction(
+                  () => batchCreateTournaments(list),
+                  `Added ${list.length} tournaments`
+                )
+              }
+            />
+          </Suspense>
         ) : tab === 'roster' ? (
-          <AdminRoster
+          <Suspense fallback={<div className="py-12 text-center text-sm text-slate-400">Loading team...</div>}>
+            <AdminRoster
             players={players}
             parents={parents}
             currentParent={currentParent}
@@ -373,98 +398,173 @@ export default function App() {
             }
             onOpenSeasonModal={() => setSeasonModalOpen(true)}
           />
-        ) : visiblePractices.length === 0 ? (
-          <div className="rounded-2xl bg-slate-900 border border-slate-800 p-8 text-center space-y-3">
-            <p className="text-sm text-slate-400">
-              {tab === 'my-drives'
-                ? "You aren't signed up to drive for any upcoming practices yet."
-                : 'No upcoming practices scheduled.'}
-            </p>
-            {isAdmin && tab === 'all' && (
-              <button
-                onClick={() => setSeasonModalOpen(true)}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                Generate Practices
-              </button>
-            )}
-          </div>
+          </Suspense>
         ) : (
-          visiblePractices.map((practice) => (
-            <PracticeCard
-              key={practice.id}
-              practice={practice}
-              isFirstUpcoming={practice.id === firstUpcomingId}
-              players={players}
-              currentParent={currentParent}
-              isAdmin={isAdmin}
-              onToggleAttendance={(practiceId, playerId) =>
-                runAction(() => toggleAttendance(practiceId, playerId))
-              }
-              onOpenDriveModal={(practiceId, leg) =>
-                setDriveModal({ practiceId, defaultDirection: leg || 'both' })
-              }
-              onOpenAssignModal={(practiceId, leg, playerId) =>
-                setAssignModal({ practiceId, leg, playerId })
-              }
-              onJoin={(practiceId, leg, carId, playerId) =>
-                runAction(() => joinCar(practiceId, leg, carId, playerId))
-              }
-              onJoinBoth={(practiceId, driverParentId, playerId) =>
-                runAction(() => joinBothWays(practiceId, driverParentId, playerId))
-              }
-              onLeave={(practiceId, leg, carId, playerId) =>
-                runAction(() => leaveCar(practiceId, leg, carId, playerId))
-              }
-              onToggleNeedSub={(practiceId, leg, carId) =>
-                runAction(() => toggleNeedSub(practiceId, leg, carId))
-              }
-              onDropDrive={(practiceId, leg, carId) =>
-                runAction(() => dropDrive(practiceId, leg, carId), 'Drive removed')
-              }
-              onTakeOver={(practiceId, leg, carId) =>
-                runAction(
-                  () => takeOverDrive(practiceId, leg, carId, currentParent),
-                  'You took over this drive'
-                )
-              }
-              onAdminRemoveRider={(practiceId, leg, carId, playerId) =>
-                runAction(() => leaveCar(practiceId, leg, carId, playerId))
-              }
-              onUpdateNotes={(practiceId, notes) =>
-                runAction(() => updatePracticeNotes(practiceId, notes), 'Note saved')
-              }
-              onUpdatePractice={(practiceId, details) =>
-                runAction(
-                  () => updatePracticeDetails(practiceId, details),
-                  'Practice updated'
-                )
-              }
-              onDeletePractice={(practiceId) =>
-                runAction(() => deletePractice(practiceId), 'Practice removed')
-              }
-            />
-          ))
+          <>
+            {tab === 'all' && needsDriverCount > 0 && (
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="inline-flex items-center gap-1 p-1 rounded-full bg-slate-900 border border-slate-800">
+                  <button
+                    onClick={() => setOnlyNeedsDriver(false)}
+                    className={`px-3 py-1 rounded-full text-xs font-semibold transition ${
+                      !onlyNeedsDriver
+                        ? 'bg-slate-800 text-slate-100'
+                        : 'text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    All Upcoming
+                  </button>
+                  <button
+                    onClick={() => setOnlyNeedsDriver(true)}
+                    className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold transition ${
+                      onlyNeedsDriver
+                        ? 'bg-amber-500/20 text-amber-300'
+                        : 'text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                    Needs Driver ({needsDriverCount})
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {tab === 'my-drives' && visiblePractices.length > 0 && currentParent && (
+              <div className="flex justify-end">
+                <button
+                  onClick={() => {
+                    const count = exportMyDrivesIcs(
+                      visiblePractices,
+                      currentParent.id,
+                      players
+                    );
+                    if (count) showToast(`Exported ${count} drive${count === 1 ? '' : 's'} (.ics)`);
+                  }}
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-200 transition"
+                >
+                  <CalendarPlus className="w-3.5 h-3.5 text-blue-400" />
+                  Add My Drives to Calendar
+                </button>
+              </div>
+            )}
+
+            {visiblePractices.length === 0 ? (
+              <div className="rounded-2xl bg-slate-900 border border-slate-800 p-8 text-center space-y-3">
+                <p className="text-sm text-slate-400">
+                  {tab === 'my-drives'
+                    ? "You aren't signed up to drive for any upcoming practices yet."
+                    : onlyNeedsDriver
+                      ? 'All upcoming practices have drivers covered!'
+                      : 'No upcoming practices scheduled.'}
+                </p>
+                {isAdmin && tab === 'all' && !onlyNeedsDriver && (
+                  <button
+                    onClick={() => setSeasonModalOpen(true)}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    Generate Practices
+                  </button>
+                )}
+              </div>
+            ) : (
+              visiblePractices.map((practice) => (
+                <PracticeCard
+                  key={practice.id}
+                  practice={practice}
+                  isFirstUpcoming={practice.id === firstUpcomingId}
+                  players={players}
+                  currentParent={currentParent}
+                  isAdmin={isAdmin}
+                  onToggleAttendance={(practiceId, playerId) =>
+                    runAction(() => toggleAttendance(practiceId, playerId))
+                  }
+                  onOpenDriveModal={(practiceId, leg) =>
+                    setDriveModal({ practiceId, defaultDirection: leg || 'both' })
+                  }
+                  onOpenAssignModal={(practiceId, leg, playerId) =>
+                    setAssignModal({ practiceId, leg, playerId })
+                  }
+                  onJoin={(practiceId, leg, carId, playerId) =>
+                    runAction(() => joinCar(practiceId, leg, carId, playerId))
+                  }
+                  onJoinBoth={(practiceId, driverParentId, playerId) =>
+                    runAction(() => joinBothWays(practiceId, driverParentId, playerId))
+                  }
+                  onLeave={(practiceId, leg, carId, playerId) =>
+                    runAction(() => leaveCar(practiceId, leg, carId, playerId))
+                  }
+                  onToggleNeedSub={(practiceId, leg, carId) =>
+                    runAction(() => toggleNeedSub(practiceId, leg, carId))
+                  }
+                  onDropDrive={(practiceId, leg, carId) =>
+                    runAction(() => dropDrive(practiceId, leg, carId), 'Drive removed')
+                  }
+                  onTakeOver={(practiceId, leg, carId) =>
+                    runAction(
+                      () => takeOverDrive(practiceId, leg, carId, currentParent),
+                      'You took over this drive'
+                    )
+                  }
+                  onAdminRemoveRider={(practiceId, leg, carId, playerId) =>
+                    runAction(() => leaveCar(practiceId, leg, carId, playerId))
+                  }
+                  onUpdateNotes={(practiceId, notes) =>
+                    runAction(() => updatePracticeNotes(practiceId, notes), 'Note saved')
+                  }
+                  onUpdatePractice={(practiceId, details) =>
+                    runAction(
+                      () => updatePracticeDetails(practiceId, details),
+                      'Practice updated'
+                    )
+                  }
+                  onDeletePractice={(practiceId) =>
+                    runAction(() => deletePractice(practiceId), 'Practice removed')
+                  }
+                  onToast={showToast}
+                />
+              ))
+            )}
+          </>
         )}
       </main>
 
-      {activeDrivePractice && currentParent && (
-        <DriveModal
-          practice={activeDrivePractice}
-          currentParent={currentParent}
-          playerName={myPlayer?.name}
-          defaultDirection={driveModal.defaultDirection}
-          onClose={() => setDriveModal(null)}
-          onConfirm={(practiceId, direction, seats) => {
-            setDriveModal(null);
-            runAction(
-              () => offerToDrive(practiceId, direction, seats, currentParent),
-              'Added to carpool'
-            );
-          }}
-        />
-      )}
+      {activeDrivePractice && currentParent && (() => {
+        const targetWeekday = new Date(`${activeDrivePractice.isoDate}T12:00:00`).getDay();
+        const upcomingSameWeekday = practices.filter(
+          (p) =>
+            p.id !== activeDrivePractice.id &&
+            p.isoDate > activeDrivePractice.isoDate &&
+            p.status !== 'cancelled' &&
+            new Date(`${p.isoDate}T12:00:00`).getDay() === targetWeekday
+        );
+        return (
+          <DriveModal
+            practice={activeDrivePractice}
+            currentParent={currentParent}
+            playerName={myPlayer?.name}
+            defaultDirection={driveModal.defaultDirection}
+            upcomingSameWeekdayCount={upcomingSameWeekday.length}
+            onClose={() => setDriveModal(null)}
+            onConfirm={(practiceId, direction, seats, repeatSameWeekday) => {
+              setDriveModal(null);
+              if (!repeatSameWeekday) {
+                runAction(
+                  () => offerToDrive(practiceId, direction, seats, currentParent),
+                  'Added to carpool'
+                );
+              } else {
+                const targets = [activeDrivePractice, ...upcomingSameWeekday];
+                runAction(async () => {
+                  for (const p of targets) {
+                    await offerToDrive(p.id, direction, seats, currentParent);
+                  }
+                }, `Added to ${targets.length} practices`);
+              }
+            }}
+          />
+        );
+      })()}
 
       {activeAssignPractice && activeAssignPlayer && (
         <AssignModal
@@ -483,21 +583,23 @@ export default function App() {
       )}
 
       {seasonModalOpen && isAdmin && (
-        <AdminSeasonModal
-          activeSeason={activeSeason}
-          players={players}
-          parents={parents}
-          onClose={() => setSeasonModalOpen(false)}
-          onCreateSeason={(payload) =>
-            runAction(() => createSeason(payload), 'Season created')
-          }
-          onBatchCreatePractices={(list) =>
-            runAction(
-              () => batchCreatePractices(list),
-              `Added ${list.length} practices`
-            )
-          }
-        />
+        <Suspense fallback={null}>
+          <AdminSeasonModal
+            activeSeason={activeSeason}
+            players={players}
+            parents={parents}
+            onClose={() => setSeasonModalOpen(false)}
+            onCreateSeason={(payload) =>
+              runAction(() => createSeason(payload), 'Season created')
+            }
+            onBatchCreatePractices={(list) =>
+              runAction(
+                () => batchCreatePractices(list),
+                `Added ${list.length} practices`
+              )
+            }
+          />
+        </Suspense>
       )}
 
       {toast && (

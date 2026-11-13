@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { MapPin, Pencil, Plus, Sparkles, Trash2, Trophy, X } from 'lucide-react';
+import { CalendarPlus, MapPin, Pencil, Plus, Sparkles, Trash2, Trophy, X } from 'lucide-react';
+import { exportTournamentIcs } from '../utils/calendar';
 import { getMapUrl } from '../utils/maps';
 import { DEFAULT_2627_TOURNAMENTS } from '../utils/schedule';
 
@@ -153,28 +154,37 @@ export default function TournamentsView({
                   </div>
                 </div>
 
-                {isAdmin && (
-                  <div className="flex items-center gap-1 shrink-0">
-                    <button
-                      onClick={() => openEdit(t)}
-                      className="p-2 rounded-full text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition"
-                      title="Edit tournament"
-                    >
-                      <Pencil className="w-3.5 h-3.5" />
-                    </button>
-                    <button
-                      onClick={() => {
-                        if (window.confirm(`Remove "${t.name}"?`)) {
-                          onDeleteTournament(t.id);
-                        }
-                      }}
-                      className="p-2 rounded-full text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition"
-                      title="Delete tournament"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                )}
+                <div className="flex items-center gap-1 shrink-0">
+                  <button
+                    onClick={() => exportTournamentIcs(t)}
+                    className="p-2 rounded-full text-slate-400 hover:text-blue-400 hover:bg-slate-800 transition"
+                    title="Add to calendar (.ics)"
+                  >
+                    <CalendarPlus className="w-4 h-4" />
+                  </button>
+                  {isAdmin && (
+                    <>
+                      <button
+                        onClick={() => openEdit(t)}
+                        className="p-2 rounded-full text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition"
+                        title="Edit tournament"
+                      >
+                        <Pencil className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (window.confirm(`Remove "${t.name}"?`)) {
+                            onDeleteTournament(t.id);
+                          }
+                        }}
+                        className="p-2 rounded-full text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition"
+                        title="Delete tournament"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </>
+                  )}
+                </div>
               </div>
             );
           })}
