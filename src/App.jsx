@@ -262,7 +262,7 @@ export default function App() {
                     : 'Avidity Carpool'}
                 </h1>
                 {activeSeason?.label && (
-                  <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-slate-800 text-slate-300">
+                  <span className="hidden sm:inline-flex px-2 py-0.5 rounded-full text-[11px] font-semibold bg-slate-800 text-slate-300">
                     {activeSeason.label}
                   </span>
                 )}
@@ -374,7 +374,7 @@ export default function App() {
                       </button>
                     </div>
                   </div>
-                  {seasons.length > 1 && (
+                  {seasons.length > 1 ? (
                     <select
                       value={activeSeasonId || ''}
                       onChange={(e) => {
@@ -389,6 +389,13 @@ export default function App() {
                         </option>
                       ))}
                     </select>
+                  ) : (
+                    activeSeason?.label && (
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="font-semibold text-slate-400">Season</span>
+                        <span className="font-semibold text-slate-200">{activeSeason.label}</span>
+                      </div>
+                    )
                   )}
                   <button
                     type="button"
