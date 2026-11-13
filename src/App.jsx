@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Calendar, CalendarPlus, Car, LogOut, Plus, Trophy, Users } from 'lucide-react';
 import {
   auth,
@@ -12,12 +12,11 @@ import AuthScreen from './components/AuthScreen';
 import PracticeCard from './components/PracticeCard';
 import DriveModal from './components/DriveModal';
 import AssignModal from './components/AssignModal';
+import AdminRoster from './components/AdminRoster';
+import AdminSeasonModal from './components/AdminSeasonModal';
+import TournamentsView from './components/TournamentsView';
 import { exportMyDrivesIcs } from './utils/calendar';
 import { getLegSummary, getShortPlayerNames } from './utils/schedule';
-
-const AdminRoster = lazy(() => import('./components/AdminRoster'));
-const AdminSeasonModal = lazy(() => import('./components/AdminSeasonModal'));
-const TournamentsView = lazy(() => import('./components/TournamentsView'));
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -389,27 +388,24 @@ export default function App() {
             </button>
           </div>
         ) : tab === 'tournaments' ? (
-          <Suspense fallback={<div className="py-12 text-center text-sm text-slate-400">Loading events...</div>}>
-            <TournamentsView
-              tournaments={tournaments}
-              isAdmin={isAdmin}
-              onSaveTournament={(payload) =>
-                runAction(() => saveTournament(payload), 'Tournament saved')
-              }
-              onDeleteTournament={(id) =>
-                runAction(() => deleteTournament(id), 'Tournament removed')
-              }
-              onSeedTournaments={(list) =>
-                runAction(
-                  () => batchCreateTournaments(list),
-                  `Added ${list.length} tournaments`
-                )
-              }
-            />
-          </Suspense>
+          <TournamentsView
+            tournaments={tournaments}
+            isAdmin={isAdmin}
+            onSaveTournament={(payload) =>
+              runAction(() => saveTournament(payload), 'Tournament saved')
+            }
+            onDeleteTournament={(id) =>
+              runAction(() => deleteTournament(id), 'Tournament removed')
+            }
+            onSeedTournaments={(list) =>
+              runAction(
+                () => batchCreateTournaments(list),
+                `Added ${list.length} tournaments`
+              )
+            }
+          />
         ) : tab === 'roster' ? (
-          <Suspense fallback={<div className="py-12 text-center text-sm text-slate-400">Loading team...</div>}>
-            <AdminRoster
+          <AdminRoster
             players={players}
             parents={parents}
             currentParent={currentParent}
@@ -438,7 +434,6 @@ export default function App() {
             }
             onOpenSeasonModal={() => setSeasonModalOpen(true)}
           />
-          </Suspense>
         ) : (
           <>
             {tab === 'all' && needsDriverCount > 0 && (
@@ -642,23 +637,21 @@ export default function App() {
       )}
 
       {seasonModalOpen && isAdmin && (
-        <Suspense fallback={null}>
-          <AdminSeasonModal
-            activeSeason={activeSeason}
-            players={players}
-            parents={parents}
-            onClose={() => setSeasonModalOpen(false)}
-            onCreateSeason={(payload) =>
-              runAction(() => createSeason(payload), 'Season created')
-            }
-            onBatchCreatePractices={(list) =>
-              runAction(
-                () => batchCreatePractices(list),
-                `Added ${list.length} practices`
-              )
-            }
-          />
-        </Suspense>
+        <AdminSeasonModal
+          activeSeason={activeSeason}
+          players={players}
+          parents={parents}
+          onClose={() => setSeasonModalOpen(false)}
+          onCreateSeason={(payload) =>
+            runAction(() => createSeason(payload), 'Season created')
+          }
+          onBatchCreatePractices={(list) =>
+            runAction(
+              () => batchCreatePractices(list),
+              `Added ${list.length} practices`
+            )
+          }
+        />
       )}
 
       {toast && (
