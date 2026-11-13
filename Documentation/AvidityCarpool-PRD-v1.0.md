@@ -15,7 +15,7 @@
 
 ## 1. Objective & Non-Goals
 
-- **Primary Objective:** Replace manual spreadsheets and group text threads for 8–10 volleyball families across 3 weekly practices (Tue/Thu at St. John's Prep, Sun at DIS) with a fast, mobile-first web app where drivers offer seats and parents claim rides per leg (`To Practice` / `From Practice`).
+- **Primary Objective:** Replace manual spreadsheets and group text threads for 8–10 volleyball families across 3 weekly practices (Tue/Thu 7:15–9:15 PM at St. John's Prep, Sun 5:00–7:00 PM at DIS; Coaches: Ashley Krugh, Hannah Mullarkey) with a fast, mobile-first web app where drivers offer seats and parents claim rides per leg (`To Practice` / `From Practice`).
 - **Audience:** Team parents/guardians (including multiple parents per player) and team carpool admins (`samir.dautovic@gmail.com`, `ldautovic@gmail.com`).
 - **Non-Goals:**
   - Automated email/SMS blasting on roster creation (admins build the roster silently and share the link when ready).

@@ -60,6 +60,15 @@ export default function TeamDirectory({
         )}
       </div>
 
+      <div className="rounded-2xl bg-slate-900 border border-slate-800 px-4 py-3 text-xs text-slate-300 flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <span className="text-slate-400 font-semibold">Coaches:</span> Ashley Krugh, Hannah Mullarkey
+        </div>
+        <div>
+          <span className="text-slate-400 font-semibold">Schedule:</span> Tue &amp; Thu 7:15–9:15 PM (SJP) · Sun 5:00–7:00 PM (DIS)
+        </div>
+      </div>
+
       <div className="space-y-3">
         {players.length === 0 ? (
           <div className="rounded-2xl bg-slate-900 border border-slate-800 p-8 text-center text-sm text-slate-400">

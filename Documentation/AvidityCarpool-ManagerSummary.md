@@ -7,6 +7,8 @@
 | **Live URL** | `https://aviditycarpool.dautovic.com` |
 | **Repository** | `https://github.com/SDautovic-GH/AvidityCarpool` |
 | **Date** | 2026-11-13 |
+| **Coaches** | Ashley Krugh, Hannah Mullarkey |
+| **Practice Schedule** | Tue & Thu 7:15–9:15 PM (St. John's Prep) · Sun 5:00–7:00 PM (DIS) |
 | **Admins** | Samir Dautovic (`samir.dautovic@gmail.com`), Lee-Anne Dautovic (`ldautovic@gmail.com`) |
 
 ---
