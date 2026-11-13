@@ -1,4 +1,4 @@
-import { formatPracticeDate, getGoingPlayers, getUnassignedPlayers } from './schedule';
+import { formatPracticeDate, getGoingPlayers, getShortPlayerNames, getUnassignedPlayers } from './schedule';
 
 function pad2(n) {
   return String(n).padStart(2, '0');
@@ -90,7 +90,7 @@ function downloadIcs(filename, events) {
 }
 
 export function exportMyDrivesIcs(practices, parentId, players) {
-  const playerMap = Object.fromEntries(players.map((p) => [p.id, p.name]));
+  const playerMap = getShortPlayerNames(players);
   const events = practices
     .map((p) => {
       const toCar = (p.legs?.to || []).find((c) => c.driverParentId === parentId);
@@ -158,7 +158,7 @@ export function exportTournamentIcs(tournament) {
 }
 
 export function formatPracticeShareText(practice, players) {
-  const playerMap = Object.fromEntries(players.map((p) => [p.id, p.name]));
+  const playerMap = getShortPlayerNames(players);
   const { month, dateNum, fullDay } = formatPracticeDate(practice.isoDate);
   const goingCount = getGoingPlayers(practice, players).length;
 
@@ -176,7 +176,7 @@ export function formatPracticeShareText(practice, players) {
       })
       .join(' · ');
     const openText = unassigned.length
-      ? ` | Need ride: ${unassigned.map((p) => p.name).join(', ')}`
+      ? ` | Need ride: ${unassigned.map((p) => playerMap[p.id] || p.name).join(', ')}`
       : '';
     return `${arrow}: ${carText}${openText}`;
   };
@@ -189,3 +189,4 @@ export function formatPracticeShareText(practice, players) {
   if (practice.notes) lines.push(`Note: ${practice.notes}`);
   return lines.join('\n');
 }
+

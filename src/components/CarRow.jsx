@@ -1,5 +1,5 @@
 import React from 'react';
-import { getAvatarColor, getInitials } from '../utils/schedule';
+import { getAvatarColor, getInitials, getShortPlayerNames } from '../utils/schedule';
 
 export default function CarRow({
   practice,
@@ -56,7 +56,8 @@ export default function CarRow({
     !myKidInOther &&
     (otherCar.riderIds || []).length < (otherCar.seatsTotal || 0);
 
-  const getPlayerName = (pid) => players.find((pl) => pl.id === pid)?.name || 'Player';
+  const shortNames = getShortPlayerNames(players);
+  const getPlayerName = (pid) => shortNames[pid] || 'Player';
   const otherRiders = riderIds.filter((id) => id !== myPlayerId).map(getPlayerName);
 
   return (

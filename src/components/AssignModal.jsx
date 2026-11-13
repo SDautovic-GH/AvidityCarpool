@@ -6,6 +6,7 @@ export default function AssignModal({
   practice,
   leg,
   player,
+  displayName,
   onClose,
   onAssign,
 }) {
@@ -25,7 +26,7 @@ export default function AssignModal({
       <div className="w-full max-w-md rounded-t-2xl sm:rounded-2xl bg-slate-900 border border-slate-800 shadow-2xl overflow-hidden">
         <div className="flex items-center justify-between px-5 py-4 border-b border-slate-800">
           <div>
-            <h2 className="text-base font-bold text-slate-100">Assign {player.name}</h2>
+            <h2 className="text-base font-bold text-slate-100">Assign {displayName || player.name}</h2>
             <p className="text-xs text-slate-400 mt-0.5">
               {fullDay}, {month} {dateNum} · {legLabel}
             </p>

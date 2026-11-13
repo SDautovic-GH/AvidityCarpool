@@ -7,6 +7,7 @@ import {
   formatPracticeDate,
   getGoingPlayers,
   getLegSummary,
+  getShortPlayerNames,
   getTimingBadge,
   getUnassignedPlayers,
 } from '../utils/schedule';
@@ -54,6 +55,8 @@ export default function PracticeCard({
   const myParentId = currentParent?.id || '';
   const canDrive = currentParent?.canDrive !== false;
   const myPlayer = players.find((pl) => pl.id === myPlayerId);
+  const shortNames = getShortPlayerNames(players);
+  const shortNameOf = (pl) => shortNames[pl?.id] || pl?.name || 'Player';
 
   const { month, dateNum, fullDay } = formatPracticeDate(practice.isoDate);
   const timingLabel = getTimingBadge(practice.isoDate, isFirstUpcoming);
@@ -169,7 +172,7 @@ export default function PracticeCard({
                       onClick={() => onOpenAssignModal(practice.id, leg, pl.id)}
                       className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-800 hover:bg-blue-600 text-slate-100 transition"
                     >
-                      {pl.name} +
+                      {shortNameOf(pl)} +
                     </button>
                   ))
                 ) : (
@@ -177,7 +180,11 @@ export default function PracticeCard({
                     {unassigned.map((pl, idx) => (
                       <React.Fragment key={pl.id}>
                         {idx > 0 && ', '}
-                        {pl.id === myPlayerId ? <strong>{pl.name}</strong> : pl.name}
+                        {pl.id === myPlayerId ? (
+                          <strong>{shortNameOf(pl)}</strong>
+                        ) : (
+                          shortNameOf(pl)
+                        )}
                       </React.Fragment>
                     ))}
                   </span>
@@ -256,7 +263,7 @@ export default function PracticeCard({
                   : 'bg-slate-800 hover:bg-slate-700 text-slate-100'
               }`}
             >
-              {myPlayer.name}: {isOut ? 'Out' : 'Going'}
+              {shortNameOf(myPlayer)}: {isOut ? 'Out' : 'Going'}
             </button>
           )}
           {canDrive && !drivesBoth && (

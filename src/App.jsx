@@ -13,7 +13,7 @@ import PracticeCard from './components/PracticeCard';
 import DriveModal from './components/DriveModal';
 import AssignModal from './components/AssignModal';
 import { exportMyDrivesIcs } from './utils/calendar';
-import { getLegSummary } from './utils/schedule';
+import { getLegSummary, getShortPlayerNames } from './utils/schedule';
 
 const AdminRoster = lazy(() => import('./components/AdminRoster'));
 const AdminSeasonModal = lazy(() => import('./components/AdminSeasonModal'));
@@ -195,6 +195,8 @@ export default function App() {
   }
 
   const myPlayer = players.find((pl) => pl.id === currentParent?.playerId);
+  const shortPlayerNames = useMemo(() => getShortPlayerNames(players), [players]);
+  const myPlayerShortName = myPlayer ? shortPlayerNames[myPlayer.id] || myPlayer.name : '';
   const activeDrivePractice = driveModal
     ? practices.find((p) => p.id === driveModal.practiceId)
     : null;
@@ -237,7 +239,7 @@ export default function App() {
               </div>
               <p className="text-xs text-slate-400 truncate">
                 {currentParent?.name || user.email}
-                {myPlayer ? ` · ${myPlayer.name}'s parent` : ''}
+                {myPlayerShortName ? ` · ${myPlayerShortName}'s parent` : ''}
               </p>
             </div>
           </button>
@@ -542,7 +544,7 @@ export default function App() {
           <DriveModal
             practice={activeDrivePractice}
             currentParent={currentParent}
-            playerName={myPlayer?.name}
+            playerName={myPlayerShortName}
             defaultDirection={driveModal.defaultDirection}
             upcomingSameWeekdayCount={upcomingSameWeekday.length}
             onClose={() => setDriveModal(null)}
@@ -571,12 +573,15 @@ export default function App() {
           practice={activeAssignPractice}
           leg={assignModal.leg}
           player={activeAssignPlayer}
+          displayName={shortPlayerNames[activeAssignPlayer.id] || activeAssignPlayer.name}
           onClose={() => setAssignModal(null)}
           onAssign={(practiceId, leg, carId, playerId) => {
             setAssignModal(null);
+            const assignedName =
+              shortPlayerNames[activeAssignPlayer.id] || activeAssignPlayer.name;
             runAction(
               () => joinCar(practiceId, leg, carId, playerId),
-              `${activeAssignPlayer.name} assigned`
+              `${assignedName} assigned`
             );
           }}
         />

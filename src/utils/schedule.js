@@ -169,3 +169,23 @@ export function getAvatarColor(seed = '') {
   }
   return AVATAR_PALETTE[hash % AVATAR_PALETTE.length];
 }
+
+export function getShortPlayerNames(players = []) {
+  const firstCounts = new Map();
+  const parsed = players.map((pl) => {
+    const parts = (pl.name || '').trim().split(/\s+/).filter(Boolean);
+    const first = parts[0] || pl.name || 'Player';
+    const lastInitial = parts.length > 1 ? parts[parts.length - 1][0].toUpperCase() : '';
+    const key = first.toLowerCase();
+    firstCounts.set(key, (firstCounts.get(key) || 0) + 1);
+    return { id: pl.id, first, lastInitial, key };
+  });
+
+  const result = {};
+  for (const item of parsed) {
+    const isDuplicate = (firstCounts.get(item.key) || 0) > 1;
+    result[item.id] =
+      isDuplicate && item.lastInitial ? `${item.first} ${item.lastInitial}.` : item.first;
+  }
+  return result;
+}
