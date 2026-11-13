@@ -424,7 +424,7 @@ export default function App() {
             ];
             return (
               <div className="w-full sm:w-auto">
-                <div className="relative w-full sm:w-auto inline-flex items-center justify-between sm:justify-start gap-0.5 sm:gap-1 p-1 rounded-full bg-slate-900 border border-slate-800">
+                <div className="relative w-full sm:w-auto flex sm:inline-flex items-center justify-between sm:justify-start gap-0 sm:gap-1 px-1.5 py-1 sm:p-1 rounded-full bg-slate-900 border border-slate-800">
                   <div
                     aria-hidden="true"
                     className="absolute top-1 bottom-1 left-0 rounded-full bg-blue-600 transition-all duration-200 ease-out"
@@ -441,7 +441,7 @@ export default function App() {
                         tabRefs.current[id] = el;
                       }}
                       onClick={() => setTab(id)}
-                      className={`relative z-10 inline-flex items-center justify-center gap-1 sm:gap-1.5 px-2 sm:px-4 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold whitespace-nowrap shrink-0 transition-colors ${
+                      className={`relative z-10 inline-flex items-center justify-center gap-1 sm:gap-1.5 px-1.5 sm:px-4 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold whitespace-nowrap shrink-0 transition-colors ${
                         tab === id ? 'text-white' : 'text-slate-400 hover:text-slate-200'
                       }`}
                     >
