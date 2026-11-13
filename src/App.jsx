@@ -281,7 +281,7 @@ export default function App() {
             ];
             return (
               <div className="w-full sm:w-auto overflow-x-auto no-scrollbar">
-                <div className="relative inline-flex items-center gap-1 p-1 rounded-full bg-slate-900 border border-slate-800">
+                <div className="relative min-w-full sm:min-w-0 inline-flex items-center justify-between sm:justify-start gap-0.5 sm:gap-1 p-1 rounded-full bg-slate-900 border border-slate-800">
                   <div
                     aria-hidden="true"
                     className="absolute top-1 bottom-1 left-0 rounded-full bg-blue-600 transition-all duration-200 ease-out"
@@ -305,11 +305,11 @@ export default function App() {
                           block: 'nearest',
                         });
                       }}
-                      className={`relative z-10 inline-flex items-center justify-center gap-1.5 px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 transition-colors ${
+                      className={`relative z-10 inline-flex items-center justify-center gap-1 sm:gap-1.5 px-2.5 sm:px-4 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold whitespace-nowrap shrink-0 transition-colors ${
                         tab === id ? 'text-white' : 'text-slate-400 hover:text-slate-200'
                       }`}
                     >
-                      <Icon className="w-3.5 h-3.5 shrink-0" />
+                      <Icon className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
                       <span>{label}</span>
                     </button>
                   ))}
