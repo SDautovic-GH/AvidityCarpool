@@ -105,15 +105,25 @@ export default function App() {
 
   const todayIso = new Date().toISOString().slice(0, 10);
 
+  const carpoolPlayers = useMemo(() => {
+    const melrosePlayerIds = new Set(
+      parents
+        .filter((p) => (p.address || '').toLowerCase().includes('melrose'))
+        .map((p) => p.playerId)
+        .filter(Boolean)
+    );
+    return players.filter((pl) => melrosePlayerIds.has(pl.id));
+  }, [players, parents]);
+
   const needsDriverCount = useMemo(
     () =>
       practices.filter((p) => {
         if (p.isoDate < todayIso || p.status === 'cancelled') return false;
-        const toSum = getLegSummary(p, 'to', players);
-        const fromSum = getLegSummary(p, 'from', players);
+        const toSum = getLegSummary(p, 'to', carpoolPlayers);
+        const fromSum = getLegSummary(p, 'from', carpoolPlayers);
         return toSum.tone !== 'success' || fromSum.tone !== 'success';
       }).length,
-    [practices, players, todayIso]
+    [practices, carpoolPlayers, todayIso]
   );
 
   const visiblePractices = useMemo(() => {
@@ -133,14 +143,14 @@ export default function App() {
     } else if (tab === 'all' && onlyNeedsDriver) {
       list = list.filter((p) => {
         if (p.status === 'cancelled') return false;
-        const toSum = getLegSummary(p, 'to', players);
-        const fromSum = getLegSummary(p, 'from', players);
+        const toSum = getLegSummary(p, 'to', carpoolPlayers);
+        const fromSum = getLegSummary(p, 'from', carpoolPlayers);
         return toSum.tone !== 'success' || fromSum.tone !== 'success';
       });
     }
 
     return list;
-  }, [practices, showPast, tab, currentParent, todayIso, onlyNeedsDriver, players]);
+  }, [practices, showPast, tab, currentParent, todayIso, onlyNeedsDriver, carpoolPlayers]);
 
   const pastCount = useMemo(
     () => practices.filter((p) => p.isoDate < todayIso).length,
@@ -440,7 +450,7 @@ export default function App() {
                     const count = exportMyDrivesIcs(
                       visiblePractices,
                       currentParent.id,
-                      players
+                      carpoolPlayers
                     );
                     if (count) showToast(`Exported ${count} drive${count === 1 ? '' : 's'} (.ics)`);
                   }}
@@ -477,7 +487,7 @@ export default function App() {
                   key={practice.id}
                   practice={practice}
                   isFirstUpcoming={practice.id === firstUpcomingId}
-                  players={players}
+                  players={carpoolPlayers}
                   currentParent={currentParent}
                   isAdmin={isAdmin}
                   onToggleAttendance={(practiceId, playerId) =>

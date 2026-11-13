@@ -30,7 +30,8 @@ export default function CarRow({
   const isMyKidInCar = myPlayerId && (car.riderIds || []).includes(myPlayerId);
   const isMyKidGoing = myPlayerId && !(practice.absentPlayerIds || []).includes(myPlayerId);
 
-  const riderIds = car.riderIds || [];
+  const carpoolIds = new Set(players.map((pl) => pl.id));
+  const riderIds = (car.riderIds || []).filter((id) => carpoolIds.has(id));
   const openSeats = Math.max(0, (car.seatsTotal || 0) - riderIds.length);
   const isFull = openSeats === 0;
   const isNeedsSub = car.status === 'needs_sub';

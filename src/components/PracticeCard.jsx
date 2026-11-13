@@ -213,9 +213,9 @@ export default function PracticeCard({
   const notesList = getPracticeNotes(practice);
 
   return (
-    <div className="rounded-2xl bg-slate-900 border border-slate-800 p-4 space-y-3.5">
-      <div className="flex items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
+    <div className="rounded-2xl bg-slate-900 border border-slate-800 p-4 space-y-3.5 min-w-0 overflow-hidden">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5">
+        <div className="flex items-center gap-3 min-w-0">
           <div
             className={`relative w-11 h-11 rounded-xl ${
               isSatisfied ? 'bg-emerald-500/15' : 'bg-slate-950'
@@ -239,8 +239,8 @@ export default function PracticeCard({
             )}
           </div>
 
-          <div>
-            <div className="flex items-center gap-2">
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-2">
               <span className="font-semibold text-sm">{fullDay}</span>
               {timingLabel && (
                 <span className="px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-600 text-white">
@@ -257,7 +257,7 @@ export default function PracticeCard({
           </div>
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center justify-between sm:justify-end gap-2 shrink-0">
           {myPlayer && (
             <button
               onClick={() => onToggleAttendance(practice.id, myPlayer.id)}
@@ -466,7 +466,7 @@ export default function PracticeCard({
             value={noteDraft}
             onChange={(e) => setNoteDraft(e.target.value)}
             placeholder="Add a note for this practice (e.g. pickup spot, early dismissal)..."
-            className="flex-1 min-w-[200px] px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-700 text-xs text-slate-100 focus:outline-none focus:border-blue-500"
+            className="w-full sm:w-auto sm:flex-1 min-w-0 px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-700 text-xs text-slate-100 focus:outline-none focus:border-blue-500"
             autoFocus
           />
           <button
