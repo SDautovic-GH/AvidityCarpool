@@ -216,10 +216,7 @@ export default function PracticeCard({
   const notesList = getPracticeNotes(practice);
 
   return (
-    <div
-      id={`practice-${practice.id}`}
-      className="scroll-mt-28 sm:scroll-mt-32 rounded-2xl bg-slate-900 border border-slate-800 p-4 space-y-3.5 min-w-0 overflow-hidden"
-    >
+    <div className="rounded-2xl bg-slate-900 border border-slate-800 p-4 space-y-3.5 min-w-0 overflow-hidden">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5">
         <div className="flex items-center gap-3 min-w-0">
           <div
