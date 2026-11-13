@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Car, KeyRound, MapPin, Pencil, Phone, Plus, Shield, Trash2, UserPlus, Users, X } from 'lucide-react';
+import { Car, KeyRound, MapPin, Pencil, Phone, Plus, Shield, Trash2, Upload, UserPlus, Users, X } from 'lucide-react';
 import { getAvatarColor, getInitials } from '../utils/schedule';
 import { getMapUrl } from '../utils/maps';
 
@@ -31,6 +31,9 @@ export default function AdminRoster({
   const [saving, setSaving] = useState(false);
   const [editingPlayerId, setEditingPlayerId] = useState(null);
   const [playerNameDraft, setPlayerNameDraft] = useState('');
+  const [importOpen, setImportOpen] = useState(false);
+  const [importText, setImportText] = useState('');
+  const [importing, setImporting] = useState(false);
 
   const openAddNewFamily = () => {
     setForm({ ...EMPTY_FORM, playerId: '__new__' });
@@ -90,6 +93,52 @@ export default function AdminRoster({
     setEditingPlayerId(null);
   };
 
+  const handleBulkImport = async (e) => {
+    e.preventDefault();
+    const lines = importText
+      .split(/\r?\n/)
+      .map((l) => l.trim())
+      .filter(Boolean);
+    if (lines.length === 0) return;
+
+    setImporting(true);
+    try {
+      const playerMap = new Map(
+        players.map((pl) => [pl.name.trim().toLowerCase(), pl.id])
+      );
+      for (const line of lines) {
+        const parts = (line.includes('|') ? line.split('|') : line.split('\t')).map((s) =>
+          s.trim()
+        );
+        const [playerName, parentName, rawEmail = '', phone = '', address = '', rawSeats = '4'] =
+          parts;
+        if (!playerName || !parentName) continue;
+
+        const slug = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, '');
+        const email =
+          rawEmail || `${slug(parentName)}.${slug(playerName)}@placeholder.local`;
+        const existingId = playerMap.get(playerName.toLowerCase()) || '';
+
+        await onSavePlayerAndParent({
+          existingParentId: null,
+          parentName,
+          email,
+          phone,
+          address,
+          playerId: existingId,
+          newPlayerName: existingId ? '' : playerName,
+          defaultSeats: Number(rawSeats) || 4,
+          canDrive: true,
+          role: 'parent',
+        });
+      }
+      setImportOpen(false);
+      setImportText('');
+    } finally {
+      setImporting(false);
+    }
+  };
+
   const unassignedParents = parents.filter(
     (p) => !players.some((pl) => pl.id === p.playerId)
   );
@@ -117,6 +166,13 @@ export default function AdminRoster({
               Season &amp; Schedule
             </button>
           )}
+          <button
+            onClick={() => setImportOpen(true)}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
+          >
+            <Upload className="w-3.5 h-3.5" />
+            Bulk Import
+          </button>
           <button
             onClick={openAddNewFamily}
             className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition"
@@ -510,6 +566,58 @@ export default function AdminRoster({
                   className="px-5 py-2 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white transition"
                 >
                   {saving ? 'Saving...' : form.existingParentId ? 'Save Changes' : 'Add'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {importOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-950/75 backdrop-blur-xs p-0 sm:p-4"
+          onClick={(e) => e.target === e.currentTarget && setImportOpen(false)}
+        >
+          <div className="w-full max-w-lg rounded-t-2xl sm:rounded-2xl bg-slate-900 border border-slate-800 shadow-2xl overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-800">
+              <h3 className="text-base font-bold text-slate-100">Bulk Import Roster</h3>
+              <button
+                onClick={() => setImportOpen(false)}
+                className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-800 hover:text-slate-100 transition"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleBulkImport} className="p-5 space-y-3">
+              <p className="text-xs text-slate-400">
+                One family per line:{' '}
+                <code className="px-1.5 py-0.5 rounded bg-slate-950 text-slate-200">
+                  Player | Parent | Email (optional) | Phone | Address | Seats
+                </code>
+              </p>
+              <textarea
+                rows={7}
+                required
+                value={importText}
+                onChange={(e) => setImportText(e.target.value)}
+                placeholder="Daniela | Justin | | (781) 389-5579 | 27 Penney Hill Road, Melrose, MA 02176 | 6"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-100 font-mono focus:outline-none focus:border-blue-500"
+              />
+              <div className="flex justify-end gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={() => setImportOpen(false)}
+                  className="px-4 py-2 rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={importing}
+                  className="px-5 py-2 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white transition"
+                >
+                  {importing ? 'Importing...' : 'Import Families'}
                 </button>
               </div>
             </form>
