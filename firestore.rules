@@ -60,6 +60,16 @@ service cloud.firestore {
     //   - createdAt: timestamp (optional, immutable)
     //   - updatedAt: timestamp (optional)
     //
+    // Subcollection: seasons/{seasonId}/tournaments
+    // Document ID: {tournamentId}
+    // Fields:
+    //   - name: string (required, 1..150 chars)
+    //   - dateLabel: string (required, 1..60 chars)
+    //   - sortDate: string (required, YYYY-MM-DD, 10..30 chars)
+    //   - location: string (required, 0..200 chars)
+    //   - notes: string (optional, 0..500 chars)
+    //   - createdAt: timestamp (required, immutable)
+    //
     // ===============================================================
 
     // ===============================================================
@@ -208,6 +218,17 @@ service cloud.firestore {
              (!('updatedAt' in data) || data.updatedAt is timestamp);
     }
 
+    function isValidTournament(data) {
+      return hasRequiredFields(['name', 'dateLabel', 'sortDate', 'location', 'createdAt']) &&
+             hasOnlyAllowedFields(['name', 'dateLabel', 'sortDate', 'location', 'notes', 'createdAt']) &&
+             validString(data.name, 1, 150) &&
+             validString(data.dateLabel, 1, 60) &&
+             validString(data.sortDate, 10, 30) &&
+             validString(data.location, 0, 200) &&
+             (!('notes' in data) || validString(data.notes, 0, 500)) &&
+             data.createdAt is timestamp;
+    }
+
     // ===============================================================
     // Collection Rules
     // ===============================================================
@@ -285,6 +306,18 @@ service cloud.firestore {
                              request.resource.data.diff(resource.data).affectedKeys().hasOnly(['absentPlayerIds', 'legs', 'notes', 'updatedAt'])
                            )
                          );
+        allow delete: if isSeasonAdmin(seasonId);
+      }
+
+      // Tournaments subcollection
+      match /tournaments/{tournamentId} {
+        allow read: if isSeasonMember(seasonId);
+        allow create: if isSeasonAdmin(seasonId) &&
+                         seasonExists(seasonId) &&
+                         isValidTournament(request.resource.data);
+        allow update: if isSeasonAdmin(seasonId) &&
+                         isValidTournament(request.resource.data) &&
+                         areImmutableFieldsUnchanged(['createdAt']);
         allow delete: if isSeasonAdmin(seasonId);
       }
     }

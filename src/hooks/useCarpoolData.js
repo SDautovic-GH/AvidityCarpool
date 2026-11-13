@@ -21,6 +21,7 @@ export function useCarpoolData(user) {
   const [players, setPlayers] = useState([]);
   const [parents, setParents] = useState([]);
   const [practices, setPractices] = useState([]);
+  const [tournaments, setTournaments] = useState([]);
   const [isGlobalAdmin, setIsGlobalAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -72,12 +73,13 @@ export function useCarpoolData(user) {
     return unsub;
   }, [userEmail]);
 
-  // Listen to players, parents, practices for activeSeasonId
+  // Listen to players, parents, practices, tournaments for activeSeasonId
   useEffect(() => {
     if (!isFirebaseConfigured || !db || !activeSeasonId || !userEmail) {
       setPlayers([]);
       setParents([]);
       setPractices([]);
+      setTournaments([]);
       return;
     }
 
@@ -96,10 +98,16 @@ export function useCarpoolData(user) {
       (snap) => setPractices(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
     );
 
+    const unsubTournaments = onSnapshot(
+      query(collection(db, 'seasons', activeSeasonId, 'tournaments'), orderBy('sortDate')),
+      (snap) => setTournaments(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
+    );
+
     return () => {
       unsubPlayers();
       unsubParents();
       unsubPractices();
+      unsubTournaments();
     };
   }, [activeSeasonId, userEmail]);
 
@@ -404,6 +412,51 @@ export function useCarpoolData(user) {
     }
   }
 
+  async function saveTournament({ existingId, name, dateLabel, sortDate, location, notes = '' }) {
+    if (!activeSeasonId) return;
+    const payload = {
+      name: name.trim(),
+      dateLabel: dateLabel.trim(),
+      sortDate: sortDate.trim(),
+      location: location.trim(),
+      notes: notes.trim(),
+    };
+    if (existingId) {
+      await updateDoc(
+        doc(db, 'seasons', activeSeasonId, 'tournaments', existingId),
+        payload
+      );
+    } else {
+      const ref = doc(collection(db, 'seasons', activeSeasonId, 'tournaments'));
+      await setDoc(ref, {
+        ...payload,
+        createdAt: serverTimestamp(),
+      });
+    }
+  }
+
+  async function deleteTournament(tournamentId) {
+    if (!activeSeasonId) return;
+    await deleteDoc(doc(db, 'seasons', activeSeasonId, 'tournaments', tournamentId));
+  }
+
+  async function batchCreateTournaments(list) {
+    if (!activeSeasonId) return;
+    const batch = writeBatch(db);
+    list.forEach((t) => {
+      const ref = doc(collection(db, 'seasons', activeSeasonId, 'tournaments'));
+      batch.set(ref, {
+        name: t.name,
+        dateLabel: t.dateLabel,
+        sortDate: t.sortDate,
+        location: t.location || '',
+        notes: t.notes || '',
+        createdAt: serverTimestamp(),
+      });
+    });
+    await batch.commit();
+  }
+
   return {
     seasons,
     activeSeason,
@@ -412,6 +465,7 @@ export function useCarpoolData(user) {
     players,
     parents,
     practices,
+    tournaments,
     currentParent,
     isAdmin,
     loading,
@@ -430,5 +484,8 @@ export function useCarpoolData(user) {
     removeParent,
     createSeason,
     batchCreatePractices,
+    saveTournament,
+    deleteTournament,
+    batchCreateTournaments,
   };
 }

@@ -114,6 +114,19 @@ export function getInitials(name = '') {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
+export const DEFAULT_2627_TOURNAMENTS = [
+  { name: 'Wicked Good', dateLabel: 'Dec 12–13', sortDate: '2026-12-12', location: 'Providence, RI' },
+  { name: 'NE Winterfest', dateLabel: 'Jan 16–18', sortDate: '2027-01-16', location: 'Hartford, CT' },
+  { name: 'Springfield Invitational', dateLabel: 'Feb 6–7', sortDate: '2027-02-06', location: 'Springfield, MA' },
+  { name: 'Capitol Hill Classic', dateLabel: 'Feb 13–15', sortDate: '2027-02-13', location: 'Washington, D.C.' },
+  { name: 'Mideast Qualifier', dateLabel: 'Mar 12–14', sortDate: '2027-03-12', location: 'St. Louis, MO' },
+  { name: 'Boston Qualifier', dateLabel: 'Mar 26–28', sortDate: '2027-03-26', location: 'Boston, MA' },
+  { name: 'Boston Open', dateLabel: 'Apr 10–11', sortDate: '2027-04-10', location: 'Boston, MA' },
+  { name: 'Top Series', dateLabel: 'May 1–2', sortDate: '2027-05-01', location: 'Mohegan Sun, CT' },
+  { name: 'North Atlantic Championship', dateLabel: 'May 8–9', sortDate: '2027-05-08', location: 'Hartford, CT' },
+  { name: 'USAV or AAU Nationals', dateLabel: 'June (TBD)', sortDate: '2027-06-15', location: 'TBD' },
+];
+
 export function getAvatarColor(seed = '') {
   let hash = 0;
   for (let i = 0; i < seed.length; i += 1) {

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Calendar, Car, LogOut, Phone, Plus, Users } from 'lucide-react';
+import { Calendar, Car, LogOut, Phone, Plus, Trophy, Users } from 'lucide-react';
 import {
   auth,
   isFirebaseConfigured,
@@ -15,6 +15,7 @@ import AssignModal from './components/AssignModal';
 import AdminRoster from './components/AdminRoster';
 import AdminSeasonModal from './components/AdminSeasonModal';
 import TeamDirectory from './components/TeamDirectory';
+import TournamentsView from './components/TournamentsView';
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -54,6 +55,7 @@ export default function App() {
     players,
     parents,
     practices,
+    tournaments,
     currentParent,
     isAdmin,
     loading,
@@ -72,6 +74,9 @@ export default function App() {
     removeParent,
     createSeason,
     batchCreatePractices,
+    saveTournament,
+    deleteTournament,
+    batchCreateTournaments,
   } = useCarpoolData(user);
 
   const todayIso = new Date().toISOString().slice(0, 10);
@@ -238,6 +243,17 @@ export default function App() {
               My Drives
             </button>
             <button
+              onClick={() => setTab('tournaments')}
+              className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold transition ${
+                tab === 'tournaments'
+                  ? 'bg-blue-600 text-white'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <Trophy className="w-3.5 h-3.5" />
+              Tournaments
+            </button>
+            <button
               onClick={() => setTab('directory')}
               className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold transition ${
                 tab === 'directory'
@@ -263,7 +279,7 @@ export default function App() {
             )}
           </div>
 
-          {tab !== 'roster' && tab !== 'directory' && pastCount > 0 && (
+          {tab !== 'roster' && tab !== 'directory' && tab !== 'tournaments' && pastCount > 0 && (
             <button
               onClick={() => setShowPast((v) => !v)}
               className="px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 transition"
@@ -296,6 +312,23 @@ export default function App() {
               Create Season
             </button>
           </div>
+        ) : tab === 'tournaments' ? (
+          <TournamentsView
+            tournaments={tournaments}
+            isAdmin={isAdmin}
+            onSaveTournament={(payload) =>
+              runAction(() => saveTournament(payload), 'Tournament saved')
+            }
+            onDeleteTournament={(id) =>
+              runAction(() => deleteTournament(id), 'Tournament removed')
+            }
+            onSeedTournaments={(list) =>
+              runAction(
+                () => batchCreateTournaments(list),
+                `Added ${list.length} tournaments`
+              )
+            }
+          />
         ) : tab === 'directory' ? (
           <TeamDirectory
             players={players}
