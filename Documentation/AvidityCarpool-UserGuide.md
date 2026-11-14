@@ -51,33 +51,35 @@ If your player is missing practice, tap the **`[Player Name]: Going`** button in
 ## 5. Offering to Drive
 
 1. Tap **+ I can drive** on a practice card.
-2. Choose **Both Ways**, **To Practice**, or **From Practice**.
+2. Choose **Both Ways**, **To Only**, or **From Only**.
 3. Pick how many **total player seats** you have available (1–7; choosing **1** means *Driving solo* for your own player only).
-4. Tap **Confirm Drive**—your player is automatically placed in your car.
+4. Optional: check **Repeat for all upcoming [weekday] practices** to sign up for the whole season on that day of the week in one tap.
+5. Tap **Confirm Drive**—your player is automatically placed in your car.
 
 ### If Your Plans Change After Signing Up to Drive
-- **Need a Sub:** Tap **Need sub** on your car if you want another parent to take over your spot. Any eligible parent can tap **Take Over** to step in.
+- **Need a Sub:** Tap **Need Sub** on your car if you want another parent to take over your spot. Any eligible parent can tap **Take Over** to step in.
 - **Cancel Driving:** Tap **Drop** to remove your car from that leg.
 
 ---
 
-## 6. Adding a Practice Note
+## 6. Notes, Texting & Sharing
 
-Need to share a quick update (like *"Meet by the north doors"* or *"Leaving 10 min early"*)?
-- Tap **+ Note** (or **Edit** on an existing note) right below the gym location on any practice card.
-
----
-
-## 7. Team Contact Directory & Updating Your Info
-
-Tap the **Directory** tab at the top to:
-- **Call a parent:** Tap any phone number to dial immediately.
-- **Get pickup/drop-off directions:** Tap any home address to open Maps.
-- **Update your own info:** Tap **Edit My Info** (or **Update** next to your name) to add or change your phone number, home address, or default car seats.
+Need to share a quick update (like *"Meet by the north doors"* or *"Running 5 min late"*)?
+- **+ Note:** Add an attributed note to any practice card (you can delete your own notes anytime).
+- **Text My Car:** Opens a group text with only the driver and rider parents in your car for that practice.
+- **Text Carpool:** Opens a group text with all Melrose carpool parents.
+- **Share:** Copies or shares a clean text summary of the practice carpool.
 
 ---
 
-## Quick Tips
-- **My Drives Tab:** Tap **My Drives** at the top to see only the practices where you are scheduled to drive.
-- **Two Parents, One Player:** Both parents can have their own login linked to the same player so whoever is handling practice that day can sign up to drive or claim a ride.
+## 7. Navigation Tabs: My Drives, Events & Team
+
+- **Practices:** Upcoming practices with **All Upcoming** / **Needs Driver** filters and a **Past** toggle.
+- **My Drives:** Shows only practices where you are driving, with an **Add My Drives to Calendar** button (`.ics` download).
+- **Events:** Full tournament schedule with Maps links and 1-tap **+ Calendar** (`.ics`) downloads.
+- **Team:** Full team roster and contacts:
+  - **Call or Text:** Tap any phone number to call, tap **Text** to message one parent, or use **Text Carpool** / **Text Team** at the top.
+  - **Directions:** Tap any home address to open Maps.
+  - **Update your info:** Tap **Edit My Info** (or **Update** next to your name) to change your phone number, home address, or default car seats.
+- **Display Zoom:** On mobile, tap **`⋯`** in the top-right header to adjust text size (`80%–130%`).
 

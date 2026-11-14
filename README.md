@@ -19,7 +19,7 @@ npm run dev
 1. Create a Firebase project in the [Firebase Console](https://console.firebase.google.com/).
 2. **Authentication → Sign-in method:** Enable **Email/Password** (leave Email link / passwordless off).
 3. **Authentication → Settings → Authorized domains:** Add `aviditycarpool.dautovic.com` (and `sdautovic-gh.github.io` if testing the default Pages URL).
-4. **Cloud Firestore:** Create the database, then paste the contents of `firestore.rules` into **Firestore → Rules** and publish (and deploy `firestore.indexes.json` if prompted).
+4. **Cloud Firestore:** Create the database and deploy `firestore.rules` and `firestore.indexes.json` (either via the Firebase Console or `npx firebase-tools deploy --only firestore:rules --project <project-id>` using `firebase.json`).
 5. **Bootstrap Global Admins:** In **Firestore → Data**, create collection `admins` and add two documents whose **Document IDs** are your lowercase admin email addresses (no fields required):
    - `samir.dautovic@gmail.com` (Samir Dautovic)
    - `ldautovic@gmail.com` (Lee-Anne Dautovic)

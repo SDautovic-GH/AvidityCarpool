@@ -33,6 +33,8 @@
 | 2026-11-13 | Separated `players` and `parents` subcollections under `seasons/{seasonId}` | Supports multiple parents/guardians per player splitting driving duties, and per-parent `canDrive` exclusion from the driving pool. | Locked |
 | 2026-11-13 | Document ID = lowercase email in `admins/{email}` and `seasons/{seasonId}/parents/{email}` | Enables direct O(1) security rule checks (`exists(...)`) and clean self-service profile updates without UID pre-provisioning. | Locked |
 | 2026-11-13 | Firestore `runTransaction` for all carpool seat & driver mutations | Prevents race conditions when two parents claim the last open seat simultaneously. | Locked |
+| 2026-11-13 | Melrose-address carpool scoping (`carpoolPlayers`) + full-team `Team` tab | Keeps practice/drive cards focused on the active Melrose carpool while preserving full-team roster, jersey numbers, and `Text Team` contacts. | Locked |
+| 2026-11-13 | Static vendor chunking (`firebase`, `vendor`) in `vite.config.js` | Splits the 760 KB bundle into preloaded vendor chunks without `React.lazy` stale-tab 404 risk across GitHub Pages deploys. | Locked |
 | 2026-11-13 | GitHub Pages (`GitHub Actions`) + `public/CNAME` (`aviditycarpool.dautovic.com`) | Automatic build/deploy on push to `main` with custom domain and TLS; Firebase keys injected via GitHub Actions secrets. | Locked |
 
 ---
@@ -50,11 +52,11 @@
 
 | Component | Technology | Notes |
 | :--- | :--- | :--- |
-| **Frontend** | React 19 + Vite 7 | `base: '/'` for custom domain root |
-| **Styling** | Tailwind CSS v4 (`@tailwindcss/vite`) | Dark slate UI, pill-shaped buttons (`rounded-full`), mobile segmented `To`/`From` tabs, desktop side-by-side legs |
+| **Frontend** | React 19 + Vite 7 | `base: '/'`, `manualChunks` (`firebase`, `vendor`), PWA manifest + home-screen icons (`public/manifest.webmanifest`, `apple-touch-icon.png`) |
+| **Styling** | Tailwind CSS v4 (`@tailwindcss/vite`) | Apple Sports Midnight Obsidian palette (`#070913` / `#101528`), pill buttons (`rounded-full`), MHS-inspired jump bar (`Practices`, `My Drives`, `Events`, `Team`), persistent zoom (`80%–130%`) |
 | **Icons** | `lucide-react` | Lightweight tree-shaken SVG icons |
 | **Auth** | Firebase Authentication | Email/Password + self/admin password reset |
-| **Database** | Cloud Firestore | Real-time listeners (`onSnapshot`), transactions (`runTransaction`), multi-tab local cache |
+| **Database** | Cloud Firestore | Real-time listeners (`onSnapshot`), transactions (`runTransaction`), multi-tab local cache, rules deployed via `firebase.json` |
 | **Hosting & DNS** | GitHub Pages + Cloudflare | Repo `SDautovic-GH/AvidityCarpool`, CNAME `aviditycarpool.dautovic.com` → `sdautovic-gh.github.io` |
 
 ---
@@ -63,17 +65,19 @@
 
 - `admins/{email}` — Global admin allowlist (lowercase email doc ID, seeded in Firebase Console; non-writable from client).
 - `seasons/{seasonId}` — Season metadata (`clubName`, `teamName`, `label`, `status`, `createdAt`). Supports multi-year carryover (`16 Apex` → `17 Apex`).
-  - `players/{playerId}` — Team players (`name`, `createdAt`).
+  - `players/{playerId}` — Team players (`name`, optional `jerseyNumber`, `createdAt`).
   - `parents/{email}` — Linked parents (`name`, `email`, `playerId`, `phone`, `address`, `defaultSeats` 1–7, `canDrive` bool, `role` `'admin'|'parent'`, `createdAt`). Parents can update only their own `phone`, `address`, `name`, and `defaultSeats`.
-  - `practices/{practiceId}` — Scheduled practices (`isoDate`, `timeLabel`, `location`, `address`, `status`, `absentPlayerIds`, `legs: { to: [], from: [] }`, optional `notes`, `createdAt`, `updatedAt`).
+  - `practices/{practiceId}` — Scheduled practices (`isoDate`, `timeLabel`, `location`, `address`, `status` `'scheduled'|'cancelled'`, `absentPlayerIds`, `legs: { to: [], from: [] }`, `notesList` array of attributed notes + legacy `notes`/`notesAuthor`, `createdAt`, `updatedAt`).
+  - `tournaments/{tournamentId}` — Team tournaments (`name`, `dateLabel`, `sortDate`, `location`, `notes`, `createdAt`, `updatedAt`).
 
 ---
 
 ## 6. Key Implemented Workflows
 
-1. **Practice Cards & Status:** Displays `Today` / `Tomorrow` / `Next` badge on the next upcoming practice; marks the date tile `All Set` with a green check only when both `To` and `From` legs have enough confirmed seats, zero subs needed, and zero unassigned going players.
-2. **Driving & Riding:** Parents offer to drive `Both Ways`, `To Only`, or `From Only` (1–7 seats, where `1` = driving solo). Drivers can mark `Need a sub` or `Drop` a leg; other eligible parents can `Take Over`. Riders join a specific car (`Join` or `Both Ways`) or leave (`×`).
-3. **Practice Notes:** Any signed-in parent or admin can add/edit an inline note per practice (up to 500 chars) for pickup spot details or schedule reminders.
-4. **Team Directory:** Read-only team contact list for all signed-in parents with tap-to-call (`tel:`) phone links, tap-for-directions address links, and **Edit My Info** self-service updates.
-5. **Admin Roster & Season Management:** Silent family/player creation, multiple parents per player, `canDrive` pool toggle, 1-tap password reset email, admin rider assignment (`AssignModal`), new season creation with selective player/parent carryover, and 1-click Tue/Thu/Sun schedule generation.
+1. **Practice Cards & Status:** Displays `Today` / `Tomorrow` / `Next` badge and blue spotlight border on the next upcoming practice; marks the date tile `All Set` with a green check when both legs are covered, or shows `● Need a driver` when seats are short. Supports **All Upcoming** / **Needs Driver** filter, **Past** toggle (read-only for non-admins), and collapsed cancelled-practice cards.
+2. **Driving & Riding:** Parents offer to drive `Both Ways`, `To Only`, or `From Only` (1–7 seats, where `1` = driving solo), with an optional **"Repeat for all upcoming [weekday] practices"** bulk signup (`Promise.all`). Drivers can mark `Need Sub` or `Drop` a leg; other eligible parents can `Take Over`. Riders join a specific car (`Join` or `Both Ways`) or leave (`×`).
+3. **Notes, Share & Targeted Texting:** Multiple attributed notes per practice (`notesList`; authors can delete their own, admins can delete any), native/clipboard **Share** summary, and 1-tap `sms:` links scoped to **Text My Car** (driver + rider parents in your car) or **Text Carpool** (Melrose carpool parents only).
+4. **My Drives & Calendar Exports (`.ics`):** Dedicated **My Drives** tab with **Add My Drives to Calendar** `.ics` export (excluding cancelled practices), plus per-tournament **+ Calendar** `.ics` export on the **Events** tab.
+5. **Events (Tournaments) & Team Directory:** **Events** tab lists team tournaments with `NEXT` badge, Maps links, `.ics` export, and Admin CRUD + 26/27 season seed. **Team** tab shows the full team roster with `Carpool` badges, `tel:` / `Text` / Maps links, **Text Carpool** and **Text Team** buttons, and **Edit My Info** self-service updates.
+6. **Admin Roster & Schedule Management:** Silent family/player creation, multiple parents per player, `canDrive` pool toggle, 1-tap password reset email, bulk player/jersey import, admin rider assignment (`AssignModal`), inline practice edit/cancel/delete, new season creation with carryover, and 1-click Tue/Thu/Sun schedule generation.
 

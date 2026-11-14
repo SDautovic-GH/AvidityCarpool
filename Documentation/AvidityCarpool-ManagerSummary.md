@@ -18,13 +18,14 @@
 **Avidity Carpool** replaces manual Excel sheets and long group text chains with a dedicated, mobile-friendly web app for coordinating rides to and from practices for **Avidity 16 Apex (26/27 Season)** and future seasons.
 
 ### Core Benefits
-- **Instant Visibility:** Every practice card shows who is going, who is driving (`To` and `From`), open seats, and which players still need a ride—highlighted with a green **All Set** indicator once both ways are covered.
+- **Instant Visibility:** Every practice card shows who is going, who is driving (`To` and `From`), open seats, `● Need a driver` alerts, and a green **All Set** indicator once both ways are covered. Parents can filter by **Needs Driver** or view **My Drives** and export them to their calendar (`.ics`).
 - **Built for Real Family Schedules:**
-  - Supports **multiple parents per player** so two parents can split driving duties independently.
-  - Supports **non-driving parents** (`Include in driving pool` unchecked) so they can claim rides and update attendance without being prompted to drive.
-  - Supports **1-tap sub requests** (`Need a sub` / `Take Over`) when a driver's plans change.
+  - **Carpool-Scoped Practice Cards:** Automatically scopes practice carpools to Melrose families while keeping the full team roster, jersey numbers, and tournament schedule (**Events** tab) accessible to everyone.
+  - **Recurring Weekday Drives:** Parents can volunteer for all upcoming practices on a weekday (e.g., all Sundays) in one tap.
+  - **Targeted Group Texting:** **Text My Car** texts only the parents in your car for that practice; **Text Carpool** texts Melrose carpool parents; **Text Team** (in **Team**) texts the full roster.
+  - Supports **multiple parents per player**, **non-driving parents** (`Include in driving pool` unchecked), and **1-tap sub requests** (`Need Sub` / `Take Over`).
 - **Private & Controlled Rollout:**
-  - Adding families to **Team Roster** saves quietly to the database—**no automated invite emails are sent** until you share `https://aviditycarpool.dautovic.com`.
+  - Adding families to **Team** saves quietly to the database—**no automated invite emails are sent** until you share `https://aviditycarpool.dautovic.com`.
   - Only email addresses listed on the team roster (or global admins) can view schedules, phone numbers, and home addresses.
 - **Multi-Season Ready:** At the end of the season, admins can create next year's season (e.g., `17 Apex · 27/28 Season`), selectively carry over returning players and parents, and generate the full Tue/Thu/Sun practice calendar in one click.
 
@@ -34,10 +35,12 @@
 
 | Task | Where in the App |
 | :--- | :--- |
-| **Add / Edit Families & Parents** | **Team Roster → Add Family / Parent** (or **+ Add Parent** on an existing player card) |
+| **Add / Edit Families & Parents** | **Team → Add Family / Parent** (or **+ Add Parent** on a player card) |
 | **Exclude a Parent from Driving** | Edit parent → uncheck **Include in driving pool** |
-| **Help a Parent Reset Password** | **Team Roster → Reset Password** next to their name |
+| **Help a Parent Reset Password** | **Team → Reset Password** next to their name |
 | **Assign an Unassigned Player** | Click the player's **`Name +`** pill under *Still need a ride* on a practice card |
-| **Generate Tue/Thu/Sun Practices** | **Team Roster → Season & Schedule → Generate Practices** |
-| **Start Next Year's Season** | **Team Roster → Season & Schedule → New Season** |
+| **Edit / Cancel / Delete a Practice** | Tap the **Pencil** or **Trash** icon on any practice card |
+| **Manage Tournaments** | **Events → Add Tournament** (or Pencil/Trash on any event card) |
+| **Generate Tue/Thu/Sun Practices** | **Team → Season & Schedule → Generate Practices** |
+| **Start Next Year's Season** | **Team → Season & Schedule → New Season** |
 
