@@ -165,7 +165,13 @@ export function useCarpoolData(user) {
 
       const addLeg = (leg) => {
         const list = legs[leg] || [];
-        if (list.some((c) => c.driverParentId === parentDoc.id)) return;
+        const existing = list.find((c) => c.driverParentId === parentDoc.id);
+        if (existing) {
+          existing.riderIds = filterCarpoolRiders(existing.riderIds);
+          existing.seatsTotal = Math.max(seatsTotal, existing.riderIds.length);
+          legs[leg] = list;
+          return;
+        }
         if (parentDoc.playerId) {
           list.forEach((c) => {
             c.riderIds = filterCarpoolRiders(c.riderIds).filter(

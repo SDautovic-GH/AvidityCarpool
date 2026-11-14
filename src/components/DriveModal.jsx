@@ -82,10 +82,23 @@ export default function DriveModal({
         <div className="space-y-2">
           <label className="text-xs font-semibold text-slate-400">Which direction?</label>
           <div className="flex gap-2">
-            {dirBtn('both', 'Both Ways', drivesTo || drivesFrom)}
-            {dirBtn('to', 'To Only', drivesTo)}
-            {dirBtn('from', 'From Only', drivesFrom)}
+            {dirBtn('both', 'Both Ways', false)}
+            {dirBtn('to', 'To Only', drivesTo && !drivesFrom)}
+            {dirBtn('from', 'From Only', drivesFrom && !drivesTo)}
           </div>
+          {(drivesTo || drivesFrom) && (
+            <p className="text-[11px] text-slate-400">
+              You&apos;re already signed up for{' '}
+              <strong className="text-slate-200">
+                {drivesTo && drivesFrom
+                  ? 'Both Ways'
+                  : drivesTo
+                    ? 'To Practice'
+                    : 'From Practice'}
+              </strong>{' '}
+              on this date.
+            </p>
+          )}
         </div>
 
         <div className="flex items-center justify-between py-2">
