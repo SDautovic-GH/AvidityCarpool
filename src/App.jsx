@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { CalendarPlus, LogOut, MoreHorizontal, Plus } from 'lucide-react';
 import {
   auth,
@@ -42,8 +42,6 @@ export default function App() {
       // ignore storage errors
     }
   }, [zoomPct]);
-  const tabRefs = useRef({});
-  const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0, ready: false });
   const [showPast, setShowPast] = useState(false);
   const [driveModal, setDriveModal] = useState(null); // { practiceId, defaultDirection }
   const [assignModal, setAssignModal] = useState(null); // { practiceId, leg, playerId }
@@ -166,21 +164,6 @@ export default function App() {
   );
 
   const shortPlayerNames = useMemo(() => getShortPlayerNames(players), [players]);
-
-  useLayoutEffect(() => {
-    const updateIndicator = () => {
-      const el = tabRefs.current[tab];
-      if (!el) return;
-      setIndicatorStyle({
-        left: el.offsetLeft,
-        width: el.offsetWidth,
-        ready: true,
-      });
-    };
-    updateIndicator();
-    window.addEventListener('resize', updateIndicator);
-    return () => window.removeEventListener('resize', updateIndicator);
-  }, [tab, user, practices.length, tournaments.length, loading]);
 
   const runAction = async (fn, successMsg) => {
     try {
@@ -431,24 +414,12 @@ export default function App() {
               { id: 'roster', label: 'Team', count: 0 },
             ];
             return (
-              <div className="relative flex-1 sm:flex-none flex items-center justify-between sm:justify-start sm:gap-6">
-                <div
-                  aria-hidden="true"
-                  className="absolute bottom-0 left-0 h-[2.5px] rounded-full bg-blue-500 transition-all duration-200 ease-out"
-                  style={{
-                    transform: `translateX(${indicatorStyle.left}px)`,
-                    width: `${indicatorStyle.width}px`,
-                    opacity: indicatorStyle.ready ? 1 : 0,
-                  }}
-                />
+              <div className="flex-1 sm:flex-none flex items-center justify-between sm:justify-start sm:gap-6">
                 {tabs.map(({ id, label, count }) => (
                   <button
                     key={id}
-                    ref={(el) => {
-                      tabRefs.current[id] = el;
-                    }}
                     onClick={() => setTab(id)}
-                    className={`relative inline-flex items-center gap-1.5 py-2.5 text-[13px] sm:text-sm whitespace-nowrap shrink-0 transition-colors ${
+                    className={`inline-flex items-center gap-1.5 py-2.5 text-[13px] sm:text-sm whitespace-nowrap shrink-0 transition-colors ${
                       tab === id
                         ? 'text-white font-bold'
                         : 'text-slate-400 hover:text-slate-200 font-semibold'
