@@ -114,6 +114,14 @@ export function useCarpoolData(user) {
   const currentParent = parents.find((p) => p.id === userEmail || p.email === userEmail) || null;
   const isAdmin = Boolean(isGlobalAdmin || currentParent?.role === 'admin');
   const activeSeason = seasons.find((s) => s.id === activeSeasonId) || null;
+  const carpoolPlayerIds = new Set(
+    parents
+      .filter((p) => (p.address || '').toLowerCase().includes('melrose'))
+      .map((p) => p.playerId)
+      .filter(Boolean)
+  );
+  const filterCarpoolRiders = (ids = []) =>
+    carpoolPlayerIds.size > 0 ? ids.filter((id) => carpoolPlayerIds.has(id)) : [...ids];
 
   // Transactional Practice Mutations
   async function updatePracticeTx(practiceId, mutator) {
@@ -150,14 +158,19 @@ export function useCarpoolData(user) {
   async function offerToDrive(practiceId, direction, seatsTotal, parentDoc) {
     await updatePracticeTx(practiceId, (p) => {
       const legs = p.legs || { to: [], from: [] };
-      const isGoing = !(p.absentPlayerIds || []).includes(parentDoc.playerId);
+      const isCarpoolKid =
+        parentDoc.playerId &&
+        (carpoolPlayerIds.size === 0 || carpoolPlayerIds.has(parentDoc.playerId));
+      const isGoing = isCarpoolKid && !(p.absentPlayerIds || []).includes(parentDoc.playerId);
 
       const addLeg = (leg) => {
         const list = legs[leg] || [];
         if (list.some((c) => c.driverParentId === parentDoc.id)) return;
         if (parentDoc.playerId) {
           list.forEach((c) => {
-            c.riderIds = (c.riderIds || []).filter((id) => id !== parentDoc.playerId);
+            c.riderIds = filterCarpoolRiders(c.riderIds).filter(
+              (id) => id !== parentDoc.playerId
+            );
           });
         }
         list.push({
@@ -165,7 +178,7 @@ export function useCarpoolData(user) {
           driverParentId: parentDoc.id,
           driverName: parentDoc.name,
           seatsTotal,
-          riderIds: isGoing && parentDoc.playerId ? [parentDoc.playerId] : [],
+          riderIds: isGoing ? [parentDoc.playerId] : [],
           status: 'confirmed',
         });
         legs[leg] = list;
@@ -200,19 +213,24 @@ export function useCarpoolData(user) {
       const legs = p.legs || { to: [], from: [] };
       const car = (legs[leg] || []).find((c) => c.id === carId);
       if (!car) return null;
+      car.riderIds = filterCarpoolRiders(car.riderIds);
       car.driverParentId = parentDoc.id;
       car.driverName = parentDoc.name;
-      car.seatsTotal = Math.max(parentDoc.defaultSeats || 4, (car.riderIds || []).length);
+      car.seatsTotal = Math.max(parentDoc.defaultSeats || 4, car.riderIds.length);
       car.status = 'confirmed';
-      const isGoing = !(p.absentPlayerIds || []).includes(parentDoc.playerId);
+      const isCarpoolKid =
+        parentDoc.playerId &&
+        (carpoolPlayerIds.size === 0 || carpoolPlayerIds.has(parentDoc.playerId));
+      const isGoing = isCarpoolKid && !(p.absentPlayerIds || []).includes(parentDoc.playerId);
       if (
         isGoing &&
-        parentDoc.playerId &&
-        !(car.riderIds || []).includes(parentDoc.playerId) &&
+        !car.riderIds.includes(parentDoc.playerId) &&
         car.riderIds.length < car.seatsTotal
       ) {
         (legs[leg] || []).forEach((c) => {
-          c.riderIds = (c.riderIds || []).filter((id) => id !== parentDoc.playerId);
+          c.riderIds = filterCarpoolRiders(c.riderIds).filter(
+            (id) => id !== parentDoc.playerId
+          );
         });
         car.riderIds.push(parentDoc.playerId);
       }
@@ -225,13 +243,14 @@ export function useCarpoolData(user) {
       const legs = p.legs || { to: [], from: [] };
       const car = (legs[leg] || []).find((c) => c.id === carId);
       if (!car) throw new Error('Car not found');
-      if ((car.riderIds || []).length >= car.seatsTotal) {
+      car.riderIds = filterCarpoolRiders(car.riderIds);
+      if (car.riderIds.length >= car.seatsTotal) {
         throw new Error('This car is already full');
       }
       (legs[leg] || []).forEach((c) => {
-        c.riderIds = (c.riderIds || []).filter((id) => id !== playerId);
+        c.riderIds = filterCarpoolRiders(c.riderIds).filter((id) => id !== playerId);
       });
-      car.riderIds = [...(car.riderIds || []), playerId];
+      car.riderIds = [...car.riderIds, playerId];
       return { legs };
     });
   }
@@ -241,11 +260,13 @@ export function useCarpoolData(user) {
       const legs = p.legs || { to: [], from: [] };
       ['to', 'from'].forEach((leg) => {
         const car = (legs[leg] || []).find((c) => c.driverParentId === driverParentId);
-        if (car && car.status !== 'needs_sub' && (car.riderIds || []).length < car.seatsTotal) {
+        if (!car) return;
+        car.riderIds = filterCarpoolRiders(car.riderIds);
+        if (car.status !== 'needs_sub' && car.riderIds.length < car.seatsTotal) {
           (legs[leg] || []).forEach((c) => {
-            c.riderIds = (c.riderIds || []).filter((id) => id !== playerId);
+            c.riderIds = filterCarpoolRiders(c.riderIds).filter((id) => id !== playerId);
           });
-          car.riderIds = [...(car.riderIds || []), playerId];
+          car.riderIds = [...car.riderIds, playerId];
         }
       });
       return { legs };

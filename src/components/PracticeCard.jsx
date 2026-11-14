@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Check, MapPin, MessageSquare, Pencil, Share2, Trash2 } from 'lucide-react';
+import { Check, MapPin, MessageCircle, MessageSquare, Pencil, Share2, Trash2 } from 'lucide-react';
 import CarRow from './CarRow';
 import { formatPracticeShareText } from '../utils/calendar';
-import { getMapUrl } from '../utils/maps';
+import { buildSmsUrl, getMapUrl } from '../utils/maps';
 import {
   formatPracticeDate,
   getGoingPlayers,
@@ -24,6 +24,8 @@ export default function PracticeCard({
   isFirstUpcoming,
   isPast = false,
   players,
+  carpoolParents = [],
+  shortPlayerNames,
   currentParent,
   isAdmin,
   onToggleAttendance,
@@ -57,9 +59,10 @@ export default function PracticeCard({
   const myPlayerId = currentParent?.playerId || '';
   const myParentId = currentParent?.id || '';
   const isReadOnly = Boolean(isPast && !isAdmin);
+  const isCancelled = practice.status === 'cancelled';
   const canDrive = currentParent?.canDrive !== false;
   const myPlayer = players.find((pl) => pl.id === myPlayerId);
-  const shortNames = getShortPlayerNames(players);
+  const shortNames = shortPlayerNames || getShortPlayerNames(players);
   const shortNameOf = (pl) => shortNames[pl?.id] || pl?.name || 'Player';
 
   const { month, dateNum, fullDay } = formatPracticeDate(practice.isoDate);
@@ -69,7 +72,14 @@ export default function PracticeCard({
 
   const toSum = getLegSummary(practice, 'to', players);
   const fromSum = getLegSummary(practice, 'from', players);
-  const isSatisfied = toSum.tone === 'success' && fromSum.tone === 'success';
+  const isSatisfied = !isCancelled && toSum.tone === 'success' && fromSum.tone === 'success';
+
+  const toSeatsCount = (practice.legs?.to || [])
+    .filter((c) => c.status !== 'needs_sub')
+    .reduce((s, c) => s + (c.seatsTotal || 0), 0);
+  const fromSeatsCount = (practice.legs?.from || [])
+    .filter((c) => c.status !== 'needs_sub')
+    .reduce((s, c) => s + (c.seatsTotal || 0), 0);
 
   const drivesTo = (practice.legs?.to || []).some((c) => c.driverParentId === myParentId);
   const drivesFrom = (practice.legs?.from || []).some((c) => c.driverParentId === myParentId);
@@ -82,6 +92,36 @@ export default function PracticeCard({
       : drivesFrom
         ? "You're driving From Practice"
         : null;
+
+  const carpoolPlayerIdSet = new Set(players.map((pl) => pl.id));
+  const carpoolPhones = carpoolParents
+    .filter((p) => p.id !== myParentId && carpoolPlayerIdSet.has(p.playerId) && p.phone)
+    .map((p) => p.phone);
+  const carpoolSmsUrl = buildSmsUrl(carpoolPhones);
+
+  const myCarDriverParentIds = new Set();
+  const myCarRiderPlayerIds = new Set();
+  ['to', 'from'].forEach((legKey) => {
+    (practice.legs?.[legKey] || []).forEach((car) => {
+      const validRiders = (car.riderIds || []).filter((id) => carpoolPlayerIdSet.has(id));
+      const involved =
+        (myParentId && car.driverParentId === myParentId) ||
+        (myPlayerId && validRiders.includes(myPlayerId));
+      if (involved) {
+        if (car.driverParentId) myCarDriverParentIds.add(car.driverParentId);
+        validRiders.forEach((pid) => myCarRiderPlayerIds.add(pid));
+      }
+    });
+  });
+  const myCarPhones = carpoolParents
+    .filter(
+      (p) =>
+        p.id !== myParentId &&
+        p.phone &&
+        (myCarDriverParentIds.has(p.id) || myCarRiderPlayerIds.has(p.playerId))
+    )
+    .map((p) => p.phone);
+  const myCarSmsUrl = buildSmsUrl(myCarPhones);
 
   async function handleShare() {
     const text = formatPracticeShareText(practice, players);
@@ -150,6 +190,7 @@ export default function PracticeCard({
                 leg={leg}
                 car={car}
                 players={players}
+                shortPlayerNames={shortNames}
                 currentParent={currentParent}
                 isAdmin={isAdmin}
                 isReadOnly={isReadOnly}
@@ -202,7 +243,9 @@ export default function PracticeCard({
 
           {!isReadOnly && !isDesktop && canDrive && !isDrivingThisLeg && needsMoreDrivers && (
             <button
-              onClick={() => onOpenDriveModal(practice.id, leg)}
+              onClick={() =>
+                onOpenDriveModal(practice.id, !drivesTo && !drivesFrom ? 'both' : leg)
+              }
               className="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition shrink-0"
             >
               + I can drive
@@ -252,80 +295,107 @@ export default function PracticeCard({
   ) : null;
 
   return (
-    <div className="rounded-2xl bg-slate-900 border border-slate-800 p-4 space-y-3.5 min-w-0 overflow-hidden">
+    <div
+      className={`rounded-2xl bg-slate-900 border ${
+        isFirstUpcoming && !isCancelled ? 'border-blue-500/45' : 'border-slate-800'
+      } p-4 space-y-3.5 min-w-0 overflow-hidden`}
+    >
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5">
         <div className="flex items-center justify-between gap-2 min-w-0">
           <div className="flex items-center gap-3 min-w-0 flex-1">
-          <div
-            className={`relative w-11 h-11 rounded-xl ${
-              isSatisfied ? 'bg-emerald-500/15' : 'bg-slate-950'
-            } flex flex-col items-center justify-center shrink-0`}
-          >
-            <span
-              className={`text-xs uppercase leading-none ${
-                isSatisfied ? 'text-emerald-400' : 'text-slate-400'
-              }`}
+            <div
+              className={`relative w-11 h-11 rounded-xl ${
+                isSatisfied
+                  ? 'bg-emerald-500/15 border border-emerald-500/30'
+                  : isFirstUpcoming && !isCancelled
+                    ? 'bg-blue-500/15 border border-blue-500/30'
+                    : 'bg-slate-950 border border-slate-800/80'
+              } flex flex-col items-center justify-center shrink-0`}
             >
-              {month}
-            </span>
-            <span className="text-base font-bold leading-tight">{dateNum}</span>
-            {isSatisfied && (
               <span
-                className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-emerald-400 text-slate-950 flex items-center justify-center"
-                title="Both ways covered"
+                className={`text-[10px] font-bold uppercase tracking-wider leading-none ${
+                  isSatisfied
+                    ? 'text-emerald-400'
+                    : isFirstUpcoming && !isCancelled
+                      ? 'text-blue-400'
+                      : 'text-slate-400'
+                }`}
               >
-                <Check className="w-2.5 h-2.5" strokeWidth={3.5} />
+                {month}
               </span>
-            )}
-          </div>
+              <span className="text-base font-extrabold leading-tight mt-0.5">{dateNum}</span>
+              {isSatisfied && (
+                <span
+                  className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-emerald-400 text-slate-950 flex items-center justify-center"
+                  title="Both ways covered"
+                >
+                  <Check className="w-2.5 h-2.5" strokeWidth={3.5} />
+                </span>
+              )}
+            </div>
 
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex flex-wrap items-center gap-2 min-w-0">
-                <span className="font-semibold text-sm">{fullDay}</span>
-                {timingLabel && (
-                  <span className="px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-600 text-white">
-                    {timingLabel}
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex flex-wrap items-center gap-2 min-w-0">
+                  <span className="font-bold text-base leading-tight text-slate-100">
+                    {fullDay}
                   </span>
-                )}
-                {isSatisfied && (
-                  <span className="text-xs font-medium text-emerald-400">All Set</span>
-                )}
+                  {timingLabel && !isCancelled && (
+                    <span className="px-2 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-blue-600 text-white">
+                      {timingLabel}
+                    </span>
+                  )}
+                  {isSatisfied && (
+                    <span className="text-xs font-semibold text-emerald-400">All Set</span>
+                  )}
+                </div>
+                <div className="sm:hidden shrink-0">{adminPracticeActions}</div>
               </div>
-              <div className="sm:hidden shrink-0">{adminPracticeActions}</div>
+              <div className="text-[11px] sm:text-xs text-slate-400 mt-0.5 whitespace-nowrap">
+                {practice.timeLabel}
+                {!isCancelled && ` • ${goingCount}/${players.length} going`}
+              </div>
             </div>
-            <div className="text-[11px] sm:text-xs text-slate-400 mt-0.5 whitespace-nowrap">
-              {practice.timeLabel} • {goingCount}/{players.length} going
-            </div>
-          </div>
           </div>
         </div>
 
         <div className="flex items-center justify-start sm:justify-end gap-2 shrink-0">
-          {myPlayer &&
+          {!isCancelled &&
+            myPlayer &&
             (isReadOnly ? (
               <span
-                className={`whitespace-nowrap px-2.5 py-1 rounded-full text-xs font-medium ${
+                className={`inline-flex items-center gap-1.5 whitespace-nowrap px-2.5 py-1 rounded-full text-xs font-semibold border ${
                   isOut
-                    ? 'bg-rose-500/15 text-rose-400'
-                    : 'bg-slate-800 text-slate-300'
+                    ? 'bg-rose-500/15 border-rose-500/30 text-rose-300'
+                    : 'bg-slate-800/80 border-slate-700/80 text-slate-300'
                 }`}
               >
+                <span
+                  className={`w-1.5 h-1.5 rounded-full ${
+                    isOut ? 'bg-rose-400' : 'bg-emerald-400'
+                  }`}
+                />
                 {shortNameOf(myPlayer)}: {isOut ? 'Out' : 'Going'}
               </span>
             ) : (
               <button
                 onClick={() => onToggleAttendance(practice.id, myPlayer.id)}
-                className={`whitespace-nowrap px-2.5 py-1 rounded-full text-xs font-medium transition ${
+                title="Tap to toggle Going / Out"
+                className={`inline-flex items-center gap-1.5 whitespace-nowrap px-3 py-1 rounded-full text-xs font-semibold border transition ${
                   isOut
-                    ? 'bg-rose-500/15 text-rose-400'
-                    : 'bg-slate-800 hover:bg-slate-700 text-slate-100'
+                    ? 'bg-rose-500/15 border-rose-500/30 hover:bg-rose-500/25 text-rose-300'
+                    : 'bg-slate-800/90 border-slate-700/80 hover:bg-slate-700 text-slate-100'
                 }`}
               >
+                <span
+                  className={`w-1.5 h-1.5 rounded-full ${
+                    isOut ? 'bg-rose-400' : 'bg-emerald-400'
+                  }`}
+                />
                 {shortNameOf(myPlayer)}: {isOut ? 'Out' : 'Going'}
               </button>
             ))}
-          {!isReadOnly && canDrive && !drivesBoth && (
+          {!isCancelled && !isReadOnly && canDrive && !drivesBoth && (
             <button
               onClick={() => onOpenDriveModal(practice.id, 'both')}
               className="hidden md:inline-flex px-3 py-1 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition"
@@ -337,9 +407,9 @@ export default function PracticeCard({
         </div>
       </div>
 
-      {practice.status === 'cancelled' && (
+      {isCancelled && (
         <div className="rounded-xl bg-rose-500/10 border border-rose-500/30 px-3 py-1.5 text-xs font-semibold text-rose-300">
-          Cancelled
+          Practice Cancelled
         </div>
       )}
 
@@ -433,7 +503,7 @@ export default function PracticeCard({
           <span>{practice.location}</span>
           <span className="text-slate-400 font-normal">↗</span>
         </a>
-        {driveFlagText && (
+        {!isCancelled && driveFlagText && (
           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-800 text-slate-100">
             {driveFlagText}
           </span>
@@ -506,22 +576,42 @@ export default function PracticeCard({
           </button>
         </form>
       ) : (
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-1.5">
           {!isReadOnly && onAddNote && (
             <button
               onClick={() => {
                 setNoteDraft('');
                 setEditingNote(true);
               }}
-              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-800/70 hover:bg-slate-800 text-slate-400 hover:text-slate-200 transition"
+              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-800/70 hover:bg-slate-800 text-slate-300 hover:text-slate-100 transition"
             >
               <MessageSquare className="w-3 h-3" />
               + Note
             </button>
           )}
+          {myCarSmsUrl && (
+            <a
+              href={myCarSmsUrl}
+              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-blue-500/15 hover:bg-blue-500/25 border border-blue-500/30 text-blue-300 transition"
+              title="Text parents in your car for this practice"
+            >
+              <MessageCircle className="w-3 h-3" />
+              Text My Car
+            </a>
+          )}
+          {carpoolSmsUrl && (
+            <a
+              href={carpoolSmsUrl}
+              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-800/70 hover:bg-slate-800 text-slate-300 hover:text-slate-100 transition"
+              title="Text all parents in the Melrose carpool"
+            >
+              <MessageCircle className="w-3 h-3" />
+              Text Carpool
+            </a>
+          )}
           <button
             onClick={handleShare}
-            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-800/70 hover:bg-slate-800 text-slate-400 hover:text-slate-200 transition"
+            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-800/70 hover:bg-slate-800 text-slate-300 hover:text-slate-100 transition"
             title="Share or copy carpool summary"
           >
             <Share2 className="w-3 h-3" />
@@ -530,42 +620,54 @@ export default function PracticeCard({
         </div>
       )}
 
-      {/* Mobile: Segmented To/From tabs */}
-      <div className="md:hidden space-y-2">
-        <div className="grid grid-cols-2 gap-1 p-1 rounded-full bg-slate-950 border border-slate-800">
-          <button
-            onClick={() => setActiveLeg('to')}
-            className={`flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold whitespace-nowrap transition ${
-              activeLeg === 'to'
-                ? 'bg-slate-800 text-slate-100 shadow-sm'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            <span className={`w-2 h-2 rounded-full shrink-0 ${TONE_DOT[toSum.tone]}`} /> → To Practice
-          </button>
-          <button
-            onClick={() => setActiveLeg('from')}
-            className={`flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold whitespace-nowrap transition ${
-              activeLeg === 'from'
-                ? 'bg-slate-800 text-slate-100 shadow-sm'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            <span className={`w-2 h-2 rounded-full shrink-0 ${TONE_DOT[fromSum.tone]}`} /> ← From Practice
-          </button>
-        </div>
-        {renderLegBody(activeLeg, false)}
-      </div>
+      {!isCancelled && (
+        <>
+          {/* Mobile: Segmented To/From tabs */}
+          <div className="md:hidden space-y-2">
+            <div className="grid grid-cols-2 gap-1 p-1 rounded-full bg-slate-950 border border-slate-800">
+              <button
+                onClick={() => setActiveLeg('to')}
+                className={`flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold whitespace-nowrap transition ${
+                  activeLeg === 'to'
+                    ? 'bg-slate-800 text-slate-100 shadow-sm'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                <span className={`w-2 h-2 rounded-full shrink-0 ${TONE_DOT[toSum.tone]}`} />
+                <span>→ To Practice</span>
+                <span className="text-[10px] font-normal text-slate-400 tabular-nums">
+                  {toSeatsCount}/{goingCount}
+                </span>
+              </button>
+              <button
+                onClick={() => setActiveLeg('from')}
+                className={`flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold whitespace-nowrap transition ${
+                  activeLeg === 'from'
+                    ? 'bg-slate-800 text-slate-100 shadow-sm'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                <span className={`w-2 h-2 rounded-full shrink-0 ${TONE_DOT[fromSum.tone]}`} />
+                <span>← From Practice</span>
+                <span className="text-[10px] font-normal text-slate-400 tabular-nums">
+                  {fromSeatsCount}/{goingCount}
+                </span>
+              </button>
+            </div>
+            {renderLegBody(activeLeg, false)}
+          </div>
 
-      {/* Desktop: Side-by-side To/From */}
-      <div className="hidden md:grid md:grid-cols-2 gap-4 pt-1">
-        <div className="rounded-xl bg-slate-950/55 border border-slate-800/80 p-3.5">
-          {renderLegBody('to', true)}
-        </div>
-        <div className="rounded-xl bg-slate-950/55 border border-slate-800/80 p-3.5">
-          {renderLegBody('from', true)}
-        </div>
-      </div>
+          {/* Desktop: Side-by-side To/From */}
+          <div className="hidden md:grid md:grid-cols-2 gap-4 pt-1">
+            <div className="rounded-xl bg-slate-950/55 border border-slate-800/80 p-3.5">
+              {renderLegBody('to', true)}
+            </div>
+            <div className="rounded-xl bg-slate-950/55 border border-slate-800/80 p-3.5">
+              {renderLegBody('from', true)}
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

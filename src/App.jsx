@@ -116,6 +116,11 @@ export default function App() {
     return players.filter((pl) => melrosePlayerIds.has(pl.id));
   }, [players, parents]);
 
+  const carpoolParents = useMemo(() => {
+    const ids = new Set(carpoolPlayers.map((pl) => pl.id));
+    return parents.filter((p) => ids.has(p.playerId));
+  }, [carpoolPlayers, parents]);
+
   const needsDriverCount = useMemo(
     () =>
       practices.filter((p) => {
@@ -138,8 +143,9 @@ export default function App() {
     if (tab === 'my-drives') {
       list = list.filter(
         (p) =>
-          (p.legs?.to || []).some((c) => c.driverParentId === myParentId) ||
-          (p.legs?.from || []).some((c) => c.driverParentId === myParentId)
+          p.status !== 'cancelled' &&
+          ((p.legs?.to || []).some((c) => c.driverParentId === myParentId) ||
+            (p.legs?.from || []).some((c) => c.driverParentId === myParentId))
       );
     } else if (tab === 'all' && onlyNeedsDriver) {
       list = list.filter((p) => {
@@ -159,7 +165,8 @@ export default function App() {
   );
 
   const firstUpcomingId = useMemo(
-    () => practices.find((p) => p.isoDate >= todayIso)?.id || null,
+    () =>
+      practices.find((p) => p.isoDate >= todayIso && p.status !== 'cancelled')?.id || null,
     [practices, todayIso]
   );
 
@@ -400,10 +407,13 @@ export default function App() {
         <div className="max-w-4xl mx-auto px-3 sm:px-4 flex items-center justify-between gap-3">
           {(() => {
             const myParentId = currentParent?.id || '';
-            const upcomingCount = practices.filter((p) => p.isoDate >= todayIso).length;
+            const upcomingCount = practices.filter(
+              (p) => p.isoDate >= todayIso && p.status !== 'cancelled'
+            ).length;
             const myDrivesCount = practices.filter(
               (p) =>
                 p.isoDate >= todayIso &&
+                p.status !== 'cancelled' &&
                 ((p.legs?.to || []).some((c) => c.driverParentId === myParentId) ||
                   (p.legs?.from || []).some((c) => c.driverParentId === myParentId))
             ).length;
@@ -599,6 +609,8 @@ export default function App() {
                   isFirstUpcoming={practice.id === firstUpcomingId}
                   isPast={practice.isoDate < todayIso}
                   players={carpoolPlayers}
+                  carpoolParents={carpoolParents}
+                  shortPlayerNames={shortPlayerNames}
                   currentParent={currentParent}
                   isAdmin={isAdmin}
                   onToggleAttendance={(practiceId, playerId) =>
@@ -695,11 +707,15 @@ export default function App() {
                 );
               } else {
                 const targets = [activeDrivePractice, ...upcomingSameWeekday];
-                runAction(async () => {
-                  for (const p of targets) {
-                    await offerToDrive(p.id, direction, seats, currentParent);
-                  }
-                }, `Added to ${targets.length} practices`);
+                runAction(
+                  () =>
+                    Promise.all(
+                      targets.map((p) =>
+                        offerToDrive(p.id, direction, seats, currentParent)
+                      )
+                    ),
+                  `Added to ${targets.length} practices`
+                );
               }
             }}
           />

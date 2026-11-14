@@ -6,6 +6,7 @@ export default function CarRow({
   leg,
   car,
   players,
+  shortPlayerNames,
   currentParent,
   isAdmin,
   isReadOnly = false,
@@ -58,7 +59,7 @@ export default function CarRow({
     !myKidInOther &&
     (otherCar.riderIds || []).length < (otherCar.seatsTotal || 0);
 
-  const shortNames = getShortPlayerNames(players);
+  const shortNames = shortPlayerNames || getShortPlayerNames(players);
   const getPlayerName = (pid) => shortNames[pid] || 'Player';
   const otherRiders = riderIds.filter((id) => id !== myPlayerId).map(getPlayerName);
 

@@ -106,89 +106,114 @@ export default function TournamentsView({
         </div>
       ) : (
         <div className="space-y-3">
-          {tournaments.map((t) => {
-            const hasLocation = t.location && t.location.toUpperCase() !== 'TBD';
-            const [monthPart, ...restParts] = (t.dateLabel || '').split(' ');
-            const dayPart = restParts.join(' ');
+          {(() => {
+            const now = new Date();
+            const todayIso = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+            const nextId = tournaments.find((t) => (t.sortDate || '') >= todayIso)?.id || null;
 
-            return (
-              <div
-                key={t.id}
-                className="rounded-2xl bg-slate-900 border border-slate-800 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
-              >
-                <div className="flex items-center gap-3.5 min-w-0 flex-1">
-                  <div className="w-16 rounded-xl bg-slate-950 border border-slate-800 py-2 px-1.5 text-center shrink-0">
-                    <div className="text-[10px] font-bold uppercase tracking-wider text-blue-400">
-                      {monthPart}
-                    </div>
-                    <div className="text-sm font-extrabold text-slate-100 mt-0.5 leading-tight">
-                      {dayPart || 'TBD'}
-                    </div>
-                  </div>
+            return tournaments.map((t) => {
+              const hasLocation = t.location && t.location.toUpperCase() !== 'TBD';
+              const [monthPart, ...restParts] = (t.dateLabel || '').split(' ');
+              const dayPart = restParts.join(' ');
+              const isNext = t.id === nextId;
+              const isPast = Boolean(t.sortDate && t.sortDate < todayIso);
 
-                  <div className="min-w-0 flex-1">
-                    <h3 className="text-sm sm:text-base font-bold text-slate-100 leading-snug">
-                      {t.name}
-                    </h3>
-                    {t.location && (
-                      <div className="mt-1">
-                        {hasLocation ? (
-                          <a
-                            href={getMapUrl(t.location)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 text-xs font-semibold text-blue-400 hover:underline"
-                          >
-                            <MapPin className="w-3.5 h-3.5 shrink-0" />
-                            <span>{t.location}</span>
-                            <span className="text-slate-400 font-normal">↗</span>
-                          </a>
-                        ) : (
-                          <span className="text-xs text-slate-400">{t.location}</span>
+              return (
+                <div
+                  key={t.id}
+                  className={`rounded-2xl bg-slate-900 border ${
+                    isNext ? 'border-blue-500/45' : 'border-slate-800'
+                  } ${isPast ? 'opacity-65' : ''} p-3.5 sm:p-4 flex items-center justify-between gap-3`}
+                >
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <div
+                      className={`w-14 sm:w-16 rounded-xl ${
+                        isNext
+                          ? 'bg-blue-500/15 border border-blue-500/30'
+                          : 'bg-slate-950 border border-slate-800'
+                      } py-2 px-1.5 text-center shrink-0`}
+                    >
+                      <div className="text-[10px] font-bold uppercase tracking-wider text-blue-400">
+                        {monthPart}
+                      </div>
+                      <div className="text-sm font-extrabold text-slate-100 mt-0.5 leading-tight whitespace-nowrap">
+                        {dayPart || 'TBD'}
+                      </div>
+                    </div>
+
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h3 className="text-sm sm:text-base font-bold text-slate-100 leading-snug">
+                          {t.name}
+                        </h3>
+                        {isNext && (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-blue-600 text-white shrink-0">
+                            Next
+                          </span>
                         )}
                       </div>
-                    )}
-                    {t.notes && (
-                      <p className="text-xs text-slate-400 mt-1 break-words">{t.notes}</p>
+                      {t.location && (
+                        <div className="mt-0.5">
+                          {hasLocation ? (
+                            <a
+                              href={getMapUrl(t.location)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 text-xs font-semibold text-blue-400 hover:underline"
+                            >
+                              <MapPin className="w-3.5 h-3.5 shrink-0" />
+                              <span>{t.location}</span>
+                              <span className="text-slate-400 font-normal">↗</span>
+                            </a>
+                          ) : (
+                            <span className="text-xs text-slate-400">{t.location}</span>
+                          )}
+                        </div>
+                      )}
+                      {t.notes && (
+                        <p className="text-xs text-slate-400 mt-1 break-words">{t.notes}</p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button
+                      onClick={() => exportTournamentIcs(t)}
+                      className="p-2 rounded-full text-slate-400 hover:text-blue-400 hover:bg-slate-800 transition"
+                      title="Add to calendar (.ics)"
+                      aria-label="Add to calendar"
+                    >
+                      <CalendarPlus className="w-4 h-4" />
+                    </button>
+                    {isAdmin && (
+                      <>
+                        <button
+                          onClick={() => openEdit(t)}
+                          className="p-2 rounded-full text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition"
+                          title="Edit tournament"
+                          aria-label="Edit tournament"
+                        >
+                          <Pencil className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={() => {
+                            if (window.confirm(`Remove "${t.name}"?`)) {
+                              onDeleteTournament(t.id);
+                            }
+                          }}
+                          className="p-2 rounded-full text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition"
+                          title="Delete tournament"
+                          aria-label="Delete tournament"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </>
                     )}
                   </div>
                 </div>
-
-                <div className="flex items-center justify-between sm:justify-end gap-1.5 pt-2.5 border-t border-slate-800/70 sm:border-0 sm:pt-0 shrink-0">
-                  <button
-                    onClick={() => exportTournamentIcs(t)}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:p-2 rounded-full text-xs font-semibold bg-slate-800/70 sm:bg-transparent text-slate-300 sm:text-slate-400 hover:text-blue-400 hover:bg-slate-800 transition"
-                    title="Add to calendar (.ics)"
-                  >
-                    <CalendarPlus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                    <span className="sm:hidden">Add to Calendar</span>
-                  </button>
-                  {isAdmin && (
-                    <div className="flex items-center gap-1">
-                      <button
-                        onClick={() => openEdit(t)}
-                        className="p-2 rounded-full text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition"
-                        title="Edit tournament"
-                      >
-                        <Pencil className="w-3.5 h-3.5" />
-                      </button>
-                      <button
-                        onClick={() => {
-                          if (window.confirm(`Remove "${t.name}"?`)) {
-                            onDeleteTournament(t.id);
-                          }
-                        }}
-                        className="p-2 rounded-full text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition"
-                        title="Delete tournament"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            );
-          })}
+              );
+            });
+          })()}
         </div>
       )}
 

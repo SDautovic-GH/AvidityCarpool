@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Car, KeyRound, MapPin, Pencil, Phone, Plus, Shield, Trash2, Upload, UserPlus, Users, X } from 'lucide-react';
+import { Car, KeyRound, MapPin, MessageCircle, Pencil, Phone, Plus, Shield, Trash2, Upload, UserPlus, Users, X } from 'lucide-react';
 import { getAvatarColor, getInitials } from '../utils/schedule';
-import { getMapUrl } from '../utils/maps';
+import { buildSmsUrl, getMapUrl } from '../utils/maps';
 
 const EMPTY_FORM = {
   existingParentId: null,
@@ -179,6 +179,18 @@ export default function AdminRoster({
     (p) => !players.some((pl) => pl.id === p.playerId)
   );
 
+  const melrosePlayerIds = new Set(
+    parents
+      .filter((p) => (p.address || '').toLowerCase().includes('melrose'))
+      .map((p) => p.playerId)
+      .filter(Boolean)
+  );
+  const myParentId = currentParent?.id || '';
+  const carpoolPhones = parents
+    .filter((p) => p.id !== myParentId && melrosePlayerIds.has(p.playerId) && p.phone)
+    .map((p) => p.phone);
+  const carpoolSmsUrl = buildSmsUrl(carpoolPhones);
+
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-slate-900 border border-slate-800 p-4">
@@ -189,11 +201,21 @@ export default function AdminRoster({
           </h2>
           <p className="text-xs text-slate-400 mt-0.5">
             {players.length} {players.length === 1 ? 'player' : 'players'} · {parents.length}{' '}
-            {parents.length === 1 ? 'parent' : 'parents'} · Tap any phone number to call or address
-            for directions.
+            {parents.length === 1 ? 'parent' : 'parents'} · Tap phone to call/text or address for
+            directions.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          {carpoolSmsUrl && (
+            <a
+              href={carpoolSmsUrl}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
+              title="Text all Melrose carpool parents"
+            >
+              <MessageCircle className="w-3.5 h-3.5 text-blue-400" />
+              Text Carpool
+            </a>
+          )}
           {currentParent && !isAdmin && (
             <button
               onClick={openEditSelf}
@@ -305,6 +327,11 @@ export default function AdminRoster({
                             #{player.jerseyNumber}
                           </span>
                         )}
+                        {melrosePlayerIds.has(player.id) && (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-500/15 text-blue-300 border border-blue-500/30 shrink-0">
+                            Carpool
+                          </span>
+                        )}
                         {isAdmin && (
                           <button
                             onClick={() => {
@@ -379,13 +406,24 @@ export default function AdminRoster({
                             {(parent.phone || parent.address) && (
                               <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-400 mt-1">
                                 {parent.phone && (
-                                  <a
-                                    href={`tel:${parent.phone.replace(/[^\d+]/g, '')}`}
-                                    className="inline-flex items-center gap-1 text-blue-400 hover:text-blue-300"
-                                  >
-                                    <Phone className="w-3 h-3" />
-                                    {parent.phone}
-                                  </a>
+                                  <span className="inline-flex items-center gap-2">
+                                    <a
+                                      href={`tel:${parent.phone.replace(/[^\d+]/g, '')}`}
+                                      className="inline-flex items-center gap-1 text-blue-400 hover:text-blue-300"
+                                      title="Call"
+                                    >
+                                      <Phone className="w-3 h-3" />
+                                      {parent.phone}
+                                    </a>
+                                    <a
+                                      href={buildSmsUrl(parent.phone)}
+                                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
+                                      title="Send text message"
+                                    >
+                                      <MessageCircle className="w-2.5 h-2.5 text-blue-400" />
+                                      Text
+                                    </a>
+                                  </span>
                                 )}
                                 {parent.address && (
                                   <a

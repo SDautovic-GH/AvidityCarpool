@@ -97,8 +97,10 @@ function downloadIcs(filename, events) {
 
 export function exportMyDrivesIcs(practices, parentId, players) {
   const playerMap = getShortPlayerNames(players);
+  const validPlayerIds = new Set(players.map((pl) => pl.id));
   const events = practices
     .map((p) => {
+      if (p.status === 'cancelled') return null;
       const toCar = (p.legs?.to || []).find((c) => c.driverParentId === parentId);
       const fromCar = (p.legs?.from || []).find((c) => c.driverParentId === parentId);
       if (!toCar && !fromCar) return null;
@@ -107,11 +109,15 @@ export function exportMyDrivesIcs(practices, parentId, players) {
       const { start, end } = parseTimeRange(p.isoDate, p.timeLabel);
       const descParts = [];
       if (toCar) {
-        const riders = (toCar.riderIds || []).map((id) => playerMap[id] || 'Rider');
+        const riders = (toCar.riderIds || [])
+          .filter((id) => validPlayerIds.has(id))
+          .map((id) => playerMap[id] || 'Rider');
         descParts.push(`To Practice: ${riders.length ? riders.join(', ') : 'No riders yet'}`);
       }
       if (fromCar) {
-        const riders = (fromCar.riderIds || []).map((id) => playerMap[id] || 'Rider');
+        const riders = (fromCar.riderIds || [])
+          .filter((id) => validPlayerIds.has(id))
+          .map((id) => playerMap[id] || 'Rider');
         descParts.push(`From Practice: ${riders.length ? riders.join(', ') : 'No riders yet'}`);
       }
       getPracticeNotes(p).forEach((n) => {
@@ -167,6 +173,7 @@ export function exportTournamentIcs(tournament) {
 
 export function formatPracticeShareText(practice, players) {
   const playerMap = getShortPlayerNames(players);
+  const validPlayerIds = new Set(players.map((pl) => pl.id));
   const { month, dateNum, fullDay } = formatPracticeDate(practice.isoDate);
   const goingCount = getGoingPlayers(practice, players).length;
 
@@ -178,7 +185,9 @@ export function formatPracticeShareText(practice, players) {
     }
     const carText = cars
       .map((c) => {
-        const riders = (c.riderIds || []).map((id) => playerMap[id] || 'Rider');
+        const riders = (c.riderIds || [])
+          .filter((id) => validPlayerIds.has(id))
+          .map((id) => playerMap[id] || 'Rider');
         const flag = c.status === 'needs_sub' ? ' [NEEDS SUB]' : '';
         return `${c.driverName}${flag} (${riders.length ? riders.join(', ') : 'open'})`;
       })

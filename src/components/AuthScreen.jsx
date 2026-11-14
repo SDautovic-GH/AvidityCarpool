@@ -57,15 +57,24 @@ export default function AuthScreen() {
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-sm rounded-2xl bg-slate-900 border border-slate-800 p-6 space-y-5 shadow-2xl">
-        <div>
-          <h1 className="text-xl font-bold tracking-tight">Avidity Carpool</h1>
-          <p className="text-xs text-slate-400 mt-0.5">
-            {mode === 'signin'
-              ? 'Sign in with your team email'
-              : mode === 'signup'
-                ? 'First time? Set a password for your invited email'
-                : 'Send yourself a password reset link'}
-          </p>
+        <div className="flex items-center gap-3">
+          <img
+            src="/volleyball.svg?v=4"
+            alt="Avidity Carpool"
+            className="w-10 h-10 shrink-0"
+          />
+          <div>
+            <h1 className="text-xl font-extrabold tracking-tight text-slate-100 leading-tight">
+              Avidity Carpool
+            </h1>
+            <p className="text-xs text-slate-400 mt-0.5">
+              {mode === 'signin'
+                ? 'Sign in with your team email'
+                : mode === 'signup'
+                  ? 'First time? Set a password for your invited email'
+                  : 'Send yourself a password reset link'}
+            </p>
+          </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-3">
