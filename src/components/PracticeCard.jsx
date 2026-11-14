@@ -170,6 +170,63 @@ export default function PracticeCard({
           </div>
         )}
 
+        {(unassigned.length > 0 || !isDesktop || cars.length > 0) && (
+          <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-800/80">
+            <div className="text-sm flex flex-wrap items-center gap-1.5">
+              {unassigned.length > 0 ? (
+                <>
+                  <span className="text-amber-400 font-medium">Still need a ride:</span>
+                  {isAdmin ? (
+                    unassigned.map((pl) => (
+                      <button
+                        key={pl.id}
+                        onClick={() => onOpenAssignModal(practice.id, leg, pl.id)}
+                        className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-800 hover:bg-blue-600 text-slate-100 transition"
+                      >
+                        {shortNameOf(pl)} +
+                      </button>
+                    ))
+                  ) : (
+                    <span className="font-medium text-slate-200">
+                      {unassigned.map((pl, idx) => (
+                        <React.Fragment key={pl.id}>
+                          {idx > 0 && ', '}
+                          {pl.id === myPlayerId ? (
+                            <strong>{shortNameOf(pl)}</strong>
+                          ) : (
+                            shortNameOf(pl)
+                          )}
+                        </React.Fragment>
+                      ))}
+                    </span>
+                  )}
+                </>
+              ) : (
+                <span className="text-emerald-400 font-medium">Everyone going has a ride</span>
+              )}
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0">
+              {!isDesktop && needsMoreDrivers && (
+                <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-400">
+                  <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
+                  Need a driver
+                </span>
+              )}
+              {!isReadOnly && !isDesktop && canDrive && !isDrivingThisLeg && needsMoreDrivers && (
+                <button
+                  onClick={() =>
+                    onOpenDriveModal(practice.id, !drivesTo && !drivesFrom ? 'both' : leg)
+                  }
+                  className="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition shrink-0"
+                >
+                  + I can drive
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
         <div className="divide-y divide-slate-800/80">
           {cars.length === 0 ? (
             <div className="py-4 text-center text-xs text-slate-400">
@@ -197,61 +254,6 @@ export default function PracticeCard({
               />
             ))
           )}
-        </div>
-
-        <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-800/80">
-          <div className="text-sm flex flex-wrap items-center gap-1.5">
-            {unassigned.length > 0 ? (
-              <>
-                <span className="text-amber-400 font-medium">Still need a ride:</span>
-                {isAdmin ? (
-                  unassigned.map((pl) => (
-                    <button
-                      key={pl.id}
-                      onClick={() => onOpenAssignModal(practice.id, leg, pl.id)}
-                      className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-800 hover:bg-blue-600 text-slate-100 transition"
-                    >
-                      {shortNameOf(pl)} +
-                    </button>
-                  ))
-                ) : (
-                  <span className="font-medium text-slate-200">
-                    {unassigned.map((pl, idx) => (
-                      <React.Fragment key={pl.id}>
-                        {idx > 0 && ', '}
-                        {pl.id === myPlayerId ? (
-                          <strong>{shortNameOf(pl)}</strong>
-                        ) : (
-                          shortNameOf(pl)
-                        )}
-                      </React.Fragment>
-                    ))}
-                  </span>
-                )}
-              </>
-            ) : (
-              <span className="text-emerald-400 font-medium">Everyone going has a ride</span>
-            )}
-          </div>
-
-          <div className="flex items-center gap-2 shrink-0">
-            {!isDesktop && needsMoreDrivers && (
-              <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-400">
-                <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
-                Need a driver
-              </span>
-            )}
-            {!isReadOnly && !isDesktop && canDrive && !isDrivingThisLeg && needsMoreDrivers && (
-              <button
-                onClick={() =>
-                  onOpenDriveModal(practice.id, !drivesTo && !drivesFrom ? 'both' : leg)
-                }
-                className="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition shrink-0"
-              >
-                + I can drive
-              </button>
-            )}
-          </div>
         </div>
       </div>
     );
@@ -542,85 +544,6 @@ export default function PracticeCard({
         </div>
       )}
 
-      {editingNote ? (
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (!noteDraft.trim()) return;
-            onAddNote?.(practice.id, noteDraft);
-            setNoteDraft('');
-            setEditingNote(false);
-          }}
-          className="flex flex-wrap items-center gap-2"
-        >
-          <input
-            type="text"
-            maxLength={500}
-            value={noteDraft}
-            onChange={(e) => setNoteDraft(e.target.value)}
-            placeholder="Add a note for this practice (e.g. pickup spot, early dismissal)..."
-            className="w-full sm:w-auto sm:flex-1 min-w-0 px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-700 text-xs text-slate-100 focus:outline-none focus:border-blue-500"
-            autoFocus
-          />
-          <button
-            type="submit"
-            className="px-3 py-1.5 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition"
-          >
-            Add
-          </button>
-          <button
-            type="button"
-            onClick={() => setEditingNote(false)}
-            className="px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 transition"
-          >
-            Cancel
-          </button>
-        </form>
-      ) : (
-        <div className="flex flex-wrap items-center gap-1.5">
-          {!isReadOnly && onAddNote && (
-            <button
-              onClick={() => {
-                setNoteDraft('');
-                setEditingNote(true);
-              }}
-              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-800/70 hover:bg-slate-800 text-slate-300 hover:text-slate-100 transition"
-            >
-              <MessageSquare className="w-3 h-3" />
-              + Note
-            </button>
-          )}
-          {myCarSmsUrl && (
-            <a
-              href={myCarSmsUrl}
-              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-800/70 hover:bg-slate-800 text-slate-300 hover:text-slate-100 transition"
-              title="Text parents in your car for this practice"
-            >
-              <MessageCircle className="w-3 h-3" />
-              Text My Car
-            </a>
-          )}
-          {carpoolSmsUrl && (
-            <a
-              href={carpoolSmsUrl}
-              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-800/70 hover:bg-slate-800 text-slate-300 hover:text-slate-100 transition"
-              title="Text all parents in the Melrose carpool"
-            >
-              <MessageCircle className="w-3 h-3" />
-              Text Carpool
-            </a>
-          )}
-          <button
-            onClick={handleShare}
-            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-800/70 hover:bg-slate-800 text-slate-300 hover:text-slate-100 transition"
-            title="Share or copy carpool summary"
-          >
-            <Share2 className="w-3 h-3" />
-            Share
-          </button>
-        </div>
-      )}
-
       {!isCancelled && (
         <>
           {/* Mobile: Segmented To/From tabs */}
@@ -662,6 +585,85 @@ export default function PracticeCard({
             </div>
           </div>
         </>
+      )}
+
+      {editingNote ? (
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!noteDraft.trim()) return;
+            onAddNote?.(practice.id, noteDraft);
+            setNoteDraft('');
+            setEditingNote(false);
+          }}
+          className={`flex flex-wrap items-center gap-2 ${!isCancelled ? 'pt-2.5 border-t border-slate-800/60' : ''}`}
+        >
+          <input
+            type="text"
+            maxLength={500}
+            value={noteDraft}
+            onChange={(e) => setNoteDraft(e.target.value)}
+            placeholder="Add a note for this practice (e.g. pickup spot, early dismissal)..."
+            className="w-full sm:w-auto sm:flex-1 min-w-0 px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-700 text-xs text-slate-100 focus:outline-none focus:border-blue-500"
+            autoFocus
+          />
+          <button
+            type="submit"
+            className="px-3 py-1.5 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition"
+          >
+            Add
+          </button>
+          <button
+            type="button"
+            onClick={() => setEditingNote(false)}
+            className="px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 transition"
+          >
+            Cancel
+          </button>
+        </form>
+      ) : (
+        <div className={`flex flex-wrap items-center gap-1.5 ${!isCancelled ? 'pt-2.5 border-t border-slate-800/60' : ''}`}>
+          {!isReadOnly && onAddNote && (
+            <button
+              onClick={() => {
+                setNoteDraft('');
+                setEditingNote(true);
+              }}
+              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-800/70 hover:bg-slate-800 text-slate-300 hover:text-slate-100 transition"
+            >
+              <MessageSquare className="w-3 h-3" />
+              + Note
+            </button>
+          )}
+          {myCarSmsUrl && (
+            <a
+              href={myCarSmsUrl}
+              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-800/70 hover:bg-slate-800 text-slate-300 hover:text-slate-100 transition"
+              title="Text parents in your car for this practice"
+            >
+              <MessageCircle className="w-3 h-3" />
+              Text My Car
+            </a>
+          )}
+          {carpoolSmsUrl && (
+            <a
+              href={carpoolSmsUrl}
+              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-800/70 hover:bg-slate-800 text-slate-300 hover:text-slate-100 transition"
+              title="Text all parents in the Melrose carpool"
+            >
+              <MessageCircle className="w-3 h-3" />
+              Text Carpool
+            </a>
+          )}
+          <button
+            onClick={handleShare}
+            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-800/70 hover:bg-slate-800 text-slate-300 hover:text-slate-100 transition"
+            title="Share or copy carpool summary"
+          >
+            <Share2 className="w-3 h-3" />
+            Share
+          </button>
+        </div>
       )}
     </div>
   );
