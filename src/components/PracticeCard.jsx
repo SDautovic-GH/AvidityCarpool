@@ -98,33 +98,35 @@ export default function PracticeCard({
   const toRide = getMyLegRide('to', drivesTo);
   const fromRide = getMyLegRide('from', drivesFrom);
 
+  const myShortName = myPlayer ? shortNameOf(myPlayer) : '';
+
   const personalRideBadge = (() => {
     if (drivesBoth) return { text: "You're driving Both Ways", warning: false };
     if (drivesTo) {
       if (fromRide?.type === 'riding')
-        return { text: `You're driving To · From: ${fromRide.label}`, warning: false };
+        return { text: `You're driving To · ${myShortName}: From ${fromRide.label}`, warning: false };
       if (fromRide?.type === 'needs_ride')
-        return { text: "You're driving To · From: Needs ride", warning: true };
+        return { text: `You're driving To · ${myShortName} needs ride From`, warning: true };
       return { text: "You're driving To Practice", warning: false };
     }
     if (drivesFrom) {
       if (toRide?.type === 'riding')
-        return { text: `To: ${toRide.label} · You're driving From`, warning: false };
+        return { text: `${myShortName}: To ${toRide.label} · You're driving From`, warning: false };
       if (toRide?.type === 'needs_ride')
-        return { text: "To: Needs ride · You're driving From", warning: true };
+        return { text: `${myShortName} needs ride To · You're driving From`, warning: true };
       return { text: "You're driving From Practice", warning: false };
     }
     if (!myPlayerId || isOut) return null;
     if (toRide?.type === 'riding' && fromRide?.type === 'riding') {
       return toRide.driverKey === fromRide.driverKey
-        ? { text: `Riding with ${toRide.label}`, warning: false }
-        : { text: `To: ${toRide.label} · From: ${fromRide.label}`, warning: false };
+        ? { text: `${myShortName}: Riding with ${toRide.label}`, warning: false }
+        : { text: `${myShortName}: To ${toRide.label} · From ${fromRide.label}`, warning: false };
     }
     if (toRide?.type === 'riding')
-      return { text: `To: ${toRide.label} · From: Needs ride`, warning: true };
+      return { text: `${myShortName}: To ${toRide.label} · Needs ride From`, warning: true };
     if (fromRide?.type === 'riding')
-      return { text: `To: Needs ride · From: ${fromRide.label}`, warning: true };
-    return { text: 'Needs a ride', warning: true };
+      return { text: `${myShortName}: Needs ride To · From ${fromRide.label}`, warning: true };
+    return { text: `${myShortName} needs a ride`, warning: true };
   })();
 
   const carpoolPlayerIdSet = new Set(players.map((pl) => pl.id));
