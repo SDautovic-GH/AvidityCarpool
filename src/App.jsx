@@ -1,5 +1,5 @@
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { Calendar, CalendarPlus, Car, LogOut, MoreHorizontal, Plus, Trophy, Users } from 'lucide-react';
+import { CalendarPlus, LogOut, MoreHorizontal, Plus } from 'lucide-react';
 import {
   auth,
   isFirebaseConfigured,
@@ -58,7 +58,7 @@ export default function App() {
     updateIndicator();
     window.addEventListener('resize', updateIndicator);
     return () => window.removeEventListener('resize', updateIndicator);
-  }, [tab, user]);
+  }, [tab, user, practices.length, tournaments.length, loading]);
   const [showPast, setShowPast] = useState(false);
   const [driveModal, setDriveModal] = useState(null); // { practiceId, defaultDirection }
   const [assignModal, setAssignModal] = useState(null); // { practiceId, leg, playerId }
@@ -414,42 +414,60 @@ export default function App() {
           </div>
         </div>
 
-        <div className="max-w-4xl mx-auto px-3 sm:px-4 pb-2.5 sm:pb-3 flex items-center justify-between gap-2 flex-wrap">
+        <div className="max-w-4xl mx-auto px-3 sm:px-4 flex items-center justify-between gap-3">
           {(() => {
+            const myParentId = currentParent?.id || '';
+            const upcomingCount = practices.filter((p) => p.isoDate >= todayIso).length;
+            const myDrivesCount = practices.filter(
+              (p) =>
+                p.isoDate >= todayIso &&
+                ((p.legs?.to || []).some((c) => c.driverParentId === myParentId) ||
+                  (p.legs?.from || []).some((c) => c.driverParentId === myParentId))
+            ).length;
             const tabs = [
-              { id: 'all', label: 'Practices', icon: Calendar },
-              { id: 'my-drives', label: 'My Drives', icon: Car },
-              { id: 'tournaments', label: 'Events', icon: Trophy },
-              { id: 'roster', label: 'Team', icon: Users },
+              { id: 'all', label: 'Practices', count: upcomingCount },
+              { id: 'my-drives', label: 'My Drives', count: myDrivesCount },
+              { id: 'tournaments', label: 'Events', count: tournaments.length },
+              { id: 'roster', label: 'Team', count: 0 },
             ];
             return (
-              <div className="w-full sm:w-auto">
-                <div className="relative w-full sm:w-auto flex sm:inline-flex items-center justify-between sm:justify-start gap-0 sm:gap-1 px-1.5 py-1 sm:p-1 rounded-full bg-slate-900 border border-slate-800">
-                  <div
-                    aria-hidden="true"
-                    className="absolute top-1 bottom-1 left-0 rounded-full bg-blue-600 transition-all duration-200 ease-out"
-                    style={{
-                      transform: `translateX(${indicatorStyle.left}px)`,
-                      width: `${indicatorStyle.width}px`,
-                      opacity: indicatorStyle.ready ? 1 : 0,
+              <div className="relative flex-1 sm:flex-none flex items-center justify-between sm:justify-start sm:gap-6">
+                <div
+                  aria-hidden="true"
+                  className="absolute bottom-0 left-0 h-[2.5px] rounded-full bg-blue-500 transition-all duration-200 ease-out"
+                  style={{
+                    transform: `translateX(${indicatorStyle.left}px)`,
+                    width: `${indicatorStyle.width}px`,
+                    opacity: indicatorStyle.ready ? 1 : 0,
+                  }}
+                />
+                {tabs.map(({ id, label, count }) => (
+                  <button
+                    key={id}
+                    ref={(el) => {
+                      tabRefs.current[id] = el;
                     }}
-                  />
-                  {tabs.map(({ id, label, icon: Icon }) => (
-                    <button
-                      key={id}
-                      ref={(el) => {
-                        tabRefs.current[id] = el;
-                      }}
-                      onClick={() => setTab(id)}
-                      className={`relative z-10 inline-flex items-center justify-center gap-1 sm:gap-1.5 px-1.5 sm:px-4 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold whitespace-nowrap shrink-0 transition-colors ${
-                        tab === id ? 'text-white' : 'text-slate-400 hover:text-slate-200'
-                      }`}
-                    >
-                      <Icon className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
-                      <span>{label}</span>
-                    </button>
-                  ))}
-                </div>
+                    onClick={() => setTab(id)}
+                    className={`relative inline-flex items-center gap-1.5 py-2.5 text-[13px] sm:text-sm whitespace-nowrap shrink-0 transition-colors ${
+                      tab === id
+                        ? 'text-white font-bold'
+                        : 'text-slate-400 hover:text-slate-200 font-semibold'
+                    }`}
+                  >
+                    <span>{label}</span>
+                    {count > 0 && (
+                      <span
+                        className={`px-1.5 py-0.5 rounded-full text-[11px] font-bold leading-none tabular-nums ${
+                          tab === id
+                            ? 'bg-slate-800 text-slate-100'
+                            : 'bg-slate-900 text-slate-400'
+                        }`}
+                      >
+                        {count}
+                      </span>
+                    )}
+                  </button>
+                ))}
               </div>
             );
           })()}
@@ -457,9 +475,9 @@ export default function App() {
           {tab !== 'roster' && tab !== 'tournaments' && pastCount > 0 && (
             <button
               onClick={() => setShowPast((v) => !v)}
-              className="px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 transition"
+              className="mb-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 transition shrink-0"
             >
-              {showPast ? 'Hide past practices' : `Show past (${pastCount})`}
+              {showPast ? 'Hide past' : `Past (${pastCount})`}
             </button>
           )}
         </div>
