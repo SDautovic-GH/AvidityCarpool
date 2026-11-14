@@ -507,13 +507,14 @@ export function useCarpoolData(user) {
     }
   }
 
-  async function saveTournament({ existingId, name, dateLabel, sortDate, location, notes = '' }) {
+  async function saveTournament({ existingId, name, dateLabel, sortDate, location, address = '', notes = '' }) {
     if (!activeSeasonId) return;
     const payload = {
       name: name.trim(),
       dateLabel: dateLabel.trim(),
       sortDate: sortDate.trim(),
       location: location.trim(),
+      address: address.trim(),
       notes: notes.trim(),
     };
     if (existingId) {

@@ -10,6 +10,7 @@ const EMPTY_FORM = {
   dateLabel: '',
   sortDate: '',
   location: '',
+  address: '',
   notes: '',
 };
 
@@ -37,6 +38,7 @@ export default function TournamentsView({
       dateLabel: t.dateLabel || '',
       sortDate: t.sortDate || '',
       location: t.location || '',
+      address: t.address || '',
       notes: t.notes || '',
     });
     setFormOpen(true);
@@ -194,13 +196,24 @@ export default function TournamentsView({
                       {t.location ? (
                         hasLocation ? (
                           <a
-                            href={getMapUrl(t.location)}
+                            href={getMapUrl(t.location, t.address)}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-400 hover:underline"
                           >
                             <MapPin className="w-3.5 h-3.5 shrink-0" />
                             <span>{t.location}</span>
+                            <span className="text-slate-400 font-normal">↗</span>
+                          </a>
+                        ) : t.address ? (
+                          <a
+                            href={getMapUrl(t.address)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-400 hover:underline"
+                          >
+                            <MapPin className="w-3.5 h-3.5 shrink-0" />
+                            <span>{t.address}</span>
                             <span className="text-slate-400 font-normal">↗</span>
                           </a>
                         ) : (
@@ -301,6 +314,19 @@ export default function TournamentsView({
                   value={form.location}
                   onChange={(e) => setForm((f) => ({ ...f, location: e.target.value }))}
                   placeholder="Providence, RI"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-slate-100 focus:outline-none focus:border-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  Address (optional)
+                </label>
+                <input
+                  type="text"
+                  value={form.address}
+                  onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))}
+                  placeholder="e.g. 1 Sabin St, Providence, RI 02903"
                   className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-slate-100 focus:outline-none focus:border-blue-500"
                 />
               </div>

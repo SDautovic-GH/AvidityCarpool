@@ -164,8 +164,10 @@ export function exportTournamentIcs(tournament) {
       summary: tournament.name,
       location:
         tournament.location && tournament.location.toUpperCase() !== 'TBD'
-          ? tournament.location
-          : '',
+          ? tournament.address
+            ? `${tournament.location}, ${tournament.address}`
+            : tournament.location
+          : tournament.address || '',
       description: tournament.notes || '',
     },
   ]);
