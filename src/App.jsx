@@ -623,13 +623,23 @@ export default function App() {
                     setAssignModal({ practiceId, leg, playerId })
                   }
                   onJoin={(practiceId, leg, carId, playerId) =>
-                    runAction(() => joinCar(practiceId, leg, carId, playerId))
+                    runAction(() =>
+                      joinCar(practiceId, leg, carId, playerId || currentParent?.playerId)
+                    )
                   }
                   onJoinBoth={(practiceId, driverParentId, playerId) =>
-                    runAction(() => joinBothWays(practiceId, driverParentId, playerId))
+                    runAction(() =>
+                      joinBothWays(
+                        practiceId,
+                        driverParentId,
+                        playerId || currentParent?.playerId
+                      )
+                    )
                   }
                   onLeave={(practiceId, leg, carId, playerId) =>
-                    runAction(() => leaveCar(practiceId, leg, carId, playerId))
+                    runAction(() =>
+                      leaveCar(practiceId, leg, carId, playerId || currentParent?.playerId)
+                    )
                   }
                   onToggleNeedSub={(practiceId, leg, carId) =>
                     runAction(() => toggleNeedSub(practiceId, leg, carId))
