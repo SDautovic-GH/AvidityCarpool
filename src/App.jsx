@@ -451,7 +451,7 @@ export default function App() {
                   <button
                     key={id}
                     onClick={() => setTab(id)}
-                    className={`inline-flex items-center gap-1.5 py-2.5 text-[13px] sm:text-sm whitespace-nowrap shrink-0 transition-colors ${
+                    className={`inline-flex items-center gap-1 sm:gap-1.5 py-2.5 text-sm sm:text-[15px] whitespace-nowrap shrink-0 transition-colors ${
                       tab === id
                         ? 'text-white font-bold'
                         : 'text-slate-400 hover:text-slate-200 font-semibold'
@@ -562,7 +562,7 @@ export default function App() {
                       onClick={() => {
                         if (onlyNeedsDriver) setOnlyNeedsDriver(false);
                       }}
-                      className={`appearance-none cursor-pointer pl-3.5 pr-8 py-1.5 min-h-[36px] rounded-full text-xs font-semibold transition focus:outline-none ${
+                      className={`appearance-none cursor-pointer pl-3.5 pr-7 py-1.5 min-h-[36px] rounded-full text-[13px] font-semibold transition focus:outline-none ${
                         !onlyNeedsDriver
                           ? 'bg-slate-800 text-slate-100'
                           : 'bg-transparent text-slate-400 hover:text-slate-200'
@@ -587,7 +587,7 @@ export default function App() {
                   {(needsDriverCount > 0 || onlyNeedsDriver) && (
                     <button
                       onClick={() => setOnlyNeedsDriver(true)}
-                      className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-semibold transition ${
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 min-h-[36px] rounded-full text-[13px] font-semibold transition ${
                         onlyNeedsDriver
                           ? 'bg-amber-500/20 text-amber-300'
                           : 'text-slate-400 hover:text-slate-200'
