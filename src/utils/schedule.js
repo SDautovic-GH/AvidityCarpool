@@ -53,13 +53,15 @@ export function getUnassignedPlayers(practice, leg, allPlayers) {
 export function getLegSummary(practice, leg, allPlayers) {
   const cars = practice.legs?.[leg] || [];
   const hasSub = cars.some((c) => c.status === 'needs_sub');
-  const totalSeats = cars.reduce((s, c) => s + (c.seatsTotal || 0), 0);
+  const totalSeats = cars
+    .filter((c) => c.status !== 'needs_sub')
+    .reduce((s, c) => s + (c.seatsTotal || 0), 0);
   const goingCount = getGoingPlayers(practice, allPlayers).length;
   const unassignedCount = getUnassignedPlayers(practice, leg, allPlayers).length;
 
   if (hasSub) return { text: 'Needs Sub', tone: 'warning' };
-  if (cars.length === 0) return { text: 'No Drivers', tone: 'error' };
-  if (totalSeats < goingCount) return { text: 'Need 1 More Car', tone: 'error' };
+  if (cars.length === 0) return { text: 'Need a driver', tone: 'error' };
+  if (totalSeats < goingCount) return { text: 'Need a driver', tone: 'error' };
   if (unassignedCount > 0) return { text: `${unassignedCount} Need Ride`, tone: 'warning' };
   return { text: 'Covered', tone: 'success' };
 }

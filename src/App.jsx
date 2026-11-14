@@ -535,7 +535,7 @@ export default function App() {
           />
         ) : (
           <>
-            {tab === 'all' && needsDriverCount > 0 && (
+            {tab === 'all' && (needsDriverCount > 0 || onlyNeedsDriver) && (
               <div className="flex flex-wrap items-center justify-center gap-2">
                 <div className="inline-flex items-center gap-1 p-1 rounded-full bg-slate-900 border border-slate-800">
                   <button

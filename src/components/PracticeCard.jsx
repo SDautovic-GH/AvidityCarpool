@@ -234,16 +234,24 @@ export default function PracticeCard({
             )}
           </div>
 
-          {!isReadOnly && !isDesktop && canDrive && !isDrivingThisLeg && needsMoreDrivers && (
-            <button
-              onClick={() =>
-                onOpenDriveModal(practice.id, !drivesTo && !drivesFrom ? 'both' : leg)
-              }
-              className="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition shrink-0"
-            >
-              + I can drive
-            </button>
-          )}
+          <div className="flex items-center gap-2 shrink-0">
+            {!isDesktop && needsMoreDrivers && (
+              <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-400">
+                <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
+                Need a driver
+              </span>
+            )}
+            {!isReadOnly && !isDesktop && canDrive && !isDrivingThisLeg && needsMoreDrivers && (
+              <button
+                onClick={() =>
+                  onOpenDriveModal(practice.id, !drivesTo && !drivesFrom ? 'both' : leg)
+                }
+                className="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition shrink-0"
+              >
+                + I can drive
+              </button>
+            )}
+          </div>
         </div>
       </div>
     );
