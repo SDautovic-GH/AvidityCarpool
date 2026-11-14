@@ -205,7 +205,7 @@ export default function PracticeCard({
                       <button
                         key={pl.id}
                         onClick={() => onOpenAssignModal(practice.id, leg, pl.id)}
-                        className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-800 hover:bg-blue-600 text-slate-100 transition"
+                        className="px-3 py-1.5 sm:px-2.5 sm:py-0.5 min-h-[36px] sm:min-h-0 rounded-full text-xs font-semibold bg-slate-800 hover:bg-blue-600 text-slate-100 transition"
                       >
                         {shortNameOf(pl)} +
                       </button>
@@ -298,7 +298,7 @@ export default function PracticeCard({
           });
           setEditingPractice((v) => !v);
         }}
-        className="p-1.5 rounded-full text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition"
+        className="p-2 sm:p-1.5 min-w-[36px] min-h-[36px] sm:min-w-0 sm:min-h-0 flex items-center justify-center rounded-full text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition"
         title="Edit / reschedule practice"
       >
         <Pencil className="w-3.5 h-3.5" />
@@ -313,7 +313,7 @@ export default function PracticeCard({
             onDeletePractice?.(practice.id);
           }
         }}
-        className="p-1.5 rounded-full text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition"
+        className="p-2 sm:p-1.5 min-w-[36px] min-h-[36px] sm:min-w-0 sm:min-h-0 flex items-center justify-center rounded-full text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition"
         title="Remove practice"
       >
         <Trash2 className="w-3.5 h-3.5" />
@@ -413,7 +413,7 @@ export default function PracticeCard({
               <button
                 onClick={() => onToggleAttendance(practice.id, myPlayer.id)}
                 title="Tap to toggle Going / Out"
-                className={`inline-flex items-center gap-1.5 whitespace-nowrap px-3 py-1 rounded-full text-xs font-semibold border transition ${
+                className={`inline-flex items-center gap-1.5 whitespace-nowrap px-3.5 py-1.5 sm:px-3 sm:py-1 min-h-[36px] sm:min-h-0 rounded-full text-xs font-semibold border transition ${
                   isOut
                     ? 'bg-rose-500/15 border-rose-500/30 hover:bg-rose-500/25 text-rose-300'
                     : 'bg-slate-800/90 border-slate-700/80 hover:bg-slate-700 text-slate-100'
@@ -566,7 +566,7 @@ export default function PracticeCard({
                 {canDelete && onDeleteNote && (
                   <button
                     onClick={() => onDeleteNote(practice.id, note.id)}
-                    className="px-1.5 py-0.5 rounded-full text-[11px] font-bold text-slate-500 hover:text-rose-400 hover:bg-slate-800 transition shrink-0"
+                    className="px-2.5 py-1 sm:px-1.5 sm:py-0.5 min-w-[32px] min-h-[32px] sm:min-w-0 sm:min-h-0 flex items-center justify-center rounded-full text-xs sm:text-[11px] font-bold text-slate-500 hover:text-rose-400 hover:bg-slate-800 transition shrink-0"
                     title="Delete note"
                   >
                     ×
@@ -656,45 +656,45 @@ export default function PracticeCard({
           </button>
         </form>
       ) : (
-        <div className={`flex flex-wrap items-center gap-1.5 ${!isCancelled ? 'pt-2.5 border-t border-slate-800/60' : ''}`}>
+        <div className={`flex flex-wrap items-center gap-2 sm:gap-1.5 ${!isCancelled ? 'pt-2.5 border-t border-slate-800/60' : ''}`}>
           {!isReadOnly && onAddNote && (
             <button
               onClick={() => {
                 setNoteDraft('');
                 setEditingNote(true);
               }}
-              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-800/70 hover:bg-slate-800 text-slate-300 hover:text-slate-100 transition"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-2.5 sm:py-1 min-h-[36px] sm:min-h-0 rounded-full text-xs sm:text-[11px] font-semibold bg-slate-800/70 hover:bg-slate-800 text-slate-300 hover:text-slate-100 transition"
             >
-              <MessageSquare className="w-3 h-3" />
+              <MessageSquare className="w-3.5 h-3.5 sm:w-3 sm:h-3" />
               + Note
             </button>
           )}
           {myCarSmsUrl && (
             <a
               href={myCarSmsUrl}
-              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-800/70 hover:bg-slate-800 text-slate-300 hover:text-slate-100 transition"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-2.5 sm:py-1 min-h-[36px] sm:min-h-0 rounded-full text-xs sm:text-[11px] font-semibold bg-slate-800/70 hover:bg-slate-800 text-slate-300 hover:text-slate-100 transition"
               title="Text parents in your car for this practice"
             >
-              <MessageCircle className="w-3 h-3" />
+              <MessageCircle className="w-3.5 h-3.5 sm:w-3 sm:h-3" />
               Text My Car
             </a>
           )}
           {carpoolSmsUrl && (
             <a
               href={carpoolSmsUrl}
-              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-800/70 hover:bg-slate-800 text-slate-300 hover:text-slate-100 transition"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-2.5 sm:py-1 min-h-[36px] sm:min-h-0 rounded-full text-xs sm:text-[11px] font-semibold bg-slate-800/70 hover:bg-slate-800 text-slate-300 hover:text-slate-100 transition"
               title="Text all parents in the Melrose carpool"
             >
-              <MessageCircle className="w-3 h-3" />
+              <MessageCircle className="w-3.5 h-3.5 sm:w-3 sm:h-3" />
               Text Carpool
             </a>
           )}
           <button
             onClick={handleShare}
-            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-800/70 hover:bg-slate-800 text-slate-300 hover:text-slate-100 transition"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-2.5 sm:py-1 min-h-[36px] sm:min-h-0 rounded-full text-xs sm:text-[11px] font-semibold bg-slate-800/70 hover:bg-slate-800 text-slate-300 hover:text-slate-100 transition"
             title="Share or copy carpool summary"
           >
-            <Share2 className="w-3 h-3" />
+            <Share2 className="w-3.5 h-3.5 sm:w-3 sm:h-3" />
             Share
           </button>
         </div>
