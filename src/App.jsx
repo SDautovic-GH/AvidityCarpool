@@ -44,21 +44,6 @@ export default function App() {
   }, [zoomPct]);
   const tabRefs = useRef({});
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0, ready: false });
-
-  useLayoutEffect(() => {
-    const updateIndicator = () => {
-      const el = tabRefs.current[tab];
-      if (!el) return;
-      setIndicatorStyle({
-        left: el.offsetLeft,
-        width: el.offsetWidth,
-        ready: true,
-      });
-    };
-    updateIndicator();
-    window.addEventListener('resize', updateIndicator);
-    return () => window.removeEventListener('resize', updateIndicator);
-  }, [tab, user, practices.length, tournaments.length, loading]);
   const [showPast, setShowPast] = useState(false);
   const [driveModal, setDriveModal] = useState(null); // { practiceId, defaultDirection }
   const [assignModal, setAssignModal] = useState(null); // { practiceId, leg, playerId }
@@ -181,6 +166,21 @@ export default function App() {
   );
 
   const shortPlayerNames = useMemo(() => getShortPlayerNames(players), [players]);
+
+  useLayoutEffect(() => {
+    const updateIndicator = () => {
+      const el = tabRefs.current[tab];
+      if (!el) return;
+      setIndicatorStyle({
+        left: el.offsetLeft,
+        width: el.offsetWidth,
+        ready: true,
+      });
+    };
+    updateIndicator();
+    window.addEventListener('resize', updateIndicator);
+    return () => window.removeEventListener('resize', updateIndicator);
+  }, [tab, user, practices.length, tournaments.length, loading]);
 
   const runAction = async (fn, successMsg) => {
     try {
