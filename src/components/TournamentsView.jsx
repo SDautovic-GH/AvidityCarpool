@@ -146,41 +146,14 @@ export default function TournamentsView({
                     </div>
 
                     <div className="min-w-0 flex-1">
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="flex flex-wrap items-center gap-2 min-w-0">
-                          <h3 className="font-bold text-base leading-tight text-slate-100">
-                            {t.name}
-                          </h3>
-                          {isNext && (
-                            <span className="px-2 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-blue-600 text-white shrink-0">
-                              Next
-                            </span>
-                          )}
-                        </div>
-
-                        {isAdmin && (
-                          <div className="flex items-center gap-1 shrink-0">
-                            <button
-                              onClick={() => openEdit(t)}
-                              className="p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-full text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition"
-                              title="Edit tournament"
-                              aria-label="Edit tournament"
-                            >
-                              <Pencil className="w-3.5 h-3.5" />
-                            </button>
-                            <button
-                              onClick={() => {
-                                if (window.confirm(`Remove "${t.name}"?`)) {
-                                  onDeleteTournament(t.id);
-                                }
-                              }}
-                              className="p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-full text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition"
-                              title="Delete tournament"
-                              aria-label="Delete tournament"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
+                      <div className="flex flex-wrap items-center gap-2 min-w-0">
+                        <h3 className="font-bold text-base leading-tight text-slate-100">
+                          {t.name}
+                        </h3>
+                        {isNext && (
+                          <span className="px-2 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-blue-600 text-white shrink-0">
+                            Next
+                          </span>
                         )}
                       </div>
 
@@ -189,6 +162,31 @@ export default function TournamentsView({
                         {t.sortDate ? `, ${t.sortDate.slice(0, 4)}` : ''}
                       </div>
                     </div>
+
+                    {isAdmin && (
+                      <div className="flex items-center gap-1 shrink-0">
+                        <button
+                          onClick={() => openEdit(t)}
+                          className="p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-full text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition"
+                          title="Edit tournament"
+                          aria-label="Edit tournament"
+                        >
+                          <Pencil className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={() => {
+                            if (window.confirm(`Remove "${t.name}"?`)) {
+                              onDeleteTournament(t.id);
+                            }
+                          }}
+                          className="p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-full text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition"
+                          title="Delete tournament"
+                          aria-label="Delete tournament"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex flex-wrap items-center justify-between gap-2">
