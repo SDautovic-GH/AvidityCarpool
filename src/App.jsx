@@ -235,11 +235,11 @@ export default function App() {
             <img
               src="/volleyball.svg?v=4"
               alt="Avidity Carpool"
-              className="w-8 h-8 sm:w-9 sm:h-9 shrink-0"
+              className="w-9 h-9 sm:w-10 sm:h-10 shrink-0"
             />
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-base sm:text-lg font-extrabold tracking-tight truncate text-slate-100">
+                <h1 className="text-lg sm:text-xl font-extrabold tracking-tight leading-tight truncate text-slate-100">
                   {activeSeason
                     ? `${activeSeason.clubName} ${activeSeason.teamName}`
                     : 'Avidity Carpool'}
