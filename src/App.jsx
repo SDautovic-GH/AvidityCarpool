@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { CalendarPlus, LogOut, MoreHorizontal, Plus } from 'lucide-react';
+import { CalendarPlus, ChevronDown, LogOut, MoreHorizontal, Plus } from 'lucide-react';
 import {
   auth,
   isFirebaseConfigured,
@@ -24,6 +24,7 @@ export default function App() {
 
   const [tab, setTab] = useState('all'); // 'all' | 'my-drives' | 'tournaments' | 'roster'
   const [onlyNeedsDriver, setOnlyNeedsDriver] = useState(false);
+  const [monthFilter, setMonthFilter] = useState('all');
   const [menuOpen, setMenuOpen] = useState(false);
   const [zoomPct, setZoomPct] = useState(() => {
     try {
@@ -132,6 +133,26 @@ export default function App() {
     [practices, carpoolPlayers, todayIso]
   );
 
+  const upcomingMonthOptions = useMemo(() => {
+    const counts = new Map();
+    practices.forEach((p) => {
+      if (!showPast && p.isoDate < todayIso) return;
+      const ym = (p.isoDate || '').slice(0, 7);
+      if (!/^\d{4}-\d{2}$/.test(ym)) return;
+      counts.set(ym, (counts.get(ym) || 0) + 1);
+    });
+    return [...counts.entries()]
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([ym, count]) => {
+        const [y, m] = ym.split('-').map(Number);
+        const label = new Date(y, m - 1, 1).toLocaleDateString('en-US', {
+          month: 'short',
+          year: 'numeric',
+        });
+        return { key: ym, label, count };
+      });
+  }, [practices, showPast, todayIso]);
+
   const visiblePractices = useMemo(() => {
     const myParentId = currentParent?.id || '';
     let list = practices;
@@ -154,10 +175,12 @@ export default function App() {
         const fromSum = getLegSummary(p, 'from', carpoolPlayers);
         return toSum.tone !== 'success' || fromSum.tone !== 'success';
       });
+    } else if (tab === 'all' && monthFilter !== 'all') {
+      list = list.filter((p) => (p.isoDate || '').startsWith(monthFilter));
     }
 
     return list;
-  }, [practices, showPast, tab, currentParent, todayIso, onlyNeedsDriver, carpoolPlayers]);
+  }, [practices, showPast, tab, currentParent, todayIso, onlyNeedsDriver, monthFilter, carpoolPlayers]);
 
   const pastCount = useMemo(
     () => practices.filter((p) => p.isoDate < todayIso).length,
@@ -535,30 +558,50 @@ export default function App() {
           />
         ) : (
           <>
-            {tab === 'all' && (needsDriverCount > 0 || onlyNeedsDriver) && (
+            {tab === 'all' && (upcomingMonthOptions.length > 0 || needsDriverCount > 0 || onlyNeedsDriver) && (
               <div className="flex flex-wrap items-center justify-center gap-2">
                 <div className="inline-flex items-center gap-1 p-1 rounded-full bg-slate-900 border border-slate-800">
-                  <button
-                    onClick={() => setOnlyNeedsDriver(false)}
-                    className={`px-3 py-1 rounded-full text-xs font-semibold transition ${
-                      !onlyNeedsDriver
-                        ? 'bg-slate-800 text-slate-100'
-                        : 'text-slate-400 hover:text-slate-200'
-                    }`}
-                  >
-                    All Upcoming
-                  </button>
-                  <button
-                    onClick={() => setOnlyNeedsDriver(true)}
-                    className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold transition ${
-                      onlyNeedsDriver
-                        ? 'bg-amber-500/20 text-amber-300'
-                        : 'text-slate-400 hover:text-slate-200'
-                    }`}
-                  >
-                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-                    Needs Driver ({needsDriverCount})
-                  </button>
+                  <div className="relative inline-flex items-center">
+                    <select
+                      aria-label="Filter practices by month"
+                      value={monthFilter}
+                      onChange={(e) => {
+                        setMonthFilter(e.target.value);
+                        setOnlyNeedsDriver(false);
+                      }}
+                      onClick={() => {
+                        if (onlyNeedsDriver) setOnlyNeedsDriver(false);
+                      }}
+                      className={`appearance-none cursor-pointer pl-3.5 pr-8 py-1.5 min-h-[36px] rounded-full text-xs font-semibold transition focus:outline-none ${
+                        !onlyNeedsDriver
+                          ? 'bg-slate-800 text-slate-100'
+                          : 'bg-transparent text-slate-400 hover:text-slate-200'
+                      }`}
+                    >
+                      <option value="all" className="bg-slate-900 text-slate-100">
+                        {showPast ? 'All Practices' : 'All Upcoming'}
+                      </option>
+                      {upcomingMonthOptions.map((m) => (
+                        <option key={m.key} value={m.key} className="bg-slate-900 text-slate-100">
+                          {m.label} ({m.count})
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="w-3.5 h-3.5 text-slate-400 pointer-events-none absolute right-2.5" />
+                  </div>
+                  {(needsDriverCount > 0 || onlyNeedsDriver) && (
+                    <button
+                      onClick={() => setOnlyNeedsDriver(true)}
+                      className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-semibold transition ${
+                        onlyNeedsDriver
+                          ? 'bg-amber-500/20 text-amber-300'
+                          : 'text-slate-400 hover:text-slate-200'
+                      }`}
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                      Needs Driver ({needsDriverCount})
+                    </button>
+                  )}
                 </div>
               </div>
             )}
