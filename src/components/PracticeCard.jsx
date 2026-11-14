@@ -592,7 +592,7 @@ export default function PracticeCard({
           {myCarSmsUrl && (
             <a
               href={myCarSmsUrl}
-              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-blue-500/15 hover:bg-blue-500/25 border border-blue-500/30 text-blue-300 transition"
+              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-800/70 hover:bg-slate-800 text-slate-300 hover:text-slate-100 transition"
               title="Text parents in your car for this practice"
             >
               <MessageCircle className="w-3 h-3" />
