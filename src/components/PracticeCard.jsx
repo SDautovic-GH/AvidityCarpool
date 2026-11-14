@@ -301,8 +301,8 @@ export default function PracticeCard({
       } p-4 space-y-3.5 min-w-0 overflow-hidden`}
     >
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5">
-        <div className="flex items-center justify-between gap-2 min-w-0">
-          <div className="flex items-center gap-3 min-w-0 flex-1">
+        <div className="flex items-start justify-between gap-2 min-w-0">
+          <div className="flex items-start gap-3 min-w-0 flex-1">
             <div
               className={`relative w-11 h-11 rounded-xl ${
                 isSatisfied
@@ -335,7 +335,7 @@ export default function PracticeCard({
             </div>
 
             <div className="min-w-0 flex-1">
-              <div className="flex items-center justify-between gap-2">
+              <div className="flex items-start justify-between gap-2">
                 <div className="flex flex-wrap items-center gap-2 min-w-0">
                   <span className="font-bold text-base leading-tight text-slate-100">
                     {fullDay}

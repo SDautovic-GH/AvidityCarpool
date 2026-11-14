@@ -125,7 +125,7 @@ export default function TournamentsView({
                     isNext ? 'border-blue-500/45' : 'border-slate-800'
                   } ${isPast ? 'opacity-65' : ''} p-4 space-y-3 min-w-0 overflow-hidden`}
                 >
-                  <div className="flex items-center gap-3 min-w-0">
+                  <div className="flex items-start gap-3 min-w-0">
                     <div
                       className={`w-14 h-11 rounded-xl ${
                         isNext
@@ -146,7 +146,7 @@ export default function TournamentsView({
                     </div>
 
                     <div className="min-w-0 flex-1">
-                      <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-start justify-between gap-2">
                         <div className="flex flex-wrap items-center gap-2 min-w-0">
                           <h3 className="font-bold text-base leading-tight text-slate-100">
                             {t.name}
