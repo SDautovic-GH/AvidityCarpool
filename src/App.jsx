@@ -43,7 +43,6 @@ export default function App() {
       // ignore storage errors
     }
   }, [zoomPct]);
-  const [showPast, setShowPast] = useState(false);
   const [driveModal, setDriveModal] = useState(null); // { practiceId, defaultDirection }
   const [assignModal, setAssignModal] = useState(null); // { practiceId, leg, playerId }
   const [seasonModalOpen, setSeasonModalOpen] = useState(false);
@@ -136,7 +135,7 @@ export default function App() {
   const upcomingMonthOptions = useMemo(() => {
     const counts = new Map();
     practices.forEach((p) => {
-      if (!showPast && p.isoDate < todayIso) return;
+      if (p.isoDate < todayIso) return;
       const ym = (p.isoDate || '').slice(0, 7);
       if (!/^\d{4}-\d{2}$/.test(ym)) return;
       counts.set(ym, (counts.get(ym) || 0) + 1);
@@ -151,15 +150,15 @@ export default function App() {
         });
         return { key: ym, label, count };
       });
-  }, [practices, showPast, todayIso]);
+  }, [practices, todayIso]);
 
   const visiblePractices = useMemo(() => {
     const myParentId = currentParent?.id || '';
-    let list = practices;
-
-    if (!showPast) {
-      list = list.filter((p) => p.isoDate >= todayIso);
+    if (tab === 'all' && !onlyNeedsDriver && monthFilter === 'past') {
+      return practices.filter((p) => p.isoDate < todayIso).reverse();
     }
+
+    let list = practices.filter((p) => p.isoDate >= todayIso);
 
     if (tab === 'my-drives') {
       list = list.filter(
@@ -180,7 +179,7 @@ export default function App() {
     }
 
     return list;
-  }, [practices, showPast, tab, currentParent, todayIso, onlyNeedsDriver, monthFilter, carpoolPlayers]);
+  }, [practices, tab, currentParent, todayIso, onlyNeedsDriver, monthFilter, carpoolPlayers]);
 
   const pastCount = useMemo(
     () => practices.filter((p) => p.isoDate < todayIso).length,
@@ -475,15 +474,6 @@ export default function App() {
               </div>
             );
           })()}
-
-          {tab !== 'roster' && tab !== 'tournaments' && pastCount > 0 && (
-            <button
-              onClick={() => setShowPast((v) => !v)}
-              className="mb-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 transition shrink-0"
-            >
-              {showPast ? 'Hide past' : `Past (${pastCount})`}
-            </button>
-          )}
         </div>
       </header>
 
@@ -558,7 +548,7 @@ export default function App() {
           />
         ) : (
           <>
-            {tab === 'all' && (upcomingMonthOptions.length > 0 || needsDriverCount > 0 || onlyNeedsDriver) && (
+            {tab === 'all' && (upcomingMonthOptions.length > 0 || pastCount > 0 || needsDriverCount > 0 || onlyNeedsDriver) && (
               <div className="flex flex-wrap items-center justify-center gap-2">
                 <div className="inline-flex items-center gap-1 p-1 rounded-full bg-slate-900 border border-slate-800">
                   <div className="relative inline-flex items-center">
@@ -579,13 +569,18 @@ export default function App() {
                       }`}
                     >
                       <option value="all" className="bg-slate-900 text-slate-100">
-                        {showPast ? 'All Practices' : 'All Upcoming'}
+                        All Upcoming
                       </option>
                       {upcomingMonthOptions.map((m) => (
                         <option key={m.key} value={m.key} className="bg-slate-900 text-slate-100">
                           {m.label} ({m.count})
                         </option>
                       ))}
+                      {pastCount > 0 && (
+                        <option value="past" className="bg-slate-900 text-slate-100">
+                          All Past ({pastCount})
+                        </option>
+                      )}
                     </select>
                     <ChevronDown className="w-3.5 h-3.5 text-slate-400 pointer-events-none absolute right-2.5" />
                   </div>
