@@ -574,7 +574,7 @@ export default function App() {
                     );
                     if (count) showToast(`Exported ${count} drive${count === 1 ? '' : 's'} (.ics)`);
                   }}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-200 transition"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 min-h-[36px] rounded-full text-xs font-semibold bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-200 transition"
                 >
                   <CalendarPlus className="w-3.5 h-3.5 text-blue-400" />
                   Add My Drives to Calendar

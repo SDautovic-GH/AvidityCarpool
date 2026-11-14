@@ -162,7 +162,7 @@ export default function TournamentsView({
                           <div className="flex items-center gap-1 shrink-0">
                             <button
                               onClick={() => openEdit(t)}
-                              className="p-1.5 rounded-full text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition"
+                              className="p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-full text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition"
                               title="Edit tournament"
                               aria-label="Edit tournament"
                             >
@@ -174,7 +174,7 @@ export default function TournamentsView({
                                   onDeleteTournament(t.id);
                                 }
                               }}
-                              className="p-1.5 rounded-full text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition"
+                              className="p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-full text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition"
                               title="Delete tournament"
                               aria-label="Delete tournament"
                             >
@@ -213,10 +213,10 @@ export default function TournamentsView({
 
                     <button
                       onClick={() => exportTournamentIcs(t)}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-800/70 hover:bg-slate-800 text-slate-300 hover:text-slate-100 transition shrink-0"
+                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-slate-800/70 hover:bg-slate-800 text-slate-300 hover:text-slate-100 transition shrink-0"
                       title="Add to calendar (.ics)"
                     >
-                      <CalendarPlus className="w-3 h-3 text-blue-400" />
+                      <CalendarPlus className="w-3.5 h-3.5 text-blue-400" />
                       + Calendar
                     </button>
                   </div>

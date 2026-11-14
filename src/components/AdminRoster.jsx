@@ -367,7 +367,7 @@ export default function AdminRoster({
                   {isAdmin && (
                     <button
                       onClick={() => openAddParentToPlayer(player.id)}
-                      className="inline-flex items-center gap-1 px-2.5 sm:px-3 py-1 rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition shrink-0"
+                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition shrink-0"
                     >
                       <Plus className="w-3 h-3" />
                       <span className="hidden sm:inline">Add Parent</span>
@@ -455,11 +455,11 @@ export default function AdminRoster({
                             )}
                           </div>
 
-                          <div className="flex items-center gap-1.5">
+                          <div className="flex items-center gap-2">
                             {!isAdmin && isSelf && (
                               <button
                                 onClick={openEditSelf}
-                                className="px-3 py-1 rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
+                                className="px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
                               >
                                 Update
                               </button>
@@ -468,16 +468,16 @@ export default function AdminRoster({
                               <>
                                 <button
                                   onClick={() => openEditParent(parent)}
-                                  className="px-3 py-1 rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
+                                  className="px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
                                 >
                                   Edit
                                 </button>
                                 <button
                                   onClick={() => onSendResetEmail(parent.email || parent.id)}
-                                  className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
+                                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
                                   title="Send password reset email"
                                 >
-                                  <KeyRound className="w-3 h-3" />
+                                  <KeyRound className="w-3.5 h-3.5" />
                                   Reset Password
                                 </button>
                                 {!isSelf && (
@@ -491,7 +491,7 @@ export default function AdminRoster({
                                         onRemoveParent(parent.id);
                                       }
                                     }}
-                                    className="p-1.5 rounded-full text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition"
+                                    className="p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-full text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition"
                                     title="Remove parent"
                                   >
                                     <Trash2 className="w-3.5 h-3.5" />
