@@ -526,7 +526,7 @@ export default function App() {
         ) : (
           <>
             {tab === 'all' && needsDriverCount > 0 && (
-              <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex flex-wrap items-center justify-center gap-2">
                 <div className="inline-flex items-center gap-1 p-1 rounded-full bg-slate-900 border border-slate-800">
                   <button
                     onClick={() => setOnlyNeedsDriver(false)}
@@ -554,7 +554,7 @@ export default function App() {
             )}
 
             {tab === 'my-drives' && visiblePractices.length > 0 && currentParent && (
-              <div className="flex justify-end">
+              <div className="flex justify-center">
                 <button
                   onClick={() => {
                     const count = exportMyDrivesIcs(
