@@ -362,21 +362,18 @@ export default function PracticeCard({
             </div>
 
             <div className="min-w-0 flex-1">
-              <div className="flex items-start justify-between gap-2">
-                <div className="flex flex-wrap items-center gap-2 min-w-0">
-                  <span className="font-bold text-base leading-tight text-slate-100">
-                    {fullDay}
+              <div className="flex flex-wrap items-center gap-2 min-w-0">
+                <span className="font-bold text-base leading-tight text-slate-100">
+                  {fullDay}
+                </span>
+                {timingLabel && !isCancelled && (
+                  <span className="px-2 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-blue-600 text-white">
+                    {timingLabel}
                   </span>
-                  {timingLabel && !isCancelled && (
-                    <span className="px-2 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-blue-600 text-white">
-                      {timingLabel}
-                    </span>
-                  )}
-                  {isSatisfied && (
-                    <span className="text-xs font-semibold text-emerald-400">All Set</span>
-                  )}
-                </div>
-                <div className="sm:hidden shrink-0">{adminPracticeActions}</div>
+                )}
+                {isSatisfied && (
+                  <span className="text-xs font-semibold text-emerald-400">All Set</span>
+                )}
               </div>
               <div className="text-[11px] sm:text-xs text-slate-400 mt-0.5 whitespace-nowrap">
                 {practice.timeLabel}
@@ -384,6 +381,7 @@ export default function PracticeCard({
               </div>
             </div>
           </div>
+          <div className="sm:hidden shrink-0">{adminPracticeActions}</div>
         </div>
 
         <div className="flex items-center justify-start sm:justify-end gap-2 shrink-0">
