@@ -191,6 +191,11 @@ export default function AdminRoster({
     .map((p) => p.phone);
   const carpoolSmsUrl = buildSmsUrl(carpoolPhones);
 
+  const teamPhones = parents
+    .filter((p) => p.id !== myParentId && p.phone)
+    .map((p) => p.phone);
+  const teamSmsUrl = buildSmsUrl(teamPhones);
+
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-slate-900 border border-slate-800 p-4">
@@ -214,6 +219,16 @@ export default function AdminRoster({
             >
               <MessageCircle className="w-3.5 h-3.5 text-blue-400" />
               Text Carpool
+            </a>
+          )}
+          {teamSmsUrl && (
+            <a
+              href={teamSmsUrl}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
+              title="Text all parents on the team roster"
+            >
+              <MessageCircle className="w-3.5 h-3.5 text-blue-400" />
+              Text Team
             </a>
           )}
           {currentParent && !isAdmin && (
