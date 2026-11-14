@@ -123,7 +123,7 @@ export default function TournamentsView({
                   key={t.id}
                   className={`rounded-2xl bg-slate-900 border ${
                     isNext ? 'border-blue-500/45' : 'border-slate-800'
-                  } ${isPast ? 'opacity-65' : ''} p-4 space-y-2.5 min-w-0 overflow-hidden`}
+                  } ${isPast ? 'opacity-65' : ''} p-4 space-y-3 min-w-0 overflow-hidden`}
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <div
@@ -146,7 +146,7 @@ export default function TournamentsView({
                     </div>
 
                     <div className="min-w-0 flex-1">
-                      <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-center justify-between gap-2">
                         <div className="flex flex-wrap items-center gap-2 min-w-0">
                           <h3 className="font-bold text-base leading-tight text-slate-100">
                             {t.name}
@@ -158,61 +158,67 @@ export default function TournamentsView({
                           )}
                         </div>
 
-                        <div className="flex items-center gap-0.5 shrink-0 -mr-1">
-                          <button
-                            onClick={() => exportTournamentIcs(t)}
-                            className="p-1.5 rounded-full text-slate-400 hover:text-blue-400 hover:bg-slate-800 transition"
-                            title="Add to calendar (.ics)"
-                            aria-label="Add to calendar"
-                          >
-                            <CalendarPlus className="w-3.5 h-3.5" />
-                          </button>
-                          {isAdmin && (
-                            <>
-                              <button
-                                onClick={() => openEdit(t)}
-                                className="p-1.5 rounded-full text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition"
-                                title="Edit tournament"
-                                aria-label="Edit tournament"
-                              >
-                                <Pencil className="w-3.5 h-3.5" />
-                              </button>
-                              <button
-                                onClick={() => {
-                                  if (window.confirm(`Remove "${t.name}"?`)) {
-                                    onDeleteTournament(t.id);
-                                  }
-                                }}
-                                className="p-1.5 rounded-full text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition"
-                                title="Delete tournament"
-                                aria-label="Delete tournament"
-                              >
-                                <Trash2 className="w-3.5 h-3.5" />
-                              </button>
-                            </>
-                          )}
-                        </div>
+                        {isAdmin && (
+                          <div className="flex items-center gap-1 shrink-0">
+                            <button
+                              onClick={() => openEdit(t)}
+                              className="p-1.5 rounded-full text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition"
+                              title="Edit tournament"
+                              aria-label="Edit tournament"
+                            >
+                              <Pencil className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              onClick={() => {
+                                if (window.confirm(`Remove "${t.name}"?`)) {
+                                  onDeleteTournament(t.id);
+                                }
+                              }}
+                              className="p-1.5 rounded-full text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition"
+                              title="Delete tournament"
+                              aria-label="Delete tournament"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        )}
                       </div>
 
-                      {t.location && (
-                        <div className="mt-1">
-                          {hasLocation ? (
-                            <a
-                              href={getMapUrl(t.location)}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-400 hover:underline"
-                            >
-                              <MapPin className="w-3.5 h-3.5 shrink-0" />
-                              <span>{t.location}</span>
-                              <span className="text-slate-400 font-normal">↗</span>
-                            </a>
-                          ) : (
-                            <span className="text-xs text-slate-400">{t.location}</span>
-                          )}
-                        </div>
-                      )}
+                      <div className="text-[11px] sm:text-xs text-slate-400 mt-0.5">
+                        {t.dateLabel}
+                        {t.sortDate ? `, ${t.sortDate.slice(0, 4)}` : ''}
+                      </div>
                     </div>
+                  </div>
+
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                      {t.location ? (
+                        hasLocation ? (
+                          <a
+                            href={getMapUrl(t.location)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-400 hover:underline"
+                          >
+                            <MapPin className="w-3.5 h-3.5 shrink-0" />
+                            <span>{t.location}</span>
+                            <span className="text-slate-400 font-normal">↗</span>
+                          </a>
+                        ) : (
+                          <span className="text-xs text-slate-400">{t.location}</span>
+                        )
+                      ) : null}
+                    </div>
+
+                    <button
+                      onClick={() => exportTournamentIcs(t)}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-800/70 hover:bg-slate-800 text-slate-300 hover:text-slate-100 transition shrink-0"
+                      title="Add to calendar (.ics)"
+                    >
+                      <CalendarPlus className="w-3 h-3 text-blue-400" />
+                      + Calendar
+                    </button>
                   </div>
 
                   {t.notes && (
