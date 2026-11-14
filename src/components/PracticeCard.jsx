@@ -280,23 +280,25 @@ export default function PracticeCard({
           </div>
 
           <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="font-semibold text-sm">{fullDay}</span>
-              {timingLabel && (
-                <span className="px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-600 text-white">
-                  {timingLabel}
-                </span>
-              )}
-              {isSatisfied && (
-                <span className="text-xs font-medium text-emerald-400">All Set</span>
-              )}
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex flex-wrap items-center gap-2 min-w-0">
+                <span className="font-semibold text-sm">{fullDay}</span>
+                {timingLabel && (
+                  <span className="px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-600 text-white">
+                    {timingLabel}
+                  </span>
+                )}
+                {isSatisfied && (
+                  <span className="text-xs font-medium text-emerald-400">All Set</span>
+                )}
+              </div>
+              <div className="sm:hidden shrink-0">{adminPracticeActions}</div>
             </div>
             <div className="text-[11px] sm:text-xs text-slate-400 mt-0.5 whitespace-nowrap">
               {practice.timeLabel} • {goingCount}/{players.length} going
             </div>
           </div>
           </div>
-          <div className="sm:hidden">{adminPracticeActions}</div>
         </div>
 
         <div className="flex items-center justify-start sm:justify-end gap-2 shrink-0">
