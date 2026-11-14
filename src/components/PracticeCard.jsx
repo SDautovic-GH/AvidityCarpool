@@ -186,7 +186,7 @@ export default function PracticeCard({
             {!isReadOnly && canDrive && !isDrivingThisLeg && needsMoreDrivers && (
               <button
                 onClick={() => onOpenDriveModal(practice.id, leg)}
-                className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition"
+                className="px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition"
               >
                 + I can drive
               </button>
@@ -391,7 +391,7 @@ export default function PracticeCard({
             myPlayer &&
             (isReadOnly ? (
               <span
-                className={`inline-flex items-center gap-1.5 whitespace-nowrap px-2.5 py-1 rounded-full text-xs font-semibold border ${
+                className={`inline-flex items-center gap-1.5 whitespace-nowrap px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-semibold border ${
                   isOut
                     ? 'bg-rose-500/15 border-rose-500/30 text-rose-300'
                     : 'bg-slate-800/80 border-slate-700/80 text-slate-300'
@@ -515,13 +515,13 @@ export default function PracticeCard({
             <button
               type="button"
               onClick={() => setEditingPractice(false)}
-              className="px-3 py-1 rounded-full text-xs font-semibold bg-slate-800 text-slate-300"
+              className="px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-slate-800 text-slate-300"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-1 rounded-full text-xs font-semibold bg-blue-600 text-white"
+              className="px-4 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-blue-600 text-white"
             >
               Save Changes
             </button>
@@ -643,14 +643,14 @@ export default function PracticeCard({
           />
           <button
             type="submit"
-            className="px-3 py-1.5 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition"
+            className="px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition"
           >
             Add
           </button>
           <button
             type="button"
             onClick={() => setEditingNote(false)}
-            className="px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 transition"
+            className="px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 transition"
           >
             Cancel
           </button>
