@@ -74,13 +74,6 @@ export default function PracticeCard({
   const fromSum = getLegSummary(practice, 'from', players);
   const isSatisfied = !isCancelled && toSum.tone === 'success' && fromSum.tone === 'success';
 
-  const toSeatsCount = (practice.legs?.to || [])
-    .filter((c) => c.status !== 'needs_sub')
-    .reduce((s, c) => s + (c.seatsTotal || 0), 0);
-  const fromSeatsCount = (practice.legs?.from || [])
-    .filter((c) => c.status !== 'needs_sub')
-    .reduce((s, c) => s + (c.seatsTotal || 0), 0);
-
   const drivesTo = (practice.legs?.to || []).some((c) => c.driverParentId === myParentId);
   const drivesFrom = (practice.legs?.from || []).some((c) => c.driverParentId === myParentId);
   const drivesBoth = drivesTo && drivesFrom;
@@ -627,7 +620,7 @@ export default function PracticeCard({
             <div className="grid grid-cols-2 gap-1 p-1 rounded-full bg-slate-950 border border-slate-800">
               <button
                 onClick={() => setActiveLeg('to')}
-                className={`flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold whitespace-nowrap transition ${
+                className={`flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold whitespace-nowrap transition ${
                   activeLeg === 'to'
                     ? 'bg-slate-800 text-slate-100 shadow-sm'
                     : 'text-slate-400 hover:text-slate-200'
@@ -635,13 +628,10 @@ export default function PracticeCard({
               >
                 <span className={`w-2 h-2 rounded-full shrink-0 ${TONE_DOT[toSum.tone]}`} />
                 <span>→ To Practice</span>
-                <span className="text-[10px] font-normal text-slate-400 tabular-nums">
-                  {toSeatsCount}/{goingCount}
-                </span>
               </button>
               <button
                 onClick={() => setActiveLeg('from')}
-                className={`flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold whitespace-nowrap transition ${
+                className={`flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold whitespace-nowrap transition ${
                   activeLeg === 'from'
                     ? 'bg-slate-800 text-slate-100 shadow-sm'
                     : 'text-slate-400 hover:text-slate-200'
@@ -649,9 +639,6 @@ export default function PracticeCard({
               >
                 <span className={`w-2 h-2 rounded-full shrink-0 ${TONE_DOT[fromSum.tone]}`} />
                 <span>← From Practice</span>
-                <span className="text-[10px] font-normal text-slate-400 tabular-nums">
-                  {fromSeatsCount}/{goingCount}
-                </span>
               </button>
             </div>
             {renderLegBody(activeLeg, false)}
