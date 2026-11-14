@@ -78,55 +78,36 @@ export default function PracticeCard({
   const drivesFrom = (practice.legs?.from || []).some((c) => c.driverParentId === myParentId);
   const drivesBoth = drivesTo && drivesFrom;
 
+  const driveFlagText = drivesBoth
+    ? "You're driving Both Ways"
+    : drivesTo
+      ? "You're driving To Practice"
+      : drivesFrom
+        ? "You're driving From Practice"
+        : null;
+
   const firstNameOf = (name) => (name || '').trim().split(/\s+/)[0] || name || 'Driver';
-  const getMyLegRide = (legKey, isDriving) => {
-    if (isDriving) return { type: 'driving' };
-    const car = myPlayerId
-      ? (practice.legs?.[legKey] || []).find((c) => (c.riderIds || []).includes(myPlayerId))
-      : null;
-    if (car) {
-      return {
-        type: 'riding',
-        driverKey: car.driverParentId || car.driverName,
-        label: firstNameOf(car.driverName),
-      };
-    }
-    if (myPlayerId && !isOut) return { type: 'needs_ride' };
-    return null;
-  };
+  const myRideStatus = (() => {
+    if (isCancelled || !myPlayerId || isOut) return null;
+    const toCar = (practice.legs?.to || []).find((c) => (c.riderIds || []).includes(myPlayerId));
+    const fromCar = (practice.legs?.from || []).find((c) => (c.riderIds || []).includes(myPlayerId));
+    const driverLabel = (car) =>
+      car.driverParentId === myParentId ? 'You' : firstNameOf(car.driverName);
 
-  const toRide = getMyLegRide('to', drivesTo);
-  const fromRide = getMyLegRide('from', drivesFrom);
-
-  const myShortName = myPlayer ? shortNameOf(myPlayer) : '';
-
-  const personalRideBadge = (() => {
-    if (drivesBoth) return { text: "You're driving Both Ways", warning: false };
-    if (drivesTo) {
-      if (fromRide?.type === 'riding')
-        return { text: `You're driving To · ${myShortName}: From ${fromRide.label}`, warning: false };
-      if (fromRide?.type === 'needs_ride')
-        return { text: `You're driving To · ${myShortName} needs ride From`, warning: true };
-      return { text: "You're driving To Practice", warning: false };
+    if (toCar && fromCar) {
+      const sameDriver =
+        (toCar.driverParentId || toCar.driverName) ===
+        (fromCar.driverParentId || fromCar.driverName);
+      if (sameDriver) {
+        return toCar.driverParentId === myParentId
+          ? null
+          : { text: `Riding with ${firstNameOf(toCar.driverName)}`, warning: false };
+      }
+      return { text: `To ${driverLabel(toCar)} · From ${driverLabel(fromCar)}`, warning: false };
     }
-    if (drivesFrom) {
-      if (toRide?.type === 'riding')
-        return { text: `${myShortName}: To ${toRide.label} · You're driving From`, warning: false };
-      if (toRide?.type === 'needs_ride')
-        return { text: `${myShortName} needs ride To · You're driving From`, warning: true };
-      return { text: "You're driving From Practice", warning: false };
-    }
-    if (!myPlayerId || isOut) return null;
-    if (toRide?.type === 'riding' && fromRide?.type === 'riding') {
-      return toRide.driverKey === fromRide.driverKey
-        ? { text: `${myShortName}: Riding with ${toRide.label}`, warning: false }
-        : { text: `${myShortName}: To ${toRide.label} · From ${fromRide.label}`, warning: false };
-    }
-    if (toRide?.type === 'riding')
-      return { text: `${myShortName}: To ${toRide.label} · Needs ride From`, warning: true };
-    if (fromRide?.type === 'riding')
-      return { text: `${myShortName}: Needs ride To · From ${fromRide.label}`, warning: true };
-    return { text: `${myShortName} needs a ride`, warning: true };
+    if (toCar) return { text: `To ${driverLabel(toCar)} · Needs ride From`, warning: true };
+    if (fromCar) return { text: `Needs ride To · From ${driverLabel(fromCar)}`, warning: true };
+    return { text: 'Needs a ride', warning: true };
   })();
 
   const carpoolPlayerIdSet = new Set(players.map((pl) => pl.id));
@@ -422,6 +403,11 @@ export default function PracticeCard({
                   }`}
                 />
                 {shortNameOf(myPlayer)}: {isOut ? 'Out' : 'Going'}
+                {myRideStatus && (
+                  <span className={myRideStatus.warning ? 'text-amber-300' : 'text-slate-300'}>
+                    · {myRideStatus.text}
+                  </span>
+                )}
               </span>
             ) : (
               <button
@@ -439,6 +425,11 @@ export default function PracticeCard({
                   }`}
                 />
                 {shortNameOf(myPlayer)}: {isOut ? 'Out' : 'Going'}
+                {myRideStatus && (
+                  <span className={myRideStatus.warning ? 'text-amber-300' : 'text-slate-300'}>
+                    · {myRideStatus.text}
+                  </span>
+                )}
               </button>
             ))}
           {!isCancelled && !isReadOnly && canDrive && !drivesBoth && (
@@ -549,15 +540,9 @@ export default function PracticeCard({
           <span>{practice.location}</span>
           <span className="text-slate-400 font-normal">↗</span>
         </a>
-        {!isCancelled && personalRideBadge && (
-          <span
-            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-              personalRideBadge.warning
-                ? 'bg-amber-500/15 border border-amber-500/30 text-amber-300'
-                : 'bg-slate-800 text-slate-100'
-            }`}
-          >
-            {personalRideBadge.text}
+        {!isCancelled && driveFlagText && (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-800 text-slate-100">
+            {driveFlagText}
           </span>
         )}
       </div>
