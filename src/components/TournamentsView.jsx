@@ -114,9 +114,9 @@ export default function TournamentsView({
             return (
               <div
                 key={t.id}
-                className="rounded-2xl bg-slate-900 border border-slate-800 p-4 flex items-center justify-between gap-3"
+                className="rounded-2xl bg-slate-900 border border-slate-800 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
               >
-                <div className="flex items-center gap-3.5 min-w-0">
+                <div className="flex items-center gap-3.5 min-w-0 flex-1">
                   <div className="w-16 rounded-xl bg-slate-950 border border-slate-800 py-2 px-1.5 text-center shrink-0">
                     <div className="text-[10px] font-bold uppercase tracking-wider text-blue-400">
                       {monthPart}
@@ -126,12 +126,12 @@ export default function TournamentsView({
                     </div>
                   </div>
 
-                  <div className="min-w-0">
-                    <h3 className="text-sm sm:text-base font-bold text-slate-100 truncate">
+                  <div className="min-w-0 flex-1">
+                    <h3 className="text-sm sm:text-base font-bold text-slate-100 leading-snug">
                       {t.name}
                     </h3>
                     {t.location && (
-                      <div className="mt-0.5">
+                      <div className="mt-1">
                         {hasLocation ? (
                           <a
                             href={getMapUrl(t.location)}
@@ -154,16 +154,17 @@ export default function TournamentsView({
                   </div>
                 </div>
 
-                <div className="flex items-center gap-1 shrink-0">
+                <div className="flex items-center justify-between sm:justify-end gap-1.5 pt-2.5 border-t border-slate-800/70 sm:border-0 sm:pt-0 shrink-0">
                   <button
                     onClick={() => exportTournamentIcs(t)}
-                    className="p-2 rounded-full text-slate-400 hover:text-blue-400 hover:bg-slate-800 transition"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:p-2 rounded-full text-xs font-semibold bg-slate-800/70 sm:bg-transparent text-slate-300 sm:text-slate-400 hover:text-blue-400 hover:bg-slate-800 transition"
                     title="Add to calendar (.ics)"
                   >
-                    <CalendarPlus className="w-4 h-4" />
+                    <CalendarPlus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                    <span className="sm:hidden">Add to Calendar</span>
                   </button>
                   {isAdmin && (
-                    <>
+                    <div className="flex items-center gap-1">
                       <button
                         onClick={() => openEdit(t)}
                         className="p-2 rounded-full text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition"
@@ -182,7 +183,7 @@ export default function TournamentsView({
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
-                    </>
+                    </div>
                   )}
                 </div>
               </div>
