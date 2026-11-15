@@ -150,8 +150,8 @@ export default function CarRow({
         </div>
       </div>
 
-      <div className="mt-2 pl-10 flex flex-wrap items-center justify-between gap-2 text-sm">
-        <div className="flex flex-wrap items-center gap-1.5">
+      <div className="mt-2 sm:pl-10 flex flex-wrap items-center justify-between gap-2 text-sm min-w-0">
+        <div className="flex flex-wrap items-center gap-1.5 min-w-0">
           {isAdmin ? (
             riderIds.length === 0 ? (
               <span className="text-xs text-slate-400 italic">No riders yet</span>
@@ -205,7 +205,7 @@ export default function CarRow({
         </div>
 
         {!isReadOnly && (isMyDrive || isAdmin) && (
-          <div className="flex flex-wrap items-center gap-2 shrink-0">
+          <div className="flex flex-wrap items-center gap-2 min-w-0 max-w-full">
             {onUpdateCarSeats && (
               <div
                 className="inline-flex items-center rounded-full bg-slate-800 border border-slate-700/80 text-xs font-semibold text-slate-100"
