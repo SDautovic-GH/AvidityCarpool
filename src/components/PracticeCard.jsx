@@ -427,6 +427,14 @@ export default function PracticeCard({
               + I can drive
             </button>
           )}
+          {!isCancelled && !isReadOnly && isAdmin && (!canDrive || drivesBoth) && (
+            <button
+              onClick={() => onOpenDriveModal(practice.id, 'both')}
+              className="hidden md:inline-flex items-center px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
+            >
+              + Assign driver
+            </button>
+          )}
           <div className="hidden sm:flex">{adminPracticeActions}</div>
         </div>
       </div>

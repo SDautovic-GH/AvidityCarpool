@@ -775,7 +775,7 @@ export default function App() {
         )}
       </main>
 
-      {activeDrivePractice && currentParent && (() => {
+      {activeDrivePractice && (currentParent || isAdmin) && (() => {
         const targetWeekday = new Date(`${activeDrivePractice.isoDate}T12:00:00`).getDay();
         const upcomingSameWeekday = practices.filter(
           (p) =>
@@ -791,12 +791,17 @@ export default function App() {
             playerName={myPlayerShortName}
             defaultDirection={driveModal.defaultDirection}
             upcomingSameWeekdayCount={upcomingSameWeekday.length}
+            isAdmin={isAdmin}
+            parents={parents}
+            shortPlayerNames={shortPlayerNames}
             onClose={() => setDriveModal(null)}
-            onConfirm={(practiceId, direction, seats, repeatSameWeekday) => {
+            onConfirm={(practiceId, direction, seats, repeatSameWeekday, driverParent) => {
               setDriveModal(null);
+              const targetDriver = driverParent || currentParent;
+              if (!targetDriver) return;
               if (!repeatSameWeekday) {
                 runAction(
-                  () => offerToDrive(practiceId, direction, seats, currentParent),
+                  () => offerToDrive(practiceId, direction, seats, targetDriver),
                   'Added to carpool'
                 );
               } else {
@@ -805,7 +810,7 @@ export default function App() {
                   () =>
                     Promise.all(
                       targets.map((p) =>
-                        offerToDrive(p.id, direction, seats, currentParent)
+                        offerToDrive(p.id, direction, seats, targetDriver)
                       )
                     ),
                   `Added to ${targets.length} practices`

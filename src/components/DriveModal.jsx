@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { formatPracticeDate } from '../utils/schedule';
 
 export default function DriveModal({
@@ -7,14 +7,42 @@ export default function DriveModal({
   playerName,
   defaultDirection,
   upcomingSameWeekdayCount = 0,
+  isAdmin = false,
+  parents = [],
+  shortPlayerNames = {},
   onClose,
   onConfirm,
 }) {
+  const drivableParents = useMemo(
+    () =>
+      parents
+        .filter((p) => p.canDrive !== false)
+        .slice()
+        .sort((a, b) => (a.name || '').localeCompare(b.name || '')),
+    [parents]
+  );
+
+  const [selectedParentId, setSelectedParentId] = useState(
+    () => currentParent?.id || drivableParents[0]?.id || ''
+  );
+
+  const driverParent =
+    (isAdmin ? drivableParents.find((p) => p.id === selectedParentId) : null) ||
+    currentParent ||
+    drivableParents[0];
+
+  const driverParentId = driverParent?.id || '';
+  const isSelf = Boolean(currentParent?.id && driverParentId === currentParent.id);
+  const effectivePlayerName =
+    (driverParent?.playerId && shortPlayerNames[driverParent.playerId]) ||
+    (isSelf ? playerName : '') ||
+    'their player';
+
   const drivesTo = (practice.legs?.to || []).some(
-    (c) => c.driverParentId === currentParent.id
+    (c) => c.driverParentId === driverParentId
   );
   const drivesFrom = (practice.legs?.from || []).some(
-    (c) => c.driverParentId === currentParent.id
+    (c) => c.driverParentId === driverParentId
   );
 
   const fallbackDir = drivesTo && !drivesFrom ? 'from' : !drivesTo && drivesFrom ? 'to' : 'both';
@@ -25,9 +53,20 @@ export default function DriveModal({
         ? 'from'
         : fallbackDir;
   const [direction, setDirection] = useState(initialDir);
-  const [seats, setSeats] = useState(currentParent.defaultSeats || 4);
+  const [seats, setSeats] = useState(driverParent?.defaultSeats || 4);
   const [repeatSameWeekday, setRepeatSameWeekday] = useState(false);
   const [busy, setBusy] = useState(false);
+
+  const handleDriverChange = (nextId) => {
+    setSelectedParentId(nextId);
+    const nextParent = drivableParents.find((p) => p.id === nextId);
+    if (nextParent) {
+      setSeats(nextParent.defaultSeats || 4);
+      const nextTo = (practice.legs?.to || []).some((c) => c.driverParentId === nextParent.id);
+      const nextFrom = (practice.legs?.from || []).some((c) => c.driverParentId === nextParent.id);
+      setDirection(nextTo && !nextFrom ? 'from' : !nextTo && nextFrom ? 'to' : 'both');
+    }
+  };
 
   const { month, dateNum, fullDay } = formatPracticeDate(practice.isoDate);
 
@@ -49,9 +88,10 @@ export default function DriveModal({
   );
 
   async function handleSubmit() {
+    if (!driverParent) return;
     setBusy(true);
     try {
-      await onConfirm(practice.id, direction, seats, repeatSameWeekday);
+      await onConfirm(practice.id, direction, seats, repeatSameWeekday, driverParent);
       onClose();
     } finally {
       setBusy(false);
@@ -79,6 +119,24 @@ export default function DriveModal({
           </button>
         </div>
 
+        {isAdmin && drivableParents.length > 0 && (
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-slate-400">Driver (Admin)</label>
+            <select
+              value={driverParentId}
+              onChange={(e) => handleDriverChange(e.target.value)}
+              className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-sm text-slate-100 focus:outline-none focus:border-blue-500"
+            >
+              {drivableParents.map((p) => (
+                <option key={p.id} value={p.id} className="bg-slate-900 text-slate-100">
+                  {p.name}
+                  {currentParent?.id === p.id ? ' (You)' : ''}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
         <div className="space-y-2">
           <label className="text-xs font-semibold text-slate-400">Which direction?</label>
           <div className="flex gap-2">
@@ -88,7 +146,7 @@ export default function DriveModal({
           </div>
           {(drivesTo || drivesFrom) && (
             <p className="text-[11px] text-slate-400">
-              You&apos;re already signed up for{' '}
+              {isSelf ? "You're" : `${driverParent?.name || 'Driver'} is`} already signed up for{' '}
               <strong className="text-slate-200">
                 {drivesTo && drivesFrom
                   ? 'Both Ways'
@@ -103,11 +161,13 @@ export default function DriveModal({
 
         <div className="flex items-center justify-between py-2">
           <div>
-            <div className="text-sm font-semibold">Player seats in your car</div>
+            <div className="text-sm font-semibold">
+              {isSelf ? 'Player seats in your car' : `Player seats in ${driverParent?.name || 'driver'}'s car`}
+            </div>
             <div className="text-xs text-slate-400">
               {seats === 1
-                ? `Driving solo (just ${playerName || 'your player'})`
-                : `${playerName || 'Your player'} + ${seats - 1} other rider${seats - 1 === 1 ? '' : 's'}`}
+                ? `Driving solo (just ${effectivePlayerName})`
+                : `${effectivePlayerName} + ${seats - 1} other rider${seats - 1 === 1 ? '' : 's'}`}
             </div>
           </div>
           <div className="flex items-center gap-3">
