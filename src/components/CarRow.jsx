@@ -17,6 +17,7 @@ export default function CarRow({
   onToggleNeedSub,
   onDropDrive,
   onTakeOver,
+  onUpdateCarSeats,
   onAdminRemoveRider,
   onOpenStopsModal,
 }) {
@@ -198,6 +199,38 @@ export default function CarRow({
 
         {!isReadOnly && (isMyDrive || isAdmin) && (
           <div className="flex flex-wrap items-center gap-2 shrink-0">
+            {onUpdateCarSeats && (
+              <div
+                className="inline-flex items-center rounded-full bg-slate-800 border border-slate-700/80 text-xs font-semibold text-slate-100"
+                title="Adjust available seats for this practice"
+              >
+                <button
+                  type="button"
+                  disabled={(car.seatsTotal || 1) <= Math.max(1, riderIds.length)}
+                  onClick={() =>
+                    onUpdateCarSeats(practice.id, leg, car.id, (car.seatsTotal || 1) - 1)
+                  }
+                  className="px-2.5 py-1.5 min-h-[36px] rounded-l-full hover:bg-slate-700 disabled:opacity-40 transition"
+                  aria-label="Decrease seats"
+                >
+                  −
+                </button>
+                <span className="px-1.5 tabular-nums whitespace-nowrap">
+                  {car.seatsTotal || 1} {car.seatsTotal === 1 ? 'seat' : 'seats'}
+                </span>
+                <button
+                  type="button"
+                  disabled={(car.seatsTotal || 1) >= 7}
+                  onClick={() =>
+                    onUpdateCarSeats(practice.id, leg, car.id, (car.seatsTotal || 1) + 1)
+                  }
+                  className="px-2.5 py-1.5 min-h-[36px] rounded-r-full hover:bg-slate-700 disabled:opacity-40 transition"
+                  aria-label="Increase seats"
+                >
+                  +
+                </button>
+              </div>
+            )}
             {isMyDrive && otherRiders.length > 0 && onOpenStopsModal && (
               <button
                 onClick={() => onOpenStopsModal(practice.id, leg, car.id)}

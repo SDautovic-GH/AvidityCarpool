@@ -37,6 +37,7 @@ export default function PracticeCard({
   onToggleNeedSub,
   onDropDrive,
   onTakeOver,
+  onUpdateCarSeats,
   onAdminRemoveRider,
   onAddNote,
   onDeleteNote,
@@ -111,8 +112,8 @@ export default function PracticeCard({
     if (toCar?.status === 'needs_sub' || fromCar?.status === 'needs_sub') {
       return { text: 'Driver needs sub', warning: true };
     }
-    if (toCar) return { text: `To ${driverLabel(toCar)} · Needs ride From`, warning: true };
-    if (fromCar) return { text: `Needs ride To · From ${driverLabel(fromCar)}`, warning: true };
+    if (toCar) return { text: `To: ${driverLabel(toCar)} · From: Needed`, warning: true };
+    if (fromCar) return { text: `To: Needed · From: ${driverLabel(fromCar)}`, warning: true };
     return { text: 'Needs a ride', warning: true };
   })();
 
@@ -262,6 +263,7 @@ export default function PracticeCard({
                 onToggleNeedSub={onToggleNeedSub}
                 onDropDrive={onDropDrive}
                 onTakeOver={onTakeOver}
+                onUpdateCarSeats={onUpdateCarSeats}
                 onAdminRemoveRider={onAdminRemoveRider}
                 onOpenStopsModal={onOpenStopsModal}
               />

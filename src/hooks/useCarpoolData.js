@@ -225,6 +225,18 @@ export function useCarpoolData(user) {
     });
   }
 
+  async function updateCarSeats(practiceId, leg, carId, seatsTotal) {
+    await updatePracticeTx(practiceId, (p) => {
+      const legs = p.legs || { to: [], from: [] };
+      const car = (legs[leg] || []).find((c) => c.id === carId);
+      if (!car) return null;
+      const riders = filterCarpoolRiders(car.riderIds);
+      const minSeats = Math.max(1, riders.length);
+      car.seatsTotal = Math.min(7, Math.max(minSeats, Number(seatsTotal) || minSeats));
+      return { legs };
+    });
+  }
+
   async function takeOverDrive(practiceId, leg, carId, parentDoc) {
     await updatePracticeTx(practiceId, (p) => {
       const legs = p.legs || { to: [], from: [] };
@@ -587,6 +599,7 @@ export function useCarpoolData(user) {
     offerToDrive,
     dropDrive,
     toggleNeedSub,
+    updateCarSeats,
     takeOverDrive,
     joinCar,
     joinBothWays,

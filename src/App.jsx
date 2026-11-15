@@ -86,6 +86,7 @@ export default function App() {
     offerToDrive,
     dropDrive,
     toggleNeedSub,
+    updateCarSeats,
     takeOverDrive,
     joinCar,
     joinBothWays,
@@ -724,6 +725,9 @@ export default function App() {
                       () => takeOverDrive(practiceId, leg, carId, currentParent),
                       'You took over this drive'
                     )
+                  }
+                  onUpdateCarSeats={(practiceId, leg, carId, seatsTotal) =>
+                    runAction(() => updateCarSeats(practiceId, leg, carId, seatsTotal))
                   }
                   onAdminRemoveRider={(practiceId, leg, carId, playerId) =>
                     runAction(() => leaveCar(practiceId, leg, carId, playerId))

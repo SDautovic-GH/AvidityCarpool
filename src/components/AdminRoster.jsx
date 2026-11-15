@@ -418,13 +418,13 @@ export default function AdminRoster({
                                 {parent.name}
                               </span>
                               {parent.role === 'admin' && (
-                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue-950 text-blue-300 border border-blue-800/60">
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue-500/15 text-blue-300 border border-blue-500/30">
                                   <Shield className="w-2.5 h-2.5" />
                                   Admin
                                 </span>
                               )}
                               {canDrive ? (
-                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-950/70 text-emerald-300 border border-emerald-800/50">
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
                                   <Car className="w-2.5 h-2.5" />
                                   {parent.defaultSeats ?? 4} seats
                                 </span>
