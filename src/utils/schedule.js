@@ -226,3 +226,14 @@ export function getCarpoolPlayerIdSet(players = [], parents = []) {
   });
   return result;
 }
+
+export function getPracticeCarpoolLegs(practice) {
+  const mode = ['both', 'to_only', 'from_only', 'none'].includes(practice?.carpoolMode)
+    ? practice.carpoolMode
+    : 'both';
+  return {
+    mode,
+    toEnabled: mode === 'both' || mode === 'to_only',
+    fromEnabled: mode === 'both' || mode === 'from_only',
+  };
+}

@@ -61,6 +61,7 @@ service cloud.firestore {
     //   - notes: string (optional, 0..500 chars)
     //   - notesAuthor: string (optional, 0..100 chars)
     //   - notesList: list (optional, max 50 items)
+    //   - carpoolMode: string (optional, 'both' | 'to_only' | 'from_only' | 'none', immutable for non-admins)
     //   - createdAt: timestamp (optional, immutable)
     //   - updatedAt: timestamp (optional)
     //
@@ -206,7 +207,7 @@ service cloud.firestore {
 
     function isValidPractice(data) {
       return hasRequiredFields(['isoDate', 'timeLabel', 'location', 'address', 'status', 'absentPlayerIds', 'legs']) &&
-             hasOnlyAllowedFields(['isoDate', 'timeLabel', 'location', 'address', 'status', 'absentPlayerIds', 'legs', 'notes', 'notesAuthor', 'notesList', 'createdAt', 'updatedAt']) &&
+             hasOnlyAllowedFields(['isoDate', 'timeLabel', 'location', 'address', 'status', 'absentPlayerIds', 'legs', 'notes', 'notesAuthor', 'notesList', 'carpoolMode', 'createdAt', 'updatedAt']) &&
              validString(data.isoDate, 10, 30) &&
              data.isoDate.matches("^\\d{4}-\\d{2}-\\d{2}.*") &&
              validString(data.timeLabel, 1, 50) &&
@@ -222,6 +223,7 @@ service cloud.firestore {
              (!('notes' in data) || validString(data.notes, 0, 500)) &&
              (!('notesAuthor' in data) || validString(data.notesAuthor, 0, 100)) &&
              (!('notesList' in data) || isValidList(data.notesList, 50)) &&
+             (!('carpoolMode' in data) || (data.carpoolMode is string && data.carpoolMode in ['both', 'to_only', 'from_only', 'none'])) &&
              (!('createdAt' in data) || data.createdAt is timestamp) &&
              (!('updatedAt' in data) || data.updatedAt is timestamp);
     }

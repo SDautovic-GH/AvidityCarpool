@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { formatPracticeDate } from '../utils/schedule';
+import { formatPracticeDate, getPracticeCarpoolLegs } from '../utils/schedule';
 
 export default function DriveModal({
   practice,
@@ -38,6 +38,8 @@ export default function DriveModal({
     (isSelf ? playerName : '') ||
     'their player';
 
+  const { toEnabled, fromEnabled } = getPracticeCarpoolLegs(practice);
+
   const drivesTo = (practice.legs?.to || []).some(
     (c) => c.driverParentId === driverParentId
   );
@@ -45,14 +47,17 @@ export default function DriveModal({
     (c) => c.driverParentId === driverParentId
   );
 
-  const fallbackDir = drivesTo && !drivesFrom ? 'from' : !drivesTo && drivesFrom ? 'to' : 'both';
-  const initialDir =
-    defaultDirection === 'to' && !drivesTo
-      ? 'to'
-      : defaultDirection === 'from' && !drivesFrom
-        ? 'from'
-        : fallbackDir;
-  const [direction, setDirection] = useState(initialDir);
+  const resolveDir = (pref, dTo, dFrom) => {
+    if (toEnabled && !fromEnabled) return 'to';
+    if (!toEnabled && fromEnabled) return 'from';
+    const fb = dTo && !dFrom ? 'from' : !dTo && dFrom ? 'to' : 'both';
+    if (pref === 'to' && !dTo) return 'to';
+    if (pref === 'from' && !dFrom) return 'from';
+    return fb;
+  };
+  const [direction, setDirection] = useState(() =>
+    resolveDir(defaultDirection, drivesTo, drivesFrom)
+  );
   const [seats, setSeats] = useState(driverParent?.defaultSeats || 4);
   const [repeatSameWeekday, setRepeatSameWeekday] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -64,7 +69,7 @@ export default function DriveModal({
       setSeats(nextParent.defaultSeats || 4);
       const nextTo = (practice.legs?.to || []).some((c) => c.driverParentId === nextParent.id);
       const nextFrom = (practice.legs?.from || []).some((c) => c.driverParentId === nextParent.id);
-      setDirection(nextTo && !nextFrom ? 'from' : !nextTo && nextFrom ? 'to' : 'both');
+      setDirection(resolveDir('both', nextTo, nextFrom));
     }
   };
 
@@ -140,9 +145,9 @@ export default function DriveModal({
         <div className="space-y-2">
           <label className="text-xs font-semibold text-slate-400">Which direction?</label>
           <div className="flex gap-2">
-            {dirBtn('both', 'Both Ways', false)}
-            {dirBtn('to', 'To Only', drivesTo && !drivesFrom)}
-            {dirBtn('from', 'From Only', drivesFrom && !drivesTo)}
+            {dirBtn('both', 'Both Ways', !toEnabled || !fromEnabled)}
+            {dirBtn('to', 'To Only', !toEnabled || (drivesTo && !drivesFrom))}
+            {dirBtn('from', 'From Only', !fromEnabled || (drivesFrom && !drivesTo))}
           </div>
           {(drivesTo || drivesFrom) && (
             <p className="text-[11px] text-slate-400">

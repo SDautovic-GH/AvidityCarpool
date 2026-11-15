@@ -6,6 +6,7 @@ import {
   formatPracticeDate,
   getGoingPlayers,
   getLegSummary,
+  getPracticeCarpoolLegs,
   getPracticeNotes,
   getShortPlayerNames,
   getTimingBadge,
@@ -55,6 +56,7 @@ export default function PracticeCard({
     location: practice.location,
     address: practice.address || '',
     status: practice.status || 'scheduled',
+    carpoolMode: practice.carpoolMode || 'both',
   });
 
   const myPlayerId = currentParent?.playerId || '';
@@ -66,6 +68,11 @@ export default function PracticeCard({
   const shortNames = shortPlayerNames || getShortPlayerNames(players);
   const shortNameOf = (pl) => shortNames[pl?.id] || pl?.name || 'Player';
 
+  const { mode: carpoolMode, toEnabled, fromEnabled } = getPracticeCarpoolLegs(practice);
+  const hasAnyCarpool = toEnabled || fromEnabled;
+  const defaultDriveDir =
+    toEnabled && !fromEnabled ? 'to' : !toEnabled && fromEnabled ? 'from' : 'both';
+
   const { month, dateNum, fullDay } = formatPracticeDate(practice.isoDate);
   const timingLabel = getTimingBadge(practice.isoDate, isFirstUpcoming);
   const goingCount = getGoingPlayers(practice, players).length;
@@ -73,27 +80,54 @@ export default function PracticeCard({
 
   const toSum = getLegSummary(practice, 'to', players);
   const fromSum = getLegSummary(practice, 'from', players);
-  const isSatisfied = !isCancelled && toSum.tone === 'success' && fromSum.tone === 'success';
+  const isSatisfied =
+    !isCancelled &&
+    hasAnyCarpool &&
+    (!toEnabled || toSum.tone === 'success') &&
+    (!fromEnabled || fromSum.tone === 'success');
 
-  const drivesTo = (practice.legs?.to || []).some((c) => c.driverParentId === myParentId);
-  const drivesFrom = (practice.legs?.from || []).some((c) => c.driverParentId === myParentId);
-  const drivesBoth = drivesTo && drivesFrom;
+  const drivesTo =
+    toEnabled && (practice.legs?.to || []).some((c) => c.driverParentId === myParentId);
+  const drivesFrom =
+    fromEnabled && (practice.legs?.from || []).some((c) => c.driverParentId === myParentId);
+  const drivesAllActive =
+    hasAnyCarpool && (!toEnabled || drivesTo) && (!fromEnabled || drivesFrom);
 
-  const driveFlagText = drivesBoth
-    ? "You're driving Both Ways"
-    : drivesTo
-      ? "You're driving To Practice"
-      : drivesFrom
-        ? "You're driving From Practice"
-        : null;
+  const driveFlagText =
+    drivesTo && drivesFrom
+      ? "You're driving Both Ways"
+      : drivesTo
+        ? "You're driving To Practice"
+        : drivesFrom
+          ? "You're driving From Practice"
+          : null;
 
   const firstNameOf = (name) => (name || '').trim().split(/\s+/)[0] || name || 'Driver';
   const myRideStatus = (() => {
-    if (isCancelled || !myPlayerId || isOut) return null;
-    const toCar = (practice.legs?.to || []).find((c) => (c.riderIds || []).includes(myPlayerId));
-    const fromCar = (practice.legs?.from || []).find((c) => (c.riderIds || []).includes(myPlayerId));
+    if (isCancelled || !hasAnyCarpool || !myPlayerId || isOut) return null;
+    const toCar = toEnabled
+      ? (practice.legs?.to || []).find((c) => (c.riderIds || []).includes(myPlayerId))
+      : null;
+    const fromCar = fromEnabled
+      ? (practice.legs?.from || []).find((c) => (c.riderIds || []).includes(myPlayerId))
+      : null;
     const driverLabel = (car) =>
       car.driverParentId === myParentId ? 'You' : firstNameOf(car.driverName);
+
+    if (toEnabled && !fromEnabled) {
+      if (!toCar) return { text: 'Needs ride To', warning: true };
+      if (toCar.status === 'needs_sub') return { text: 'Driver needs sub', warning: true };
+      return toCar.driverParentId === myParentId
+        ? null
+        : { text: `To: ${firstNameOf(toCar.driverName)}`, warning: false };
+    }
+    if (!toEnabled && fromEnabled) {
+      if (!fromCar) return { text: 'Needs ride From', warning: true };
+      if (fromCar.status === 'needs_sub') return { text: 'Driver needs sub', warning: true };
+      return fromCar.driverParentId === myParentId
+        ? null
+        : { text: `From: ${firstNameOf(fromCar.driverName)}`, warning: false };
+    }
 
     if (toCar && fromCar) {
       if (toCar.status === 'needs_sub' || fromCar.status === 'needs_sub') {
@@ -286,6 +320,7 @@ export default function PracticeCard({
             location: practice.location,
             address: practice.address || '',
             status: practice.status || 'scheduled',
+            carpoolMode: practice.carpoolMode || 'both',
           });
           setEditingPractice((v) => !v);
         }}
@@ -365,6 +400,15 @@ export default function PracticeCard({
                 {isSatisfied && (
                   <span className="text-xs font-semibold text-emerald-400">All Set</span>
                 )}
+                {!isCancelled && carpoolMode !== 'both' && (
+                  <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-slate-800 text-slate-300 border border-slate-700">
+                    {carpoolMode === 'from_only'
+                      ? 'Carpool From Only'
+                      : carpoolMode === 'to_only'
+                        ? 'Carpool To Only'
+                        : 'No Carpool'}
+                  </span>
+                )}
               </div>
               <div className="text-[11px] sm:text-xs text-slate-400 mt-0.5 whitespace-nowrap">
                 {practice.timeLabel}
@@ -421,17 +465,17 @@ export default function PracticeCard({
                 )}
               </button>
             ))}
-          {!isCancelled && !isReadOnly && canDrive && !drivesBoth && (
+          {!isCancelled && !isReadOnly && hasAnyCarpool && canDrive && !drivesAllActive && (
             <button
-              onClick={() => onOpenDriveModal(practice.id, 'both')}
+              onClick={() => onOpenDriveModal(practice.id, defaultDriveDir)}
               className={`${isAdmin ? 'inline-flex' : 'hidden md:inline-flex'} items-center whitespace-nowrap px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition`}
             >
               + I can drive
             </button>
           )}
-          {!isCancelled && !isReadOnly && isAdmin && (!canDrive || drivesBoth) && (
+          {!isCancelled && !isReadOnly && hasAnyCarpool && isAdmin && (!canDrive || drivesAllActive) && (
             <button
-              onClick={() => onOpenDriveModal(practice.id, 'both')}
+              onClick={() => onOpenDriveModal(practice.id, defaultDriveDir)}
               className="inline-flex items-center whitespace-nowrap px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
             >
               + Assign driver
@@ -487,7 +531,7 @@ export default function PracticeCard({
               <option value="cancelled">Cancelled</option>
             </select>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             <input
               type="text"
               required
@@ -507,6 +551,19 @@ export default function PracticeCard({
               placeholder="Address"
               className="px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs text-slate-100 focus:outline-none focus:border-blue-500"
             />
+            <select
+              value={practiceDraft.carpoolMode}
+              onChange={(e) =>
+                setPracticeDraft((d) => ({ ...d, carpoolMode: e.target.value }))
+              }
+              aria-label="Carpool needed"
+              className="px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs text-slate-100 focus:outline-none focus:border-blue-500"
+            >
+              <option value="both">Carpool: Both Ways</option>
+              <option value="from_only">Carpool: From Practice Only</option>
+              <option value="to_only">Carpool: To Practice Only</option>
+              <option value="none">No Carpool Needed</option>
+            </select>
           </div>
           <div className="flex justify-end gap-2">
             <button
@@ -576,46 +633,63 @@ export default function PracticeCard({
       )}
 
       {!isCancelled && (
-        <>
-          {/* Mobile: Segmented To/From tabs */}
-          <div className="md:hidden space-y-2">
-            <div className="grid grid-cols-2 gap-1 p-1 rounded-full bg-slate-950 border border-slate-800">
-              <button
-                onClick={() => setActiveLeg('to')}
-                className={`flex items-center justify-center gap-1.5 px-3 py-2 min-h-[36px] rounded-full text-xs font-semibold whitespace-nowrap transition ${
-                  activeLeg === 'to'
-                    ? 'bg-slate-800 text-slate-100 shadow-sm'
-                    : 'text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                <span className={`w-2 h-2 rounded-full shrink-0 ${TONE_DOT[toSum.tone]}`} />
-                <span>→ To Practice</span>
-              </button>
-              <button
-                onClick={() => setActiveLeg('from')}
-                className={`flex items-center justify-center gap-1.5 px-3 py-2 min-h-[36px] rounded-full text-xs font-semibold whitespace-nowrap transition ${
-                  activeLeg === 'from'
-                    ? 'bg-slate-800 text-slate-100 shadow-sm'
-                    : 'text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                <span className={`w-2 h-2 rounded-full shrink-0 ${TONE_DOT[fromSum.tone]}`} />
-                <span>← From Practice</span>
-              </button>
-            </div>
-            {renderLegBody(activeLeg, false)}
+        !hasAnyCarpool ? (
+          <div className="rounded-xl bg-slate-950/55 border border-slate-800/80 px-3.5 py-2.5 text-xs text-slate-400">
+            No carpool needed for this practice.
           </div>
+        ) : toEnabled && fromEnabled ? (
+          <>
+            {/* Mobile: Segmented To/From tabs */}
+            <div className="md:hidden space-y-2">
+              <div className="grid grid-cols-2 gap-1 p-1 rounded-full bg-slate-950 border border-slate-800">
+                <button
+                  onClick={() => setActiveLeg('to')}
+                  className={`flex items-center justify-center gap-1.5 px-3 py-2 min-h-[36px] rounded-full text-xs font-semibold whitespace-nowrap transition ${
+                    activeLeg === 'to'
+                      ? 'bg-slate-800 text-slate-100 shadow-sm'
+                      : 'text-slate-400 hover:text-slate-200'
+                  }`}
+                >
+                  <span className={`w-2 h-2 rounded-full shrink-0 ${TONE_DOT[toSum.tone]}`} />
+                  <span>→ To Practice</span>
+                </button>
+                <button
+                  onClick={() => setActiveLeg('from')}
+                  className={`flex items-center justify-center gap-1.5 px-3 py-2 min-h-[36px] rounded-full text-xs font-semibold whitespace-nowrap transition ${
+                    activeLeg === 'from'
+                      ? 'bg-slate-800 text-slate-100 shadow-sm'
+                      : 'text-slate-400 hover:text-slate-200'
+                  }`}
+                >
+                  <span className={`w-2 h-2 rounded-full shrink-0 ${TONE_DOT[fromSum.tone]}`} />
+                  <span>← From Practice</span>
+                </button>
+              </div>
+              {renderLegBody(activeLeg, false)}
+            </div>
 
-          {/* Desktop: Side-by-side To/From */}
-          <div className="hidden md:grid md:grid-cols-2 gap-4 pt-1">
-            <div className="rounded-xl bg-slate-950/55 border border-slate-800/80 p-3.5">
-              {renderLegBody('to', true)}
+            {/* Desktop: Side-by-side To/From */}
+            <div className="hidden md:grid md:grid-cols-2 gap-4 pt-1">
+              <div className="rounded-xl bg-slate-950/55 border border-slate-800/80 p-3.5">
+                {renderLegBody('to', true)}
+              </div>
+              <div className="rounded-xl bg-slate-950/55 border border-slate-800/80 p-3.5">
+                {renderLegBody('from', true)}
+              </div>
             </div>
-            <div className="rounded-xl bg-slate-950/55 border border-slate-800/80 p-3.5">
-              {renderLegBody('from', true)}
+          </>
+        ) : (
+          <>
+            <div className="md:hidden">
+              {renderLegBody(toEnabled ? 'to' : 'from', false)}
             </div>
-          </div>
-        </>
+            <div className="hidden md:block pt-1">
+              <div className="rounded-xl bg-slate-950/55 border border-slate-800/80 p-3.5">
+                {renderLegBody(toEnabled ? 'to' : 'from', true)}
+              </div>
+            </div>
+          </>
+        )
       )}
 
       {editingNote ? (

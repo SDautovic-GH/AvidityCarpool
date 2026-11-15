@@ -347,7 +347,10 @@ export function useCarpoolData(user) {
     });
   }
 
-  async function updatePracticeDetails(practiceId, { isoDate, timeLabel, location, address, status }) {
+  async function updatePracticeDetails(
+    practiceId,
+    { isoDate, timeLabel, location, address, status, carpoolMode }
+  ) {
     if (!activeSeasonId) return;
     await updateDoc(doc(db, 'seasons', activeSeasonId, 'practices', practiceId), {
       isoDate: isoDate.trim(),
@@ -355,6 +358,7 @@ export function useCarpoolData(user) {
       location: location.trim(),
       address: (address || '').trim(),
       status: status || 'scheduled',
+      carpoolMode: carpoolMode || 'both',
       updatedAt: serverTimestamp(),
     });
   }

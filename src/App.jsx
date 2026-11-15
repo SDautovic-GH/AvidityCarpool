@@ -17,7 +17,12 @@ import AdminRoster from './components/AdminRoster';
 import AdminSeasonModal from './components/AdminSeasonModal';
 import TournamentsView from './components/TournamentsView';
 import { exportMyDrivesIcs } from './utils/calendar';
-import { getCarpoolPlayerIdSet, getLegSummary, getShortPlayerNames } from './utils/schedule';
+import {
+  getCarpoolPlayerIdSet,
+  getLegSummary,
+  getPracticeCarpoolLegs,
+  getShortPlayerNames,
+} from './utils/schedule';
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -125,9 +130,10 @@ export default function App() {
     () =>
       practices.filter((p) => {
         if (p.isoDate < todayIso || p.status === 'cancelled') return false;
-        const toSum = getLegSummary(p, 'to', carpoolPlayers);
-        const fromSum = getLegSummary(p, 'from', carpoolPlayers);
-        return toSum.tone !== 'success' || fromSum.tone !== 'success';
+        const { toEnabled, fromEnabled } = getPracticeCarpoolLegs(p);
+        const toSum = toEnabled ? getLegSummary(p, 'to', carpoolPlayers) : null;
+        const fromSum = fromEnabled ? getLegSummary(p, 'from', carpoolPlayers) : null;
+        return (toSum && toSum.tone !== 'success') || (fromSum && fromSum.tone !== 'success');
       }).length,
     [practices, carpoolPlayers, todayIso]
   );
@@ -172,9 +178,10 @@ export default function App() {
     } else if (tab === 'all' && onlyNeedsDriver) {
       list = list.filter((p) => {
         if (p.status === 'cancelled') return false;
-        const toSum = getLegSummary(p, 'to', carpoolPlayers);
-        const fromSum = getLegSummary(p, 'from', carpoolPlayers);
-        return toSum.tone !== 'success' || fromSum.tone !== 'success';
+        const { toEnabled, fromEnabled } = getPracticeCarpoolLegs(p);
+        const toSum = toEnabled ? getLegSummary(p, 'to', carpoolPlayers) : null;
+        const fromSum = fromEnabled ? getLegSummary(p, 'from', carpoolPlayers) : null;
+        return (toSum && toSum.tone !== 'success') || (fromSum && fromSum.tone !== 'success');
       });
     } else if (tab === 'all' && monthFilter !== 'all') {
       list = list.filter((p) => (p.isoDate || '').startsWith(monthFilter));
