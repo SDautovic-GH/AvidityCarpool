@@ -6,6 +6,7 @@
   <title>Avidity Carpool — Admin Guide</title>
   <style>
     :root {
+      color-scheme: light dark;
       --bg: #0f172a;
       --card: #1e293b;
       --border: #334155;
@@ -14,6 +15,24 @@
       --accent: #3b82f6;
       --green: #34d399;
       --amber: #fbbf24;
+      --badge-color: #60a5fa;
+      --pill-blue-color: #93c5fd;
+      --tip-bg: rgba(15, 23, 42, 0.45);
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f8fafc;
+        --card: #ffffff;
+        --border: #e2e8f0;
+        --text: #0f172a;
+        --muted: #475569;
+        --accent: #2563eb;
+        --green: #059669;
+        --amber: #d97706;
+        --badge-color: #1d4ed8;
+        --pill-blue-color: #1d4ed8;
+        --tip-bg: #f1f5f9;
+      }
     }
     @media print {
       :root {
@@ -52,7 +71,7 @@
       padding: 4px 12px;
       border-radius: 9999px;
       background: rgba(59, 130, 246, 0.16);
-      color: #60a5fa;
+      color: var(--badge-color);
       font-size: 12px;
       font-weight: 700;
       letter-spacing: 0.02em;
@@ -127,7 +146,7 @@
     .pill-blue {
       background: rgba(59, 130, 246, 0.2);
       border-color: rgba(59, 130, 246, 0.4);
-      color: #93c5fd;
+      color: var(--pill-blue-color);
     }
     .pill-green {
       background: rgba(52, 211, 153, 0.15);
@@ -138,7 +157,7 @@
       margin-top: 12px;
       padding: 10px 12px;
       border-radius: 12px;
-      background: rgba(15, 23, 42, 0.45);
+      background: var(--tip-bg);
       border: 1px solid var(--border);
       font-size: 13.5px;
       color: var(--muted);

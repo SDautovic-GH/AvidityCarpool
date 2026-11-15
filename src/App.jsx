@@ -305,7 +305,7 @@ export default function App() {
                 <button
                   type="button"
                   onClick={() => setZoomPct(100)}
-                  className="px-1 py-1.5 tabular-nums hover:text-white transition"
+                  className="px-1 py-1.5 tabular-nums hover:text-slate-100 transition"
                   title="Reset zoom to 100%"
                 >
                   {zoomPct}%
@@ -454,7 +454,7 @@ export default function App() {
                     onClick={() => setTab(id)}
                     className={`inline-flex items-center gap-1 sm:gap-1.5 py-2.5 text-sm sm:text-[15px] whitespace-nowrap shrink-0 transition-colors ${
                       tab === id
-                        ? 'text-white font-bold'
+                        ? 'text-slate-100 font-bold'
                         : 'text-slate-400 hover:text-slate-200 font-semibold'
                     }`}
                   >

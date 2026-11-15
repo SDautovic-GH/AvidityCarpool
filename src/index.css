@@ -11,7 +11,31 @@
 }
 
 :root {
-  color-scheme: dark;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --color-slate-950: #f8fafc;
+    --color-slate-900: #ffffff;
+    --color-slate-800: #e2e8f0;
+    --color-slate-700: #cbd5e1;
+    --color-slate-600: #94a3b8;
+    --color-slate-500: #64748b;
+    --color-slate-400: #475569;
+    --color-slate-300: #334155;
+    --color-slate-200: #1e293b;
+    --color-slate-100: #0f172a;
+    --color-slate-50: #020617;
+    --color-blue-400: #0071e3;
+    --color-blue-300: #1d4ed8;
+    --color-emerald-400: #059669;
+    --color-emerald-300: #047857;
+    --color-amber-400: #d97706;
+    --color-amber-300: #b45309;
+    --color-rose-400: #e11d48;
+    --color-rose-300: #be123c;
+  }
 }
 
 html,
@@ -31,6 +55,15 @@ body {
 /* Subtle Apple-style hairline depth on elevated cards */
 .rounded-2xl.bg-slate-900 {
   box-shadow: 0 8px 24px -12px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+@media (prefers-color-scheme: light) {
+  body {
+    background: radial-gradient(1200px 600px at 50% -10%, rgba(0, 113, 227, 0.06), transparent 65%), #f8fafc;
+  }
+  .rounded-2xl.bg-slate-900 {
+    box-shadow: 0 6px 20px -12px rgba(15, 23, 42, 0.14), 0 1px 3px rgba(15, 23, 42, 0.06);
+  }
 }
 
 .no-scrollbar::-webkit-scrollbar {
