@@ -17,7 +17,13 @@ import { db, isFirebaseConfigured } from '../firebase';
 
 export function useCarpoolData(user) {
   const [seasons, setSeasons] = useState([]);
-  const [activeSeasonId, setActiveSeasonId] = useState(null);
+  const [activeSeasonId, setActiveSeasonId] = useState(() => {
+    try {
+      return localStorage.getItem('avidity_active_season_id') || null;
+    } catch {
+      return null;
+    }
+  });
   const [players, setPlayers] = useState([]);
   const [parents, setParents] = useState([]);
   const [practices, setPractices] = useState([]);
@@ -26,6 +32,15 @@ export function useCarpoolData(user) {
   const [loading, setLoading] = useState(true);
 
   const userEmail = user?.email?.toLowerCase().trim() || null;
+
+  useEffect(() => {
+    if (!activeSeasonId) return;
+    try {
+      localStorage.setItem('avidity_active_season_id', activeSeasonId);
+    } catch {
+      // ignore storage errors
+    }
+  }, [activeSeasonId]);
 
   // Check if user is in top-level admins/{email}
   useEffect(() => {

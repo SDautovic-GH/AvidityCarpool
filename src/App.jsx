@@ -25,6 +25,7 @@ export default function App() {
   const [tab, setTab] = useState('all'); // 'all' | 'my-drives' | 'tournaments' | 'roster'
   const [onlyNeedsDriver, setOnlyNeedsDriver] = useState(false);
   const [monthFilter, setMonthFilter] = useState('all');
+  const [showAllUpcoming, setShowAllUpcoming] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [zoomPct, setZoomPct] = useState(() => {
     try {
@@ -639,8 +640,19 @@ export default function App() {
                   </button>
                 )}
               </div>
-            ) : (
-              visiblePractices.map((practice) => (
+            ) : (() => {
+              const shouldCapUpcoming =
+                tab === 'all' &&
+                !onlyNeedsDriver &&
+                monthFilter === 'all' &&
+                !showAllUpcoming &&
+                visiblePractices.length > 10;
+              const displayedPractices = shouldCapUpcoming
+                ? visiblePractices.slice(0, 10)
+                : visiblePractices;
+              return (
+                <>
+                  {displayedPractices.map((practice) => (
                 <PracticeCard
                   key={practice.id}
                   practice={practice}
@@ -723,8 +735,20 @@ export default function App() {
                   }
                   onToast={showToast}
                 />
-              ))
-            )}
+                  ))}
+                  {shouldCapUpcoming && (
+                    <div className="flex justify-center pt-1">
+                      <button
+                        onClick={() => setShowAllUpcoming(true)}
+                        className="px-5 py-2.5 min-h-[36px] rounded-full text-xs font-semibold bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-200 transition"
+                      >
+                        Show all {visiblePractices.length} upcoming practices
+                      </button>
+                    </div>
+                  )}
+                </>
+              );
+            })()}
           </>
         )}
       </main>
