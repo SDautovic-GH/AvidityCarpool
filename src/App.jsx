@@ -126,17 +126,22 @@ export default function App() {
     return parents.filter((p) => ids.has(p.playerId));
   }, [carpoolPlayers, parents]);
 
-  const needsDriverCount = useMemo(
-    () =>
-      practices.filter((p) => {
-        if (p.isoDate < todayIso || p.status === 'cancelled') return false;
-        const { toEnabled, fromEnabled } = getPracticeCarpoolLegs(p);
-        const toSum = toEnabled ? getLegSummary(p, 'to', carpoolPlayers) : null;
-        const fromSum = fromEnabled ? getLegSummary(p, 'from', carpoolPlayers) : null;
-        return (toSum && toSum.tone !== 'success') || (fromSum && fromSum.tone !== 'success');
-      }).length,
-    [practices, carpoolPlayers, todayIso]
-  );
+  const practiceNeedsDriver = (p) => {
+    if (p.status === 'cancelled') return false;
+    const { toEnabled, fromEnabled } = getPracticeCarpoolLegs(p);
+    const toSum = toEnabled ? getLegSummary(p, 'to', carpoolPlayers) : null;
+    const fromSum = fromEnabled ? getLegSummary(p, 'from', carpoolPlayers) : null;
+    return (toSum && toSum.tone !== 'success') || (fromSum && fromSum.tone !== 'success');
+  };
+
+  const needsDriverCount = useMemo(() => {
+    if (monthFilter === 'past') return 0;
+    return practices.filter((p) => {
+      if (p.isoDate < todayIso) return false;
+      if (monthFilter !== 'all' && !(p.isoDate || '').startsWith(monthFilter)) return false;
+      return practiceNeedsDriver(p);
+    }).length;
+  }, [practices, carpoolPlayers, todayIso, monthFilter]);
 
   const myPlayerId = currentParent?.playerId || '';
 
@@ -162,7 +167,7 @@ export default function App() {
 
   const visiblePractices = useMemo(() => {
     const myParentId = currentParent?.id || '';
-    if (tab === 'all' && !onlyNeedsDriver && monthFilter === 'past') {
+    if (tab === 'all' && monthFilter === 'past') {
       return practices.filter((p) => p.isoDate < todayIso).reverse();
     }
 
@@ -175,16 +180,13 @@ export default function App() {
           ((p.legs?.to || []).some((c) => c.driverParentId === myParentId) ||
             (p.legs?.from || []).some((c) => c.driverParentId === myParentId))
       );
-    } else if (tab === 'all' && onlyNeedsDriver) {
-      list = list.filter((p) => {
-        if (p.status === 'cancelled') return false;
-        const { toEnabled, fromEnabled } = getPracticeCarpoolLegs(p);
-        const toSum = toEnabled ? getLegSummary(p, 'to', carpoolPlayers) : null;
-        const fromSum = fromEnabled ? getLegSummary(p, 'from', carpoolPlayers) : null;
-        return (toSum && toSum.tone !== 'success') || (fromSum && fromSum.tone !== 'success');
-      });
-    } else if (tab === 'all' && monthFilter !== 'all') {
-      list = list.filter((p) => (p.isoDate || '').startsWith(monthFilter));
+    } else if (tab === 'all') {
+      if (monthFilter !== 'all') {
+        list = list.filter((p) => (p.isoDate || '').startsWith(monthFilter));
+      }
+      if (onlyNeedsDriver) {
+        list = list.filter((p) => practiceNeedsDriver(p));
+      }
     }
 
     return list;
@@ -572,46 +574,34 @@ export default function App() {
             {tab === 'all' && (upcomingMonthOptions.length > 0 || pastCount > 0 || needsDriverCount > 0 || onlyNeedsDriver) && (
               <div className="flex flex-wrap items-center justify-center gap-2">
                 <div className="inline-flex flex-wrap items-center justify-center gap-1 p-1 rounded-2xl sm:rounded-full bg-slate-900 border border-slate-800">
-                  {onlyNeedsDriver ? (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setOnlyNeedsDriver(false);
-                        setMonthFilter('all');
+                  <div className="relative inline-flex items-center">
+                    <select
+                      aria-label="Filter practices by month"
+                      value={monthFilter}
+                      onChange={(e) => {
+                        const next = e.target.value;
+                        setMonthFilter(next);
+                        if (next === 'past') setOnlyNeedsDriver(false);
                       }}
-                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 min-h-[36px] rounded-full text-[13px] font-semibold bg-transparent text-slate-300 hover:bg-slate-800 hover:text-slate-100 transition"
+                      className="appearance-none cursor-pointer pl-3.5 pr-7 py-1.5 min-h-[36px] rounded-full text-[13px] font-semibold transition focus:outline-none bg-slate-800 text-slate-100"
                     >
-                      All Upcoming
-                    </button>
-                  ) : (
-                    <div className="relative inline-flex items-center">
-                      <select
-                        aria-label="Filter practices by month"
-                        value={monthFilter}
-                        onChange={(e) => {
-                          setMonthFilter(e.target.value);
-                          setOnlyNeedsDriver(false);
-                        }}
-                        className="appearance-none cursor-pointer pl-3.5 pr-7 py-1.5 min-h-[36px] rounded-full text-[13px] font-semibold transition focus:outline-none bg-slate-800 text-slate-100"
-                      >
-                        <option value="all" className="bg-slate-900 text-slate-100">
-                          All Upcoming
+                      <option value="all" className="bg-slate-900 text-slate-100">
+                        All Upcoming
+                      </option>
+                      {upcomingMonthOptions.map((m) => (
+                        <option key={m.key} value={m.key} className="bg-slate-900 text-slate-100">
+                          {m.label} ({m.count})
                         </option>
-                        {upcomingMonthOptions.map((m) => (
-                          <option key={m.key} value={m.key} className="bg-slate-900 text-slate-100">
-                            {m.label} ({m.count})
-                          </option>
-                        ))}
-                        {pastCount > 0 && (
-                          <option value="past" className="bg-slate-900 text-slate-100">
-                            All Past ({pastCount})
-                          </option>
-                        )}
-                      </select>
-                      <ChevronDown className="w-3.5 h-3.5 text-slate-400 pointer-events-none absolute right-2.5" />
-                    </div>
-                  )}
-                  {(needsDriverCount > 0 || onlyNeedsDriver) && (
+                      ))}
+                      {pastCount > 0 && (
+                        <option value="past" className="bg-slate-900 text-slate-100">
+                          All Past ({pastCount})
+                        </option>
+                      )}
+                    </select>
+                    <ChevronDown className="w-3.5 h-3.5 text-slate-400 pointer-events-none absolute right-2.5" />
+                  </div>
+                  {monthFilter !== 'past' && (needsDriverCount > 0 || onlyNeedsDriver) && (
                     <button
                       type="button"
                       onClick={() => setOnlyNeedsDriver((v) => !v)}
@@ -654,7 +644,9 @@ export default function App() {
                   {tab === 'my-drives'
                     ? "You aren't signed up to drive for any upcoming practices yet."
                     : onlyNeedsDriver
-                      ? 'All upcoming practices have drivers covered!'
+                      ? monthFilter !== 'all'
+                        ? 'All practices in this month have drivers covered!'
+                        : 'All upcoming practices have drivers covered!'
                       : 'No upcoming practices scheduled.'}
                 </p>
                 {isAdmin && tab === 'all' && !onlyNeedsDriver && (
