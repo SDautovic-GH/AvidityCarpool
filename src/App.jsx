@@ -458,7 +458,13 @@ export default function App() {
                         : 'text-slate-400 hover:text-slate-200 font-semibold'
                     }`}
                   >
-                    <span>{label}</span>
+                    <span
+                      className={`pb-0.5 border-b ${
+                        tab === id ? 'border-current' : 'border-transparent'
+                      }`}
+                    >
+                      {label}
+                    </span>
                     {count > 0 && (
                       <span
                         className={`px-1.5 py-0.5 rounded-full text-[11px] font-bold leading-none tabular-nums ${
