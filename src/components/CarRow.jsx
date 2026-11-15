@@ -67,7 +67,13 @@ export default function CarRow({
   const otherRiders = riderIds.filter((id) => id !== myPlayerId).map(getPlayerName);
 
   return (
-    <div className="py-3 first:pt-2 last:pb-1">
+    <div
+      className={
+        isNeedsSub
+          ? 'my-1.5 rounded-xl bg-amber-500/10 border border-amber-500/35 border-l-4 border-l-amber-400 px-3 py-3'
+          : 'py-3 first:pt-2 last:pb-1'
+      }
+    >
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2.5 min-w-0">
           <div
@@ -82,8 +88,9 @@ export default function CarRow({
                 <span className="text-xs text-blue-400 font-medium whitespace-nowrap">• You</span>
               )}
               {isNeedsSub && (
-                <span className="text-xs text-amber-400 font-medium whitespace-nowrap">
-                  • Needs Sub
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wide bg-amber-500/20 text-amber-300 border border-amber-500/40 whitespace-nowrap">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                  Needs Sub
                 </span>
               )}
             </div>
@@ -243,7 +250,11 @@ export default function CarRow({
             )}
             <button
               onClick={() => onToggleNeedSub(practice.id, leg, car.id)}
-              className="px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-100 transition"
+              className={`px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-medium border transition ${
+                isNeedsSub
+                  ? 'bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border-amber-500/40'
+                  : 'bg-slate-800 hover:bg-slate-700 text-slate-100 border-transparent'
+              }`}
             >
               {isNeedsSub ? 'Cancel Sub' : 'Need Sub'}
             </button>
