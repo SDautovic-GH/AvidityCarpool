@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { Check, MapPin, MessageCircle, MessageSquare, Pencil, Share2, Trash2 } from 'lucide-react';
+import { Check, MapPin, MessageCircle, MessageSquare, Pencil, Trash2 } from 'lucide-react';
 import CarRow from './CarRow';
-import { formatPracticeShareText } from '../utils/calendar';
 import { buildSmsUrl, getMapUrl } from '../utils/maps';
 import {
   formatPracticeDate,
@@ -139,24 +138,6 @@ export default function PracticeCard({
     )
     .map((p) => p.phone);
   const myCarSmsUrl = buildSmsUrl(myCarPhones);
-
-  async function handleShare() {
-    const text = formatPracticeShareText(practice, players);
-    if (navigator.share) {
-      try {
-        await navigator.share({ text });
-        return;
-      } catch (err) {
-        if (err?.name === 'AbortError') return;
-      }
-    }
-    try {
-      await navigator.clipboard.writeText(text);
-      onToast?.('Carpool summary copied');
-    } catch {
-      onToast?.('Could not copy summary');
-    }
-  }
 
   const renderLegBody = (leg, isDesktop) => {
     const cars = practice.legs?.[leg] || [];
@@ -687,14 +668,6 @@ export default function PracticeCard({
               Text Carpool
             </a>
           )}
-          <button
-            onClick={handleShare}
-            className="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-slate-800/70 hover:bg-slate-800 text-slate-300 hover:text-slate-100 transition"
-            title="Share or copy carpool summary"
-          >
-            <Share2 className="w-3.5 h-3.5" />
-            Share
-          </button>
         </div>
       )}
     </div>
