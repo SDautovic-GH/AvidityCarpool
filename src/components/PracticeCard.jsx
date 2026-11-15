@@ -373,7 +373,7 @@ export default function PracticeCard({
           <div className="sm:hidden shrink-0">{adminPracticeActions}</div>
         </div>
 
-        <div className="flex items-center justify-start sm:justify-end gap-2 shrink-0">
+        <div className="flex flex-wrap items-center justify-start sm:justify-end gap-2 min-w-0">
           {!isCancelled &&
             myPlayer &&
             (isReadOnly ? (
@@ -422,7 +422,7 @@ export default function PracticeCard({
           {!isCancelled && !isReadOnly && canDrive && !drivesBoth && (
             <button
               onClick={() => onOpenDriveModal(practice.id, 'both')}
-              className={`${isAdmin ? 'inline-flex' : 'hidden md:inline-flex'} items-center px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition`}
+              className={`${isAdmin ? 'inline-flex' : 'hidden md:inline-flex'} items-center whitespace-nowrap px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition`}
             >
               + I can drive
             </button>
@@ -430,7 +430,7 @@ export default function PracticeCard({
           {!isCancelled && !isReadOnly && isAdmin && (!canDrive || drivesBoth) && (
             <button
               onClick={() => onOpenDriveModal(practice.id, 'both')}
-              className="inline-flex items-center px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
+              className="inline-flex items-center whitespace-nowrap px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
             >
               + Assign driver
             </button>
