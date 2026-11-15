@@ -57,7 +57,7 @@ If your player is missing practice, tap the **`[Player Name]: Going`** button in
 5. Tap **Confirm Drive**—your player is automatically placed in your car.
 
 ### Driving Tips & Plan Changes
-- **Stops (Pickup / Dropoff Addresses):** Once at least one teammate joins your car, tap **Stops** on your car row to see each rider's home address (1-tap Maps), parent **Call** / **Text** buttons, and a gym Maps link.
+- **Rider Stops (for drivers):** Once at least one teammate joins your car, tap **Stops** on your car row to see each rider's home address (1-tap Maps), parent **Call** / **Text** buttons, and a gym Maps link.
 - **Need a Sub:** Tap **Need Sub** on your car if you want another parent to take over your spot. Any eligible parent can tap **Take Over** to step in.
 - **Cancel Driving:** Tap **Drop** to remove your car from that leg.
 
