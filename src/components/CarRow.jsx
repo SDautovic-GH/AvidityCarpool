@@ -131,7 +131,7 @@ export default function CarRow({
             </>
           )}
 
-          {!isReadOnly && !isMyDrive && isNeedsSub && canDrive && (
+          {!isReadOnly && !isMyDrive && isNeedsSub && canDrive && currentParent && (
             <button
               onClick={() => onTakeOver(practice.id, leg, car.id)}
               className="px-3.5 py-2 min-h-[36px] rounded-full text-xs font-semibold bg-amber-400 hover:bg-amber-300 text-slate-950 transition"
@@ -196,9 +196,9 @@ export default function CarRow({
           )}
         </div>
 
-        {!isReadOnly && isMyDrive && (
+        {!isReadOnly && (isMyDrive || isAdmin) && (
           <div className="flex flex-wrap items-center gap-2 shrink-0">
-            {otherRiders.length > 0 && onOpenStopsModal && (
+            {isMyDrive && otherRiders.length > 0 && onOpenStopsModal && (
               <button
                 onClick={() => onOpenStopsModal(practice.id, leg, car.id)}
                 className="inline-flex items-center gap-1 px-3 py-1.5 min-h-[36px] rounded-full text-xs font-medium bg-slate-800 hover:bg-slate-700 text-blue-300 transition"
@@ -214,12 +214,14 @@ export default function CarRow({
             >
               {isNeedsSub ? 'Cancel Sub' : 'Need Sub'}
             </button>
-            <button
-              onClick={() => onDropDrive(practice.id, leg, car.id)}
-              className="px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-medium text-rose-400 border border-rose-500/25 bg-rose-500/5 hover:bg-rose-500/10 transition"
-            >
-              Drop
-            </button>
+            {isMyDrive && (
+              <button
+                onClick={() => onDropDrive(practice.id, leg, car.id)}
+                className="px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-medium text-rose-400 border border-rose-500/25 bg-rose-500/5 hover:bg-rose-500/10 transition"
+              >
+                Drop
+              </button>
+            )}
           </div>
         )}
       </div>
