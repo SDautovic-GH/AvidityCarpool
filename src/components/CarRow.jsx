@@ -214,9 +214,17 @@ export default function CarRow({
             >
               {isNeedsSub ? 'Cancel Sub' : 'Need Sub'}
             </button>
-            {isMyDrive && (
+            {(isMyDrive || isAdmin) && (
               <button
-                onClick={() => onDropDrive(practice.id, leg, car.id)}
+                onClick={() => {
+                  if (
+                    !isMyDrive &&
+                    !window.confirm(`Remove ${car.driverName}'s car from this leg?`)
+                  ) {
+                    return;
+                  }
+                  onDropDrive(practice.id, leg, car.id);
+                }}
                 className="px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-medium text-rose-400 border border-rose-500/25 bg-rose-500/5 hover:bg-rose-500/10 transition"
               >
                 Drop
