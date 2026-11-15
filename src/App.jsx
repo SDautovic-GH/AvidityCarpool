@@ -427,7 +427,7 @@ export default function App() {
           </div>
         </div>
 
-        <div className="max-w-4xl mx-auto px-3 sm:px-4 flex items-center justify-between gap-3">
+        <div className="max-w-4xl mx-auto px-3 sm:px-4 flex items-center justify-center">
           {(() => {
             const myParentId = currentParent?.id || '';
             const upcomingCount = practices.filter(
@@ -447,7 +447,7 @@ export default function App() {
               { id: 'roster', label: 'Team', count: 0 },
             ];
             return (
-              <div className="flex-1 sm:flex-none flex items-center justify-between sm:justify-start sm:gap-6">
+              <div className="w-full sm:w-auto flex items-center justify-evenly sm:justify-center sm:gap-7">
                 {tabs.map(({ id, label, count }) => (
                   <button
                     key={id}
