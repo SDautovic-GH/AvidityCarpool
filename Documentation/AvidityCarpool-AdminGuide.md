@@ -36,7 +36,7 @@ This guide covers all team administrator capabilities in **Avidity Carpool** (`h
    - Open **Team** → **Season & Schedule** → **Generate Practices** (or tap **Generate Practices** when no upcoming practices exist).
    - Pick a **Start Date** and **End Date** to preview and batch-create practices.
 2. **Edit, Reschedule, or Cancel a Practice:**
-   - Tap the **pencil (Edit)** icon in the top-right of any practice card to change its **date**, **time**, **gym/address**, or **status** (for example, marking a practice **Cancelled**).
+   - Tap the **pencil (Edit)** icon in the top-right of any practice card to change its **date**, **time**, **gym/address**, **status** (for example, **Cancelled**), or **Carpool Needed** (**Both Ways**, **From Practice Only**, **To Practice Only**, or **No Carpool Needed**).
    - Tap the **trash (Remove)** icon in the top-right of a practice card to delete it permanently.
 3. **Past Practices:** Admins can still view and edit past practices when toggling **Past** in the Practices filter.
 
