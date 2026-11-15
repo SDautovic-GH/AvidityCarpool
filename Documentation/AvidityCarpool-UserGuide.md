@@ -74,8 +74,6 @@ Need to share a quick update (like *"Meet by the north doors"* or *"Running 5 mi
 
 ## 7. Navigation Tabs: My Drives, Events & Team
 
-On phones, switch tabs using the bottom navigation bar; on computers, use the top tab bar.
-
 - **Practices:** Upcoming practices with **All Upcoming** / **Needs Driver** filters and a **Past** toggle.
 - **My Drives:** Shows only practices where you are driving, with an **Add My Drives to Calendar** button (`.ics` download).
 - **Events:** Full tournament schedule with Maps links and 1-tap **+ Calendar** (`.ics`) downloads.
