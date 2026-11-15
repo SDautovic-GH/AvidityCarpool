@@ -14,6 +14,7 @@ import {
   serverTimestamp,
 } from 'firebase/firestore';
 import { db, isFirebaseConfigured } from '../firebase';
+import { getCarpoolPlayerIdSet } from '../utils/schedule';
 
 export function useCarpoolData(user) {
   const [seasons, setSeasons] = useState([]);
@@ -129,12 +130,7 @@ export function useCarpoolData(user) {
   const currentParent = parents.find((p) => p.id === userEmail || p.email === userEmail) || null;
   const isAdmin = Boolean(isGlobalAdmin || currentParent?.role === 'admin');
   const activeSeason = seasons.find((s) => s.id === activeSeasonId) || null;
-  const carpoolPlayerIds = new Set(
-    parents
-      .filter((p) => (p.address || '').toLowerCase().includes('melrose'))
-      .map((p) => p.playerId)
-      .filter(Boolean)
-  );
+  const carpoolPlayerIds = getCarpoolPlayerIdSet(players, parents);
   const filterCarpoolRiders = (ids = []) =>
     carpoolPlayerIds.size > 0 ? ids.filter((id) => carpoolPlayerIds.has(id)) : [...ids];
 
@@ -427,6 +423,13 @@ export function useCarpoolData(user) {
     });
   }
 
+  async function togglePlayerCarpool(playerId, inCarpool) {
+    if (!activeSeasonId || !playerId) return;
+    await updateDoc(doc(db, 'seasons', activeSeasonId, 'players', playerId), {
+      inCarpool: Boolean(inCarpool),
+    });
+  }
+
   async function upsertPlayerOnly({ name, jerseyNumber = '' }) {
     if (!activeSeasonId) return;
     const cleanName = name.trim();
@@ -595,6 +598,7 @@ export function useCarpoolData(user) {
     savePlayerAndParent,
     updateMyProfile,
     updatePlayerName,
+    togglePlayerCarpool,
     upsertPlayerOnly,
     removeParent,
     createSeason,

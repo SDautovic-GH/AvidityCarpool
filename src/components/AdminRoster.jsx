@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Car, KeyRound, MapPin, MessageCircle, Pencil, Phone, Plus, Shield, Trash2, Upload, UserPlus, Users, X } from 'lucide-react';
-import { getAvatarColor, getInitials } from '../utils/schedule';
+import { getAvatarColor, getCarpoolPlayerIdSet, getInitials } from '../utils/schedule';
 import { buildSmsUrl, getMapUrl } from '../utils/maps';
 
 const EMPTY_FORM = {
@@ -25,6 +25,7 @@ export default function AdminRoster({
   onSavePlayerAndParent,
   onUpdateMyProfile,
   onUpdatePlayerName,
+  onTogglePlayerCarpool,
   onUpsertPlayerOnly,
   onRemoveParent,
   onSendResetEmail,
@@ -179,15 +180,10 @@ export default function AdminRoster({
     (p) => !players.some((pl) => pl.id === p.playerId)
   );
 
-  const melrosePlayerIds = new Set(
-    parents
-      .filter((p) => (p.address || '').toLowerCase().includes('melrose'))
-      .map((p) => p.playerId)
-      .filter(Boolean)
-  );
+  const carpoolPlayerIds = getCarpoolPlayerIdSet(players, parents);
   const myParentId = currentParent?.id || '';
   const carpoolPhones = parents
-    .filter((p) => p.id !== myParentId && melrosePlayerIds.has(p.playerId) && p.phone)
+    .filter((p) => p.id !== myParentId && carpoolPlayerIds.has(p.playerId) && p.phone)
     .map((p) => p.phone);
   const carpoolSmsUrl = buildSmsUrl(carpoolPhones);
 
@@ -342,11 +338,34 @@ export default function AdminRoster({
                             #{player.jerseyNumber}
                           </span>
                         )}
-                        {melrosePlayerIds.has(player.id) && (
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-500/15 text-blue-300 border border-blue-500/30 shrink-0">
-                            Carpool
-                          </span>
-                        )}
+                        {(() => {
+                          const inCarpool = carpoolPlayerIds.has(player.id);
+                          if (isAdmin && onTogglePlayerCarpool) {
+                            return (
+                              <button
+                                type="button"
+                                onClick={() => onTogglePlayerCarpool(player.id, !inCarpool)}
+                                title={
+                                  inCarpool
+                                    ? 'In carpool — tap to remove'
+                                    : 'Not in carpool — tap to add'
+                                }
+                                className={`min-h-[32px] px-2.5 py-1 rounded-full text-[11px] font-semibold border shrink-0 transition cursor-pointer ${
+                                  inCarpool
+                                    ? 'bg-blue-500/15 text-blue-300 border-blue-500/30 hover:bg-blue-500/25'
+                                    : 'bg-slate-800/70 text-slate-400 border-slate-700 hover:text-slate-200 hover:border-slate-500'
+                                }`}
+                              >
+                                {inCarpool ? '✓ Carpool' : '+ Carpool'}
+                              </button>
+                            );
+                          }
+                          return inCarpool ? (
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-500/15 text-blue-300 border border-blue-500/30 shrink-0">
+                              Carpool
+                            </span>
+                          ) : null;
+                        })()}
                         {isAdmin && (
                           <button
                             onClick={() => {

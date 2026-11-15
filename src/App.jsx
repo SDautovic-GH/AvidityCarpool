@@ -16,7 +16,7 @@ import AdminRoster from './components/AdminRoster';
 import AdminSeasonModal from './components/AdminSeasonModal';
 import TournamentsView from './components/TournamentsView';
 import { exportMyDrivesIcs } from './utils/calendar';
-import { getLegSummary, getShortPlayerNames } from './utils/schedule';
+import { getCarpoolPlayerIdSet, getLegSummary, getShortPlayerNames } from './utils/schedule';
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -95,6 +95,7 @@ export default function App() {
     savePlayerAndParent,
     updateMyProfile,
     updatePlayerName,
+    togglePlayerCarpool,
     upsertPlayerOnly,
     removeParent,
     createSeason,
@@ -108,13 +109,8 @@ export default function App() {
   const todayIso = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
   const carpoolPlayers = useMemo(() => {
-    const melrosePlayerIds = new Set(
-      parents
-        .filter((p) => (p.address || '').toLowerCase().includes('melrose'))
-        .map((p) => p.playerId)
-        .filter(Boolean)
-    );
-    return players.filter((pl) => melrosePlayerIds.has(pl.id));
+    const carpoolPlayerIds = getCarpoolPlayerIdSet(players, parents);
+    return players.filter((pl) => carpoolPlayerIds.has(pl.id));
   }, [players, parents]);
 
   const carpoolParents = useMemo(() => {
@@ -538,6 +534,12 @@ export default function App() {
             }
             onUpdatePlayerName={(id, name, jerseyNumber) =>
               runAction(() => updatePlayerName(id, name, jerseyNumber), 'Player updated')
+            }
+            onTogglePlayerCarpool={(playerId, nextVal) =>
+              runAction(
+                () => togglePlayerCarpool(playerId, nextVal),
+                nextVal ? 'Added to carpool' : 'Removed from carpool'
+              )
             }
             onUpsertPlayerOnly={(payload) =>
               runAction(() => upsertPlayerOnly(payload), 'Players imported')

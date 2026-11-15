@@ -207,3 +207,22 @@ export function getPracticeNotes(practice) {
   }
   return [];
 }
+
+/**
+ * Returns the Set of player IDs included in the carpool.
+ * Explicit boolean `player.inCarpool` overrides the default Melrose address match.
+ */
+export function getCarpoolPlayerIdSet(players = [], parents = []) {
+  const melroseIds = new Set(
+    parents
+      .filter((p) => (p.address || '').toLowerCase().includes('melrose'))
+      .map((p) => p.playerId)
+      .filter(Boolean)
+  );
+  const result = new Set();
+  players.forEach((pl) => {
+    const included = typeof pl.inCarpool === 'boolean' ? pl.inCarpool : melroseIds.has(pl.id);
+    if (included) result.add(pl.id);
+  });
+  return result;
+}
