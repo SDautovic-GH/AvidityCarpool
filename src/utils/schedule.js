@@ -226,21 +226,3 @@ export function getCarpoolPlayerIdSet(players = [], parents = []) {
   });
   return result;
 }
-
-/**
- * Returns true if the given carpool player is Going to this practice
- * and lacks a confirmed car (either unassigned or their car needs a sub) on To or From.
- */
-export function doesPlayerNeedRide(practice, playerId) {
-  if (!practice || !playerId || practice.status === 'cancelled') return false;
-  if ((practice.absentPlayerIds || []).includes(playerId)) return false;
-
-  const isLegConfirmed = (leg) => {
-    const car = (practice.legs?.[leg] || []).find((c) =>
-      (c.riderIds || []).includes(playerId)
-    );
-    return Boolean(car && car.status !== 'needs_sub');
-  };
-
-  return !isLegConfirmed('to') || !isLegConfirmed('from');
-}
