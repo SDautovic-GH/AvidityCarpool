@@ -67,12 +67,14 @@ If your player is missing practice, tap the **`[Player Name]: Going`** button in
 Need to share a quick update (like *"Meet by the north doors"* or *"Running 5 min late"*)?
 - **+ Note:** Add an attributed note to any practice card (you can delete your own notes anytime).
 - **Text My Car:** Opens a group text with only the driver and rider parents in your car for that practice.
-- **Text Carpool:** Opens a group text with all Melrose carpool parents.
+- **Text Carpool:** Opens a group text with all carpool parents.
 - **Share:** Copies or shares a clean text summary of the practice carpool.
 
 ---
 
 ## 7. Navigation Tabs: My Drives, Events & Team
+
+On phones, switch tabs using the bottom navigation bar; on computers, use the top tab bar.
 
 - **Practices:** Upcoming practices with **All Upcoming** / **Needs Driver** filters and a **Past** toggle.
 - **My Drives:** Shows only practices where you are driving, with an **Add My Drives to Calendar** button (`.ics` download).

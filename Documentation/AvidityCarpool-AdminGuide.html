@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Avidity Carpool — Admin Guide</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --border: #334155;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --accent: #3b82f6;
+      --green: #34d399;
+      --amber: #fbbf24;
+    }
+    @media print {
+      :root {
+        --bg: #ffffff;
+        --card: #f8fafc;
+        --border: #cbd5e1;
+        --text: #0f172a;
+        --muted: #475569;
+        --accent: #2563eb;
+        --green: #059669;
+        --amber: #d97706;
+      }
+      body { padding: 0; }
+      .card { break-inside: avoid; }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 24px 16px 56px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+    }
+    .container {
+      max-width: 740px;
+      margin: 0 auto;
+    }
+    header {
+      margin-bottom: 24px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--border);
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      background: rgba(59, 130, 246, 0.16);
+      color: #60a5fa;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      margin-bottom: 10px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      line-height: 1.2;
+    }
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+    .app-link {
+      display: inline-block;
+      margin-top: 14px;
+      padding: 8px 16px;
+      border-radius: 9999px;
+      background: var(--accent);
+      color: #ffffff;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px 20px;
+      margin-bottom: 16px;
+    }
+    h2 {
+      margin: 0 0 10px;
+      font-size: 17px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .step-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 9999px;
+      background: var(--accent);
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    p { margin: 0 0 10px; font-size: 14.5px; }
+    p:last-child { margin-bottom: 0; }
+    ul, ol {
+      margin: 8px 0 0;
+      padding-left: 20px;
+      font-size: 14.5px;
+    }
+    li { margin-bottom: 6px; }
+    li:last-child { margin-bottom: 0; }
+    .pill {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 9999px;
+      background: rgba(148, 163, 184, 0.15);
+      border: 1px solid var(--border);
+      font-size: 12.5px;
+      font-weight: 600;
+    }
+    .pill-blue {
+      background: rgba(59, 130, 246, 0.2);
+      border-color: rgba(59, 130, 246, 0.4);
+      color: #93c5fd;
+    }
+    .pill-green {
+      background: rgba(52, 211, 153, 0.15);
+      border-color: rgba(52, 211, 153, 0.35);
+      color: var(--green);
+    }
+    .tip {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.45);
+      border: 1px solid var(--border);
+      font-size: 13.5px;
+      color: var(--muted);
+    }
+    .tip strong { color: var(--text); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="badge">Avidity 16 Apex · Admin Guide</div>
+      <h1>Avidity Carpool — Admin Guide</h1>
+      <p class="subtitle">
+        Manage team roster, carpool eligibility overrides, practice schedules, ride assignments, tournaments, and seasons.
+      </p>
+      <a class="app-link" href="https://aviditycarpool.dautovic.com" target="_blank" rel="noopener noreferrer">
+        Open aviditycarpool.dautovic.com ↗
+      </a>
+    </header>
+
+    <section class="card">
+      <h2><span class="step-num">1</span> Roster &amp; Parent Accounts (Team Tab)</h2>
+      <ul>
+        <li><strong>Add a Family:</strong> Tap <span class="pill pill-blue">Add Family / Parent</span> to add a player and parent contact. Parents must sign up using the exact email address entered here.</li>
+        <li><strong>Bulk Import:</strong> Tap <span class="pill">Bulk Import</span> to add multiple players and families at once.</li>
+        <li><strong>Edit or Reset:</strong> Edit any player's name/jersey number, update a parent's contact info or <strong>Admin</strong> role, send a password reset email, or remove a parent.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2><span class="step-num">2</span> Carpool Eligibility Override</h2>
+      <p>
+        By default, any player whose parent address includes <strong>Melrose</strong> is automatically included in the carpool (<span class="pill pill-blue">✓ Carpool</span>).
+      </p>
+      <ul>
+        <li><strong>Manual Override:</strong> Tap <span class="pill pill-blue">✓ Carpool</span> or <span class="pill">+ Carpool</span> on any player in the <strong>Team</strong> tab to include a non-Melrose teammate or exclude a Melrose opt-out.</li>
+        <li><strong>Where It Applies:</strong> Only <span class="pill pill-blue">✓ Carpool</span> players appear in practice ride headcounts, <em>Still need a ride</em>, and <span class="pill">Text Carpool</span>.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2><span class="step-num">3</span> Managing Practices (Practices Tab)</h2>
+      <ul>
+        <li><strong>Generate Schedule:</strong> Open <strong>Team</strong> → <span class="pill">Season &amp; Schedule</span> → <span class="pill pill-blue">Generate Practices</span>, choose a date range, and preview before creating.</li>
+        <li><strong>Edit / Cancel / Remove:</strong> Tap the <strong>pencil</strong> icon on any practice card to change date, time, gym, or status (e.g., <em>Cancelled</em>), or tap the <strong>trash</strong> icon to delete it.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2><span class="step-num">4</span> Ride Assignments &amp; Overrides</h2>
+      <ul>
+        <li><strong>Assign Unassigned Riders:</strong> Under <em>Still need a ride</em>, tap <span class="pill">[Name] +</span> to assign a player into any confirmed car with open seats.</li>
+        <li><strong>Car &amp; Note Controls:</strong> Remove riders (<strong>×</strong>), manage or <span class="pill">Drop</span> any parent's car, trigger <span class="pill">Need Sub</span>, or delete any practice note.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2><span class="step-num">5</span> Tournaments &amp; Seasons</h2>
+      <ul>
+        <li><strong>Events Tab:</strong> Tap <span class="pill">Load 26/27 Tournaments</span> (when empty) or <span class="pill pill-blue">+ Add Tournament</span> to add, edit, or remove events.</li>
+        <li><strong>New Season:</strong> Open <strong>Team</strong> → <span class="pill">Season &amp; Schedule</span> → <span class="pill">New Season</span>, enter team/season details, select players to carry over, and create.</li>
+      </ul>
+    </section>
+  </div>
+</body>
+</html>
