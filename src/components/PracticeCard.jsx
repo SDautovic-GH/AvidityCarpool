@@ -535,25 +535,25 @@ export default function PracticeCard({
       </div>
 
       {notesList.length > 0 && (
-        <div className="rounded-xl bg-slate-950/70 border border-slate-800/90 px-3 py-2 space-y-1.5 text-xs text-slate-300">
+        <div className="rounded-xl bg-amber-500/10 border border-amber-500/30 border-l-4 border-l-amber-400 px-3.5 py-2.5 space-y-2 text-[13px] text-slate-100">
           {notesList.map((note) => {
             const canDelete =
               !isReadOnly && (isAdmin || (note.authorId && note.authorId === myParentId));
             return (
               <div key={note.id} className="flex items-start justify-between gap-2">
                 <div className="flex items-start gap-2 min-w-0">
-                  <MessageSquare className="w-3.5 h-3.5 text-blue-400 shrink-0 mt-0.5" />
-                  <div className="min-w-0 break-words">
-                    <span>{note.text}</span>
+                  <MessageSquare className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                  <div className="min-w-0 break-words leading-snug">
+                    <span className="font-medium">{note.text}</span>
                     {note.authorName && (
-                      <span className="text-slate-400"> — {note.authorName}</span>
+                      <span className="text-xs text-slate-400 font-normal"> — {note.authorName}</span>
                     )}
                   </div>
                 </div>
                 {canDelete && onDeleteNote && (
                   <button
                     onClick={() => onDeleteNote(practice.id, note.id)}
-                    className="px-2.5 py-1 min-w-[32px] min-h-[32px] flex items-center justify-center rounded-full text-xs font-bold text-slate-500 hover:text-rose-400 hover:bg-slate-800 transition shrink-0"
+                    className="px-2.5 py-1 min-w-[32px] min-h-[32px] flex items-center justify-center rounded-full text-xs font-bold text-slate-400 hover:text-rose-400 hover:bg-slate-800/60 transition shrink-0"
                     title="Delete note"
                   >
                     ×
