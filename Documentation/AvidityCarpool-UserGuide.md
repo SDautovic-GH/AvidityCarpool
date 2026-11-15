@@ -56,7 +56,8 @@ If your player is missing practice, tap the **`[Player Name]: Going`** button in
 4. Optional: check **Repeat for all upcoming [weekday] practices** to sign up for the whole season on that day of the week in one tap.
 5. Tap **Confirm Drive**—your player is automatically placed in your car.
 
-### If Your Plans Change After Signing Up to Drive
+### Driving Tips & Plan Changes
+- **Stops (Pickup / Dropoff Addresses):** Once at least one teammate joins your car, tap **Stops** on your car row to see each rider's home address (1-tap Maps), parent **Call** / **Text** buttons, and a gym Maps link.
 - **Need a Sub:** Tap **Need Sub** on your car if you want another parent to take over your spot. Any eligible parent can tap **Take Over** to step in.
 - **Cancel Driving:** Tap **Drop** to remove your car from that leg.
 
@@ -74,7 +75,7 @@ Need to share a quick update (like *"Meet by the north doors"* or *"Running 5 mi
 
 ## 7. Navigation Tabs: My Drives, Events & Team
 
-- **Practices:** Upcoming practices with **All Upcoming** / **Needs Driver** filters and a **Past** toggle.
+- **Practices:** Upcoming practices with **All Upcoming** / month / **All Past** and **Needs Driver** filters.
 - **My Drives:** Shows only practices where you are driving, with an **Add My Drives to Calendar** button (`.ics` download).
 - **Events:** Full tournament schedule with Maps links and 1-tap **+ Calendar** (`.ics`) downloads.
 - **Team:** Full team roster and contacts:
