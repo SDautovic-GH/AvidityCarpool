@@ -12,11 +12,17 @@ import AuthScreen from './components/AuthScreen';
 import PracticeCard from './components/PracticeCard';
 import DriveModal from './components/DriveModal';
 import AssignModal from './components/AssignModal';
+import StopsModal from './components/StopsModal';
 import AdminRoster from './components/AdminRoster';
 import AdminSeasonModal from './components/AdminSeasonModal';
 import TournamentsView from './components/TournamentsView';
 import { exportMyDrivesIcs } from './utils/calendar';
-import { getCarpoolPlayerIdSet, getLegSummary, getShortPlayerNames } from './utils/schedule';
+import {
+  doesPlayerNeedRide,
+  getCarpoolPlayerIdSet,
+  getLegSummary,
+  getShortPlayerNames,
+} from './utils/schedule';
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -24,6 +30,7 @@ export default function App() {
 
   const [tab, setTab] = useState('all'); // 'all' | 'my-drives' | 'tournaments' | 'roster'
   const [onlyNeedsDriver, setOnlyNeedsDriver] = useState(false);
+  const [onlyMyNeedsRide, setOnlyMyNeedsRide] = useState(false);
   const [monthFilter, setMonthFilter] = useState('all');
   const [showAllUpcoming, setShowAllUpcoming] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -46,6 +53,7 @@ export default function App() {
   }, [zoomPct]);
   const [driveModal, setDriveModal] = useState(null); // { practiceId, defaultDirection }
   const [assignModal, setAssignModal] = useState(null); // { practiceId, leg, playerId }
+  const [stopsModal, setStopsModal] = useState(null); // { practiceId, leg, carId }
   const [seasonModalOpen, setSeasonModalOpen] = useState(false);
   const [toast, setToast] = useState('');
 
@@ -129,6 +137,20 @@ export default function App() {
     [practices, carpoolPlayers, todayIso]
   );
 
+  const myPlayerId = currentParent?.playerId || '';
+  const isMyPlayerInCarpool = Boolean(
+    myPlayerId && carpoolPlayers.some((pl) => pl.id === myPlayerId)
+  );
+  const myNeedsRideCount = useMemo(() => {
+    if (!isMyPlayerInCarpool) return 0;
+    return practices.filter(
+      (p) =>
+        p.isoDate >= todayIso &&
+        p.status !== 'cancelled' &&
+        doesPlayerNeedRide(p, myPlayerId)
+    ).length;
+  }, [practices, todayIso, isMyPlayerInCarpool, myPlayerId]);
+
   const upcomingMonthOptions = useMemo(() => {
     const counts = new Map();
     practices.forEach((p) => {
@@ -151,7 +173,7 @@ export default function App() {
 
   const visiblePractices = useMemo(() => {
     const myParentId = currentParent?.id || '';
-    if (tab === 'all' && !onlyNeedsDriver && monthFilter === 'past') {
+    if (tab === 'all' && !onlyNeedsDriver && !onlyMyNeedsRide && monthFilter === 'past') {
       return practices.filter((p) => p.isoDate < todayIso).reverse();
     }
 
@@ -163,6 +185,10 @@ export default function App() {
           p.status !== 'cancelled' &&
           ((p.legs?.to || []).some((c) => c.driverParentId === myParentId) ||
             (p.legs?.from || []).some((c) => c.driverParentId === myParentId))
+      );
+    } else if (tab === 'all' && onlyMyNeedsRide && isMyPlayerInCarpool) {
+      list = list.filter(
+        (p) => p.status !== 'cancelled' && doesPlayerNeedRide(p, myPlayerId)
       );
     } else if (tab === 'all' && onlyNeedsDriver) {
       list = list.filter((p) => {
@@ -176,7 +202,18 @@ export default function App() {
     }
 
     return list;
-  }, [practices, tab, currentParent, todayIso, onlyNeedsDriver, monthFilter, carpoolPlayers]);
+  }, [
+    practices,
+    tab,
+    currentParent,
+    todayIso,
+    onlyNeedsDriver,
+    onlyMyNeedsRide,
+    isMyPlayerInCarpool,
+    myPlayerId,
+    monthFilter,
+    carpoolPlayers,
+  ]);
 
   const pastCount = useMemo(
     () => practices.filter((p) => p.isoDate < todayIso).length,
@@ -557,9 +594,9 @@ export default function App() {
           />
         ) : (
           <>
-            {tab === 'all' && (upcomingMonthOptions.length > 0 || pastCount > 0 || needsDriverCount > 0 || onlyNeedsDriver) && (
+            {tab === 'all' && (upcomingMonthOptions.length > 0 || pastCount > 0 || needsDriverCount > 0 || onlyNeedsDriver || myNeedsRideCount > 0 || onlyMyNeedsRide) && (
               <div className="flex flex-wrap items-center justify-center gap-2">
-                <div className="inline-flex items-center gap-1 p-1 rounded-full bg-slate-900 border border-slate-800">
+                <div className="inline-flex flex-wrap items-center justify-center gap-1 p-1 rounded-2xl sm:rounded-full bg-slate-900 border border-slate-800">
                   <div className="relative inline-flex items-center">
                     <select
                       aria-label="Filter practices by month"
@@ -567,12 +604,14 @@ export default function App() {
                       onChange={(e) => {
                         setMonthFilter(e.target.value);
                         setOnlyNeedsDriver(false);
+                        setOnlyMyNeedsRide(false);
                       }}
                       onClick={() => {
                         if (onlyNeedsDriver) setOnlyNeedsDriver(false);
+                        if (onlyMyNeedsRide) setOnlyMyNeedsRide(false);
                       }}
                       className={`appearance-none cursor-pointer pl-3.5 pr-7 py-1.5 min-h-[36px] rounded-full text-[13px] font-semibold transition focus:outline-none ${
-                        !onlyNeedsDriver
+                        !onlyNeedsDriver && !onlyMyNeedsRide
                           ? 'bg-slate-800 text-slate-100'
                           : 'bg-transparent text-slate-400 hover:text-slate-200'
                       }`}
@@ -593,9 +632,28 @@ export default function App() {
                     </select>
                     <ChevronDown className="w-3.5 h-3.5 text-slate-400 pointer-events-none absolute right-2.5" />
                   </div>
+                  {(myNeedsRideCount > 0 || onlyMyNeedsRide) && (
+                    <button
+                      onClick={() => {
+                        setOnlyMyNeedsRide(true);
+                        setOnlyNeedsDriver(false);
+                      }}
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 min-h-[36px] rounded-full text-[13px] font-semibold transition ${
+                        onlyMyNeedsRide
+                          ? 'bg-rose-500/20 text-rose-300'
+                          : 'text-rose-300/85 hover:text-rose-200'
+                      }`}
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
+                      Needs My Ride ({myNeedsRideCount})
+                    </button>
+                  )}
                   {(needsDriverCount > 0 || onlyNeedsDriver) && (
                     <button
-                      onClick={() => setOnlyNeedsDriver(true)}
+                      onClick={() => {
+                        setOnlyNeedsDriver(true);
+                        setOnlyMyNeedsRide(false);
+                      }}
                       className={`inline-flex items-center gap-1.5 px-3 py-1.5 min-h-[36px] rounded-full text-[13px] font-semibold transition ${
                         onlyNeedsDriver
                           ? 'bg-amber-500/20 text-amber-300'
@@ -634,11 +692,13 @@ export default function App() {
                 <p className="text-sm text-slate-400">
                   {tab === 'my-drives'
                     ? "You aren't signed up to drive for any upcoming practices yet."
-                    : onlyNeedsDriver
-                      ? 'All upcoming practices have drivers covered!'
-                      : 'No upcoming practices scheduled.'}
+                    : onlyMyNeedsRide
+                      ? 'Your player has a confirmed ride for every upcoming practice!'
+                      : onlyNeedsDriver
+                        ? 'All upcoming practices have drivers covered!'
+                        : 'No upcoming practices scheduled.'}
                 </p>
-                {isAdmin && tab === 'all' && !onlyNeedsDriver && (
+                {isAdmin && tab === 'all' && !onlyNeedsDriver && !onlyMyNeedsRide && (
                   <button
                     onClick={() => setSeasonModalOpen(true)}
                     className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition"
@@ -652,6 +712,7 @@ export default function App() {
               const shouldCapUpcoming =
                 tab === 'all' &&
                 !onlyNeedsDriver &&
+                !onlyMyNeedsRide &&
                 monthFilter === 'all' &&
                 !showAllUpcoming &&
                 visiblePractices.length > 10;
@@ -679,6 +740,9 @@ export default function App() {
                   }
                   onOpenAssignModal={(practiceId, leg, playerId) =>
                     setAssignModal({ practiceId, leg, playerId })
+                  }
+                  onOpenStopsModal={(practiceId, leg, carId) =>
+                    setStopsModal({ practiceId, leg, carId })
                   }
                   onJoin={(practiceId, leg, carId, playerId) =>
                     runAction(() =>
@@ -820,6 +884,27 @@ export default function App() {
           }}
         />
       )}
+
+      {stopsModal && (() => {
+        const activeStopsPractice = practices.find((p) => p.id === stopsModal.practiceId);
+        const activeStopsCar = (activeStopsPractice?.legs?.[stopsModal.leg] || []).find(
+          (c) => c.id === stopsModal.carId
+        );
+        if (!activeStopsPractice || !activeStopsCar) return null;
+        return (
+          <StopsModal
+            practice={activeStopsPractice}
+            leg={stopsModal.leg}
+            car={activeStopsCar}
+            players={carpoolPlayers}
+            parents={parents}
+            shortPlayerNames={shortPlayerNames}
+            currentParentId={currentParent?.id || ''}
+            myPlayerId={myPlayerId}
+            onClose={() => setStopsModal(null)}
+          />
+        );
+      })()}
 
       {seasonModalOpen && isAdmin && (
         <AdminSeasonModal

@@ -1,4 +1,5 @@
 import React from 'react';
+import { MapPin } from 'lucide-react';
 import { getAvatarColor, getInitials, getShortPlayerNames } from '../utils/schedule';
 
 export default function CarRow({
@@ -17,6 +18,7 @@ export default function CarRow({
   onDropDrive,
   onTakeOver,
   onAdminRemoveRider,
+  onOpenStopsModal,
 }) {
   const myPlayerId = currentParent?.playerId || '';
   const myParentId = currentParent?.id || '';
@@ -195,7 +197,17 @@ export default function CarRow({
         </div>
 
         {!isReadOnly && isMyDrive && (
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex flex-wrap items-center gap-2 shrink-0">
+            {otherRiders.length > 0 && onOpenStopsModal && (
+              <button
+                onClick={() => onOpenStopsModal(practice.id, leg, car.id)}
+                className="inline-flex items-center gap-1 px-3 py-1.5 min-h-[36px] rounded-full text-xs font-medium bg-slate-800 hover:bg-slate-700 text-blue-300 transition"
+                title="View rider addresses and parent contacts"
+              >
+                <MapPin className="w-3.5 h-3.5" />
+                Stops
+              </button>
+            )}
             <button
               onClick={() => onToggleNeedSub(practice.id, leg, car.id)}
               className="px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-100 transition"

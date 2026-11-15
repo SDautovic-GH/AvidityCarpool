@@ -30,6 +30,7 @@ export default function PracticeCard({
   onToggleAttendance,
   onOpenDriveModal,
   onOpenAssignModal,
+  onOpenStopsModal,
   onJoin,
   onJoinBoth,
   onLeave,
@@ -94,6 +95,9 @@ export default function PracticeCard({
       car.driverParentId === myParentId ? 'You' : firstNameOf(car.driverName);
 
     if (toCar && fromCar) {
+      if (toCar.status === 'needs_sub' || fromCar.status === 'needs_sub') {
+        return { text: 'Driver needs sub', warning: true };
+      }
       const sameDriver =
         (toCar.driverParentId || toCar.driverName) ===
         (fromCar.driverParentId || fromCar.driverName);
@@ -103,6 +107,9 @@ export default function PracticeCard({
           : { text: `Riding with ${firstNameOf(toCar.driverName)}`, warning: false };
       }
       return { text: `To ${driverLabel(toCar)} · From ${driverLabel(fromCar)}`, warning: false };
+    }
+    if (toCar?.status === 'needs_sub' || fromCar?.status === 'needs_sub') {
+      return { text: 'Driver needs sub', warning: true };
     }
     if (toCar) return { text: `To ${driverLabel(toCar)} · Needs ride From`, warning: true };
     if (fromCar) return { text: `Needs ride To · From ${driverLabel(fromCar)}`, warning: true };
@@ -256,6 +263,7 @@ export default function PracticeCard({
                 onDropDrive={onDropDrive}
                 onTakeOver={onTakeOver}
                 onAdminRemoveRider={onAdminRemoveRider}
+                onOpenStopsModal={onOpenStopsModal}
               />
             ))
           )}
