@@ -29,6 +29,7 @@ Each card shows one practice date, time, and gym:
 - **Status Dot:**
   - **Green:** Covered — everyone going has a seat.
   - **Amber / Red:** Still need a driver, more seats, or a sub.
+- **One-Way Carpool:** Special events where parents handle one direction themselves show **Carpool To Only** or **Carpool From Only**.
 - **To / From Tabs (Phone):** On mobile, tap **→ To Practice** or **← From Practice** to switch directions. On a computer, both appear side by side.
 
 ---
@@ -58,6 +59,7 @@ If your player is missing practice, tap the **`[Player Name]: Going`** button in
 
 ### Driving Tips & Plan Changes
 - **Rider Stops (for drivers):** Once at least one teammate joins your car, tap **Stops** on your car row to see each rider's home address (1-tap Maps), parent **Call** / **Text** buttons, and a gym Maps link.
+- **Adjust Seats for One Practice:** Use the **`N seats ▾`** dropdown next to the open-seat count on your car row to change seats for just that practice leg.
 - **Need a Sub:** Tap **Need Sub** on your car if you want another parent to take over your spot. Any eligible parent can tap **Take Over** to step in.
 - **Cancel Driving:** Tap **Drop** to remove your car from that leg.
 
@@ -75,7 +77,7 @@ Need to share a quick update (like *"Meet by the north doors"* or *"Running 5 mi
 
 ## 7. Navigation Tabs: My Drives, Events & Team
 
-- **Practices:** Upcoming practices with **All Upcoming** / month / **All Past** and **Needs Driver** filters.
+- **Practices:** Upcoming practices with **All Upcoming** / month / **All Past** and **Needs Driver** filters (selecting a month scopes both the list and the **Needs Driver** count to that month).
 - **My Drives:** Shows only practices where you are driving, with an **Add My Drives to Calendar** button (`.ics` download).
 - **Events:** Full tournament schedule with Maps links and 1-tap **+ Calendar** (`.ics`) downloads.
 - **Team:** Full team roster and contacts:

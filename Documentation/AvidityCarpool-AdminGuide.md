@@ -47,7 +47,7 @@ This guide covers all team administrator capabilities in **Avidity Carpool** (`h
 Admins can step in to organize rides on any practice card:
 
 - **Assign a Driver:** Tap **+ I can drive** or **+ Assign driver** on any practice card and pick any drivable parent from the **Driver (Admin)** dropdown (for that practice or all upcoming practices on that weekday).
-- **Override Need Sub / Adjust Seats / Remove a Driver:** On any car row, use **`− N seats +`** to adjust available seats for that practice leg, tap **Need Sub** / **Cancel Sub** to override sub status, **Take Over** on a sub-needed car, or **Drop** (with confirmation) to remove that driver from an individual practice leg without changing their roster `Can drive` status.
+- **Override Need Sub / Adjust Seats / Remove a Driver:** On any car row, use the inline **`N seats ▾`** dropdown next to the open-seat count to adjust available seats for that practice leg, tap **Need Sub** / **Cancel Sub** to override sub status, **Take Over** on a sub-needed car, or **Drop** (with confirmation) to remove that driver from an individual practice leg without changing their roster `Can drive` status.
 - **Assign or Remove Riders:** Under **Still need a ride:**, tap any player's **`[Name] +`** button to open the **Assign** modal and place them into any confirmed car with open seats, or tap **`×`** next to any rider's name to remove them.
 - **Delete Any Note:** Admins can delete any parent's practice note on a card.
 
