@@ -574,16 +574,35 @@ export function useCarpoolData(user) {
     if (!activeSeasonId) return;
     const batch = writeBatch(db);
     list.forEach((t) => {
-      const ref = doc(collection(db, 'seasons', activeSeasonId, 'tournaments'));
-      batch.set(ref, {
-        name: t.name,
-        dateLabel: t.dateLabel,
-        sortDate: t.sortDate,
-        location: t.location || '',
-        address: t.address || '',
-        notes: t.notes || '',
-        createdAt: serverTimestamp(),
-      });
+      const existing = tournaments.find(
+        (ex) =>
+          ex.sortDate === t.sortDate ||
+          (ex.name || '').trim().toLowerCase() === (t.name || '').trim().toLowerCase() ||
+          ((ex.name || '').toLowerCase().includes('nationals') &&
+            (t.name || '').toLowerCase().includes('nationals'))
+      );
+      if (existing) {
+        const ref = doc(db, 'seasons', activeSeasonId, 'tournaments', existing.id);
+        batch.update(ref, {
+          name: t.name,
+          dateLabel: t.dateLabel,
+          sortDate: t.sortDate,
+          location: t.location || '',
+          address: t.address || '',
+          notes: t.notes || '',
+        });
+      } else {
+        const ref = doc(collection(db, 'seasons', activeSeasonId, 'tournaments'));
+        batch.set(ref, {
+          name: t.name,
+          dateLabel: t.dateLabel,
+          sortDate: t.sortDate,
+          location: t.location || '',
+          address: t.address || '',
+          notes: t.notes || '',
+          createdAt: serverTimestamp(),
+        });
+      }
     });
     await batch.commit();
   }

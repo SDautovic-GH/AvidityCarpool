@@ -81,16 +81,18 @@ export default function TournamentsView({
 
         {isAdmin && (
           <div className="flex flex-wrap items-center gap-2">
-            {tournaments.length === 0 && (
-              <button
-                onClick={handleSeed}
-                disabled={seeding}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-slate-100 transition"
-              >
-                <Sparkles className="w-3.5 h-3.5 text-blue-400" />
-                {seeding ? 'Loading...' : 'Load 26/27 Tournaments'}
-              </button>
-            )}
+            <button
+              onClick={handleSeed}
+              disabled={seeding}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-slate-100 transition"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-blue-400" />
+              {seeding
+                ? 'Syncing...'
+                : tournaments.length === 0
+                  ? 'Load 26/27 Tournaments'
+                  : 'Sync 26/27'}
+            </button>
             <button
               onClick={openAdd}
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition"
