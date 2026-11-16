@@ -507,7 +507,7 @@ export default function App() {
           </div>
         </div>
 
-        <div className="max-w-4xl mx-auto px-3 sm:px-4 flex items-center justify-center">
+        <div className="max-w-4xl mx-auto px-2 sm:px-4 flex items-center justify-center">
           {(() => {
             const myParentId = currentParent?.id || '';
             const upcomingCount = practices.filter(
@@ -527,7 +527,7 @@ export default function App() {
               { id: 'roster', label: 'Team', count: 0 },
             ];
             return (
-              <div className="w-full sm:w-auto flex items-center justify-between gap-3 sm:justify-center sm:gap-7 overflow-x-auto">
+              <div className="w-full sm:w-auto flex items-center justify-between gap-1.5 sm:justify-center sm:gap-7">
                 {tabs.map(({ id, label, count }) => (
                   <button
                     key={id}
@@ -547,7 +547,7 @@ export default function App() {
                     </span>
                     {count > 0 && (
                       <span
-                        className={`px-1.5 py-0.5 rounded-full text-[11px] font-bold leading-none tabular-nums ${
+                        className={`px-1 sm:px-1.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold leading-none tabular-nums ${
                           tab === id
                             ? 'bg-slate-800 text-slate-100'
                             : 'bg-slate-900 text-slate-400'
