@@ -56,6 +56,76 @@ export default function App() {
   const [seasonModalOpen, setSeasonModalOpen] = useState(false);
   const [toast, setToast] = useState('');
 
+  const hasModalOpen = Boolean(driveModal || assignModal || stopsModal || seasonModalOpen);
+  const hasModalOpenRef = React.useRef(hasModalOpen);
+  hasModalOpenRef.current = hasModalOpen;
+  const pendingBuildIdRef = React.useRef(null);
+
+  useEffect(() => {
+    if (import.meta.env.DEV) return;
+    // Strip one-time cache-bust param after reload so the address bar stays clean.
+    const curUrl = new URL(window.location.href);
+    if (curUrl.searchParams.has('_v')) {
+      curUrl.searchParams.delete('_v');
+      window.history.replaceState({}, '', curUrl.toString());
+    }
+
+    const applyReload = (remoteId) => {
+      try {
+        if (sessionStorage.getItem('avidity_reloaded_for_build') === remoteId) return;
+        sessionStorage.setItem('avidity_reloaded_for_build', remoteId);
+      } catch {
+        // ignore storage errors
+      }
+      const nextUrl = new URL(window.location.href);
+      nextUrl.searchParams.set('_v', remoteId);
+      window.location.replace(nextUrl.toString());
+    };
+
+    const checkForUpdate = async () => {
+      try {
+        const res = await fetch(`/version.json?t=${Date.now()}`, { cache: 'no-store' });
+        if (!res.ok) return;
+        const data = await res.json();
+        const remoteId = data?.buildId;
+        if (!remoteId || remoteId === __APP_BUILD_ID__) return;
+        if (hasModalOpenRef.current) {
+          pendingBuildIdRef.current = remoteId;
+          return;
+        }
+        applyReload(remoteId);
+      } catch {
+        // ignore transient network errors
+      }
+    };
+
+    checkForUpdate();
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') checkForUpdate();
+    };
+    const onResume = () => checkForUpdate();
+    document.addEventListener('visibilitychange', onVisible);
+    window.addEventListener('focus', onResume);
+    window.addEventListener('pageshow', onResume);
+    const intervalId = setInterval(checkForUpdate, 60_000);
+    return () => {
+      document.removeEventListener('visibilitychange', onVisible);
+      window.removeEventListener('focus', onResume);
+      window.removeEventListener('pageshow', onResume);
+      clearInterval(intervalId);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!hasModalOpen && pendingBuildIdRef.current) {
+      const remoteId = pendingBuildIdRef.current;
+      pendingBuildIdRef.current = null;
+      const nextUrl = new URL(window.location.href);
+      nextUrl.searchParams.set('_v', remoteId);
+      window.location.replace(nextUrl.toString());
+    }
+  }, [hasModalOpen]);
+
   useEffect(() => {
     if (!isFirebaseConfigured || !auth) return;
     const unsub = onAuthStateChanged(auth, (u) => {
