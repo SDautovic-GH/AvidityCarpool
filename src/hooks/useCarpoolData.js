@@ -580,6 +580,7 @@ export function useCarpoolData(user) {
         dateLabel: t.dateLabel,
         sortDate: t.sortDate,
         location: t.location || '',
+        address: t.address || '',
         notes: t.notes || '',
         createdAt: serverTimestamp(),
       });
