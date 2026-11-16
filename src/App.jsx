@@ -527,12 +527,12 @@ export default function App() {
               { id: 'roster', label: 'Team', count: 0 },
             ];
             return (
-              <div className="w-full sm:w-auto flex items-center justify-evenly sm:justify-center sm:gap-7">
+              <div className="w-full sm:w-auto flex items-center justify-between gap-2 sm:justify-center sm:gap-7 overflow-x-auto">
                 {tabs.map(({ id, label, count }) => (
                   <button
                     key={id}
                     onClick={() => setTab(id)}
-                    className={`inline-flex items-center gap-1 sm:gap-1.5 py-2.5 text-sm sm:text-[15px] whitespace-nowrap shrink-0 transition-colors ${
+                    className={`inline-flex items-center gap-1 sm:gap-1.5 py-2.5 text-[13px] sm:text-[15px] whitespace-nowrap shrink-0 transition-colors ${
                       tab === id
                         ? 'text-slate-100 font-bold'
                         : 'text-slate-400 hover:text-slate-200 font-semibold'
