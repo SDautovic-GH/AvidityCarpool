@@ -532,7 +532,7 @@ export default function App() {
                   <button
                     key={id}
                     onClick={() => setTab(id)}
-                    className={`inline-flex items-center gap-1 sm:gap-1.5 py-2.5 text-sm sm:text-[15px] whitespace-nowrap shrink-0 transition-colors ${
+                    className={`inline-flex items-baseline gap-1 sm:gap-1.5 py-2.5 text-sm sm:text-[15px] whitespace-nowrap shrink-0 transition-colors ${
                       tab === id
                         ? 'text-slate-100 font-bold'
                         : 'text-slate-400 hover:text-slate-200 font-semibold'
@@ -547,7 +547,7 @@ export default function App() {
                     </span>
                     {count > 0 && (
                       <span
-                        className={`px-1 sm:px-1.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold leading-none tabular-nums ${
+                        className={`px-1.5 py-0.5 rounded-full text-[11px] font-bold leading-none tabular-nums ${
                           tab === id
                             ? 'bg-slate-800 text-slate-100'
                             : 'bg-slate-900 text-slate-400'
