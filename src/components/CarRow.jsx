@@ -156,7 +156,7 @@ export default function CarRow({
               {canRideBoth && (
                 <button
                   onClick={() => onJoinBoth(practice.id, car.driverParentId)}
-                  className="px-3.5 py-2 min-h-[36px] rounded-full text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-100 transition"
+                  className="px-3.5 py-2 min-h-[36px] rounded-full text-xs font-medium bg-slate-700/75 hover:bg-slate-700 text-slate-100 transition"
                 >
                   Both Ways
                 </button>
@@ -234,7 +234,7 @@ export default function CarRow({
             {isMyDrive && otherRiders.length > 0 && onOpenStopsModal && (
               <button
                 onClick={() => onOpenStopsModal(practice.id, leg, car.id)}
-                className="inline-flex items-center gap-1 px-3 py-1.5 min-h-[36px] rounded-full text-xs font-medium bg-slate-800 hover:bg-slate-700 text-blue-300 transition"
+                className="inline-flex items-center gap-1 px-3 py-1.5 min-h-[36px] rounded-full text-xs font-medium bg-slate-700/75 hover:bg-slate-700 text-blue-300 transition"
                 title="View rider addresses and parent contacts"
               >
                 <MapPin className="w-3.5 h-3.5" />
@@ -246,7 +246,7 @@ export default function CarRow({
               className={`px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-medium border transition ${
                 isNeedsSub
                   ? 'bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border-amber-500/40'
-                  : 'bg-slate-800 hover:bg-slate-700 text-slate-100 border-transparent'
+                  : 'bg-slate-700/75 hover:bg-slate-700 text-slate-100 border-transparent'
               }`}
             >
               {isNeedsSub ? 'Cancel Sub' : 'Need Sub'}

@@ -236,7 +236,7 @@ export default function PracticeCard({
                       <button
                         key={pl.id}
                         onClick={() => onOpenAssignModal(practice.id, leg, pl.id)}
-                        className="px-3 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-slate-800 hover:bg-blue-600 text-slate-100 transition"
+                        className="px-3 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-slate-700/75 hover:bg-blue-600 text-slate-100 transition"
                       >
                         {shortNameOf(pl)} +
                       </button>
@@ -484,7 +484,7 @@ export default function PracticeCard({
           {!isCancelled && !isReadOnly && hasAnyCarpool && isAdmin && (!canDrive || drivesAllActive) && (
             <button
               onClick={() => onOpenDriveModal(practice.id, defaultDriveDir)}
-              className="inline-flex items-center whitespace-nowrap px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
+              className="inline-flex items-center whitespace-nowrap px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-slate-700/75 hover:bg-slate-700 text-slate-100 transition"
             >
               + Assign driver
             </button>
@@ -742,7 +742,7 @@ export default function PracticeCard({
                 setNoteDraft('');
                 setEditingNote(true);
               }}
-              className="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-slate-800/70 hover:bg-slate-800 text-slate-300 hover:text-slate-100 transition"
+              className="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-slate-700/75 hover:bg-slate-700 text-slate-100 transition"
             >
               <MessageSquare className="w-3.5 h-3.5" />
               + Note
@@ -751,7 +751,7 @@ export default function PracticeCard({
           {myCarSmsUrl && (
             <a
               href={myCarSmsUrl}
-              className="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-slate-800/70 hover:bg-slate-800 text-slate-300 hover:text-slate-100 transition"
+              className="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-slate-700/75 hover:bg-slate-700 text-slate-100 transition"
               title="Text parents in your car for this practice"
             >
               <MessageCircle className="w-3.5 h-3.5" />
@@ -761,7 +761,7 @@ export default function PracticeCard({
           {carpoolSmsUrl && (
             <a
               href={carpoolSmsUrl}
-              className="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-slate-800/70 hover:bg-slate-800 text-slate-300 hover:text-slate-100 transition"
+              className="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-slate-700/75 hover:bg-slate-700 text-slate-100 transition"
               title="Text all parents in the Melrose carpool"
             >
               <MessageCircle className="w-3.5 h-3.5" />
