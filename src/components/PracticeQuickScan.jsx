@@ -262,11 +262,11 @@ export default function PracticeQuickScan({
                           type="button"
                           onClick={() => setExpandedId(isExpanded ? null : p.id)}
                           aria-label={isExpanded ? 'Collapse practice' : 'Expand practice'}
-                          className={
+                          className={`inline-flex items-center gap-1 px-2.5 py-1 min-h-[34px] rounded-full text-xs font-semibold transition ${
                             isExpanded
-                              ? 'inline-flex items-center gap-1 px-2.5 py-1 min-h-[32px] rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition'
-                              : 'p-1.5 min-w-[32px] min-h-[32px] flex items-center justify-center rounded-full text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition'
-                          }
+                              ? 'bg-slate-800 hover:bg-slate-700 text-slate-100'
+                              : 'bg-slate-800/70 hover:bg-slate-800 text-slate-300 hover:text-slate-100 border border-slate-700/60'
+                          }`}
                         >
                           {isExpanded ? (
                             <>
@@ -274,7 +274,10 @@ export default function PracticeQuickScan({
                               <ChevronUp className="w-3.5 h-3.5" />
                             </>
                           ) : (
-                            <ChevronDown className="w-4 h-4" />
+                            <>
+                              <span>View</span>
+                              <ChevronDown className="w-3.5 h-3.5" />
+                            </>
                           )}
                         </button>
                       </div>
