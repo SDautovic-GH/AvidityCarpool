@@ -172,6 +172,10 @@ export default function PracticeQuickScan({
                 const toNeedsDriver = Boolean(toSum && toSum.tone === 'error');
                 const fromNeedsDriver = Boolean(fromSum && fromSum.tone === 'error');
                 const needsAnyDriver = toNeedsDriver || fromNeedsDriver;
+                const hasSub =
+                  !isCancelled &&
+                  hasCarpool &&
+                  (toSum?.text === 'Needs Sub' || fromSum?.text === 'Needs Sub');
                 const isAllSet =
                   !isCancelled &&
                   hasCarpool &&
@@ -241,7 +245,7 @@ export default function PracticeQuickScan({
                             className={`sm:hidden inline-flex items-center gap-1 px-2.5 py-1 min-h-[30px] rounded-full text-xs font-semibold shrink-0 transition ${
                               isExpanded
                                 ? 'bg-slate-800 hover:bg-slate-700 text-slate-100'
-                                : 'bg-slate-800/70 hover:bg-slate-800 text-slate-300 border border-slate-700/60'
+                                : 'bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-slate-100'
                             }`}
                           >
                             {isExpanded ? (
@@ -279,8 +283,13 @@ export default function PracticeQuickScan({
 
                           <div className="flex items-center gap-3 shrink-0">
                             {isAllSet && !isExpanded && (
-                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 whitespace-nowrap">
+                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-400 whitespace-nowrap">
                                 ✓ All Set
+                              </span>
+                            )}
+                            {hasSub && !needsAnyDriver && !isExpanded && (
+                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 whitespace-nowrap">
+                                Needs Sub
                               </span>
                             )}
                             {showDriveBtn && !isExpanded && (
@@ -299,7 +308,7 @@ export default function PracticeQuickScan({
                               className={`hidden sm:inline-flex items-center gap-1 px-2.5 py-1 min-h-[32px] rounded-full text-xs font-semibold transition ${
                                 isExpanded
                                   ? 'bg-slate-800 hover:bg-slate-700 text-slate-100'
-                                  : 'bg-slate-800/70 hover:bg-slate-800 text-slate-300 hover:text-slate-100 border border-slate-700/60'
+                                  : 'bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-slate-100'
                               }`}
                             >
                               {isExpanded ? (
