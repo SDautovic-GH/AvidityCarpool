@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { BookOpen, CalendarPlus, ChevronDown, LayoutGrid, List, LogOut, MoreHorizontal, Plus } from 'lucide-react';
+import { BookOpen, CalendarPlus, ChevronDown, CircleHelp, LayoutGrid, List, LogOut, MoreHorizontal, Plus } from 'lucide-react';
 import {
   auth,
   isFirebaseConfigured,
@@ -475,6 +475,16 @@ export default function App() {
                 <span>Sign Out</span>
               </button>
             </div>
+
+            <button
+              type="button"
+              onClick={() => setGuideModalOpen(true)}
+              className="sm:hidden w-8 h-8 rounded-full bg-slate-900 hover:bg-slate-800 border border-slate-800 flex items-center justify-center text-slate-300 transition"
+              aria-label="User Guide"
+              title="User Guide"
+            >
+              <CircleHelp className="w-4 h-4 text-blue-400" />
+            </button>
 
             <button
               type="button"
