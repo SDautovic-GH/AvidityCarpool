@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { CalendarPlus, ChevronDown, LogOut, MoreHorizontal, Plus } from 'lucide-react';
+import { CalendarPlus, ChevronDown, LayoutGrid, List, LogOut, MoreHorizontal, Plus } from 'lucide-react';
 import {
   auth,
   isFirebaseConfigured,
@@ -10,6 +10,7 @@ import {
 import { useCarpoolData } from './hooks/useCarpoolData';
 import AuthScreen from './components/AuthScreen';
 import PracticeCard from './components/PracticeCard';
+import PracticeQuickScan from './components/PracticeQuickScan';
 import DriveModal from './components/DriveModal';
 import AssignModal from './components/AssignModal';
 import StopsModal from './components/StopsModal';
@@ -47,6 +48,22 @@ export default function App() {
   }, [tab]);
   const [onlyNeedsDriver, setOnlyNeedsDriver] = useState(false);
   const [monthFilter, setMonthFilter] = useState('all');
+  const [viewMode, setViewMode] = useState(() => {
+    try {
+      const saved = localStorage.getItem('avidity_practices_view');
+      return saved === 'scan' ? 'scan' : 'cards';
+    } catch {
+      return 'cards';
+    }
+  }); // 'cards' | 'scan'
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('avidity_practices_view', viewMode);
+    } catch {
+      // ignore storage errors
+    }
+  }, [viewMode]);
   const [showAllUpcoming, setShowAllUpcoming] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [zoomPct, setZoomPct] = useState(() => {
@@ -722,6 +739,34 @@ export default function App() {
                     </button>
                   )}
                 </div>
+                <div className="inline-flex p-1 rounded-full bg-slate-900 border border-slate-800 text-xs font-semibold">
+                  <button
+                    type="button"
+                    onClick={() => setViewMode('cards')}
+                    className={`inline-flex items-center gap-1 px-2.5 py-1.5 min-h-[36px] rounded-full transition ${
+                      viewMode === 'cards'
+                        ? 'bg-slate-800 text-slate-100'
+                        : 'text-slate-400 hover:text-slate-200'
+                    }`}
+                    title="Full practice cards"
+                  >
+                    <LayoutGrid className="w-3.5 h-3.5" />
+                    Cards
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setViewMode('scan')}
+                    className={`inline-flex items-center gap-1 px-2.5 py-1.5 min-h-[36px] rounded-full transition ${
+                      viewMode === 'scan'
+                        ? 'bg-slate-800 text-slate-100'
+                        : 'text-slate-400 hover:text-slate-200'
+                    }`}
+                    title="Condensed Quick Scan list"
+                  >
+                    <List className="w-3.5 h-3.5" />
+                    Quick Scan
+                  </button>
+                </div>
                 {isAdmin && (
                   <button
                     type="button"
@@ -777,18 +822,7 @@ export default function App() {
                 )}
               </div>
             ) : (() => {
-              const shouldCapUpcoming =
-                tab === 'all' &&
-                !onlyNeedsDriver &&
-                monthFilter === 'all' &&
-                !showAllUpcoming &&
-                visiblePractices.length > 10;
-              const displayedPractices = shouldCapUpcoming
-                ? visiblePractices.slice(0, 10)
-                : visiblePractices;
-              return (
-                <>
-                  {displayedPractices.map((practice) => (
+              const renderPracticeCard = (practice) => (
                 <PracticeCard
                   key={practice.id}
                   practice={practice}
@@ -877,7 +911,37 @@ export default function App() {
                   }
                   onToast={showToast}
                 />
-                  ))}
+              );
+
+              if (tab === 'all' && viewMode === 'scan') {
+                return (
+                  <PracticeQuickScan
+                    practices={visiblePractices}
+                    players={carpoolPlayers}
+                    currentParent={currentParent}
+                    isAdmin={isAdmin}
+                    todayIso={todayIso}
+                    firstUpcomingId={firstUpcomingId}
+                    onOpenDriveModal={(practiceId, leg) =>
+                      setDriveModal({ practiceId, defaultDirection: leg || 'both' })
+                    }
+                    renderExpandedCard={renderPracticeCard}
+                  />
+                );
+              }
+
+              const shouldCapUpcoming =
+                tab === 'all' &&
+                !onlyNeedsDriver &&
+                monthFilter === 'all' &&
+                !showAllUpcoming &&
+                visiblePractices.length > 10;
+              const displayedPractices = shouldCapUpcoming
+                ? visiblePractices.slice(0, 10)
+                : visiblePractices;
+              return (
+                <>
+                  {displayedPractices.map(renderPracticeCard)}
                   {shouldCapUpcoming && (
                     <div className="flex justify-center pt-1">
                       <button
