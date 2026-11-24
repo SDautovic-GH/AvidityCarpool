@@ -36,7 +36,22 @@ export default function AdminRoster({
 }) {
   const [formOpen, setFormOpen] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
-  const [subView, setSubView] = useState('roster'); // 'roster' | 'drivers'
+  const [subView, setSubView] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem('avidity_team_subview');
+      return saved === 'drivers' ? 'drivers' : 'roster';
+    } catch {
+      return 'roster';
+    }
+  }); // 'roster' | 'drivers'
+
+  React.useEffect(() => {
+    try {
+      sessionStorage.setItem('avidity_team_subview', subView);
+    } catch {
+      // ignore storage errors
+    }
+  }, [subView]);
   const [saving, setSaving] = useState(false);
   const [editingPlayerId, setEditingPlayerId] = useState(null);
   const [playerNameDraft, setPlayerNameDraft] = useState('');

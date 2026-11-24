@@ -29,7 +29,22 @@ export default function App() {
   const [user, setUser] = useState(null);
   const [authReady, setAuthReady] = useState(!isFirebaseConfigured);
 
-  const [tab, setTab] = useState('all'); // 'all' | 'my-drives' | 'tournaments' | 'roster'
+  const [tab, setTab] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem('avidity_tab');
+      return ['all', 'my-drives', 'tournaments', 'roster'].includes(saved) ? saved : 'all';
+    } catch {
+      return 'all';
+    }
+  }); // 'all' | 'my-drives' | 'tournaments' | 'roster'
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem('avidity_tab', tab);
+    } catch {
+      // ignore storage errors
+    }
+  }, [tab]);
   const [onlyNeedsDriver, setOnlyNeedsDriver] = useState(false);
   const [monthFilter, setMonthFilter] = useState('all');
   const [showAllUpcoming, setShowAllUpcoming] = useState(false);

@@ -21,7 +21,25 @@ export default function DriverEngagementView({ players, parents, practices, toda
   const [timeframe, setTimeframe] = useState('all'); // 'all' | 'past' | 'upcoming'
   const [scope, setScope] = useState('carpool'); // 'carpool' | 'all'
   const [sortBy, setSortBy] = useState('most'); // 'most' | 'fewest' | 'name'
-  const [selectedDriverId, setSelectedDriverId] = useState(null);
+  const [selectedDriverId, setSelectedDriverId] = useState(() => {
+    try {
+      return sessionStorage.getItem('avidity_selected_driver_id') || null;
+    } catch {
+      return null;
+    }
+  });
+
+  React.useEffect(() => {
+    try {
+      if (selectedDriverId) {
+        sessionStorage.setItem('avidity_selected_driver_id', selectedDriverId);
+      } else {
+        sessionStorage.removeItem('avidity_selected_driver_id');
+      }
+    } catch {
+      // ignore storage errors
+    }
+  }, [selectedDriverId]);
 
   const shortPlayerNames = useMemo(() => getShortPlayerNames(players), [players]);
 
