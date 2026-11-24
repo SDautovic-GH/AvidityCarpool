@@ -31,8 +31,13 @@ export function useCarpoolData(user) {
   const [tournaments, setTournaments] = useState([]);
   const [isGlobalAdmin, setIsGlobalAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [deniedSeasonIds, setDeniedSeasonIds] = useState(() => new Set());
 
   const userEmail = user?.email?.toLowerCase().trim() || null;
+
+  useEffect(() => {
+    setDeniedSeasonIds(new Set());
+  }, [userEmail]);
 
   useEffect(() => {
     if (!activeSeasonId) return;
@@ -76,9 +81,15 @@ export function useCarpoolData(user) {
         const list = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
         setSeasons(list);
         setActiveSeasonId((prev) => {
-          if (prev && list.some((s) => s.id === prev)) return prev;
-          const active = list.find((s) => s.status === 'active');
-          return active?.id || list[0]?.id || null;
+          const prevSeason = list.find((s) => s.id === prev);
+          if (prevSeason && !deniedSeasonIds.has(prev) && prevSeason.status === 'active') {
+            return prev;
+          }
+          const active = list.find((s) => s.status === 'active' && !deniedSeasonIds.has(s.id));
+          if (active) return active.id;
+          if (prevSeason && !deniedSeasonIds.has(prev)) return prev;
+          const fallback = list.find((s) => !deniedSeasonIds.has(s.id));
+          return fallback?.id || null;
         });
         setLoading(false);
       },
@@ -108,7 +119,21 @@ export function useCarpoolData(user) {
     const unsubParents = onSnapshot(
       query(collection(db, 'seasons', activeSeasonId, 'parents'), orderBy('name')),
       (snap) => setParents(snap.docs.map((d) => ({ id: d.id, ...d.data() }))),
-      () => setParents([])
+      (err) => {
+        setParents([]);
+        if (err?.code === 'permission-denied') {
+          setDeniedSeasonIds((prev) => {
+            if (prev.has(activeSeasonId)) return prev;
+            const next = new Set(prev);
+            next.add(activeSeasonId);
+            const candidate =
+              seasons.find((s) => s.status === 'active' && !next.has(s.id)) ||
+              seasons.find((s) => !next.has(s.id));
+            if (candidate) setActiveSeasonId(candidate.id);
+            return next;
+          });
+        }
+      }
     );
 
     const unsubPractices = onSnapshot(
