@@ -652,10 +652,10 @@ export default function PracticeCard({
               <div className="grid grid-cols-2 gap-1 p-1 rounded-full bg-slate-950 border border-slate-800">
                 <button
                   onClick={() => setActiveLeg('to')}
-                  className={`flex items-center justify-center gap-1.5 px-3 py-2 min-h-[36px] rounded-full text-xs font-semibold whitespace-nowrap transition ${
+                  className={`flex items-center justify-center gap-1.5 px-3 py-2 min-h-[38px] rounded-full text-[13px] font-semibold whitespace-nowrap transition ${
                     activeLeg === 'to'
-                      ? 'bg-slate-800 text-slate-100 shadow-sm'
-                      : 'text-slate-400 hover:text-slate-200'
+                      ? 'bg-slate-700/85 text-slate-50 shadow-sm'
+                      : 'text-slate-300 hover:text-slate-100'
                   }`}
                 >
                   <span className={`w-2 h-2 rounded-full shrink-0 ${TONE_DOT[toSum.tone]}`} />
@@ -663,10 +663,10 @@ export default function PracticeCard({
                 </button>
                 <button
                   onClick={() => setActiveLeg('from')}
-                  className={`flex items-center justify-center gap-1.5 px-3 py-2 min-h-[36px] rounded-full text-xs font-semibold whitespace-nowrap transition ${
+                  className={`flex items-center justify-center gap-1.5 px-3 py-2 min-h-[38px] rounded-full text-[13px] font-semibold whitespace-nowrap transition ${
                     activeLeg === 'from'
-                      ? 'bg-slate-800 text-slate-100 shadow-sm'
-                      : 'text-slate-400 hover:text-slate-200'
+                      ? 'bg-slate-700/85 text-slate-50 shadow-sm'
+                      : 'text-slate-300 hover:text-slate-100'
                   }`}
                 >
                   <span className={`w-2 h-2 rounded-full shrink-0 ${TONE_DOT[fromSum.tone]}`} />
