@@ -153,7 +153,7 @@ export default function PracticeQuickScan({
               </span>
             </div>
 
-            <div className="rounded-2xl bg-slate-900 border border-slate-800 divide-y divide-slate-800/80 overflow-hidden">
+            <div className="space-y-2.5">
               {group.items.map((p) => {
                 const { month, dateNum, fullDay } = formatPracticeDate(p.isoDate);
                 const isPast = p.isoDate < todayIso;
@@ -198,7 +198,12 @@ export default function PracticeQuickScan({
                 const isExpanded = expandedId === p.id;
 
                 return (
-                  <div key={p.id} className={isPast ? 'opacity-70' : ''}>
+                  <div
+                    key={p.id}
+                    className={`rounded-2xl bg-slate-900 border ${
+                      isExpanded ? 'border-blue-500/45' : 'border-slate-800'
+                    } overflow-hidden ${isPast ? 'opacity-70' : ''}`}
+                  >
                     <div
                       className={`px-3.5 py-3.5 transition-colors ${
                         isExpanded
