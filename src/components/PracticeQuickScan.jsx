@@ -244,8 +244,8 @@ export default function PracticeQuickScan({
                             aria-label={isExpanded ? 'Collapse practice' : 'Expand practice'}
                             className={`sm:hidden inline-flex items-center gap-1 px-2.5 py-1 min-h-[30px] rounded-full text-xs font-semibold shrink-0 transition ${
                               isExpanded
-                                ? 'bg-slate-800 hover:bg-slate-700 text-slate-100'
-                                : 'bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-slate-100'
+                                ? 'bg-blue-600/20 hover:bg-blue-600/30 text-blue-300'
+                                : 'bg-slate-700/75 hover:bg-slate-700 text-slate-100'
                             }`}
                           >
                             {isExpanded ? (
@@ -307,8 +307,8 @@ export default function PracticeQuickScan({
                               aria-label={isExpanded ? 'Collapse practice' : 'Expand practice'}
                               className={`hidden sm:inline-flex items-center gap-1 px-2.5 py-1 min-h-[32px] rounded-full text-xs font-semibold transition ${
                                 isExpanded
-                                  ? 'bg-slate-800 hover:bg-slate-700 text-slate-100'
-                                  : 'bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-slate-100'
+                                  ? 'bg-blue-600/20 hover:bg-blue-600/30 text-blue-300'
+                                  : 'bg-slate-700/75 hover:bg-slate-700 text-slate-100'
                               }`}
                             >
                               {isExpanded ? (
