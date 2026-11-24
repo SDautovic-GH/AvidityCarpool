@@ -825,7 +825,35 @@ export default function App() {
             )}
 
             {tab === 'my-drives' && visiblePractices.length > 0 && currentParent && (
-              <div className="flex justify-center">
+              <div className="flex flex-wrap items-center justify-center gap-2">
+                <div className="inline-flex p-0.5 rounded-full bg-slate-900 border border-slate-800 text-xs font-semibold">
+                  <button
+                    type="button"
+                    onClick={() => setViewMode('cards')}
+                    className={`inline-flex items-center gap-1 px-2.5 py-1 min-h-[32px] rounded-full transition ${
+                      viewMode === 'cards'
+                        ? 'bg-slate-800 text-slate-100'
+                        : 'text-slate-400 hover:text-slate-200'
+                    }`}
+                    title="Full practice cards"
+                  >
+                    <LayoutGrid className="w-3.5 h-3.5" />
+                    Cards
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setViewMode('scan')}
+                    className={`inline-flex items-center gap-1 px-2.5 py-1 min-h-[32px] rounded-full transition ${
+                      viewMode === 'scan'
+                        ? 'bg-slate-800 text-slate-100'
+                        : 'text-slate-400 hover:text-slate-200'
+                    }`}
+                    title="Condensed Quick Scan list"
+                  >
+                    <List className="w-3.5 h-3.5" />
+                    Scan
+                  </button>
+                </div>
                 <button
                   onClick={() => {
                     const count = exportMyDrivesIcs(
@@ -835,10 +863,10 @@ export default function App() {
                     );
                     if (count) showToast(`Exported ${count} drive${count === 1 ? '' : 's'} (.ics)`);
                   }}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 min-h-[36px] rounded-full text-xs font-semibold bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-200 transition"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 min-h-[34px] rounded-full text-xs font-semibold bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-200 transition"
                 >
                   <CalendarPlus className="w-3.5 h-3.5 text-blue-400" />
-                  Add My Drives to Calendar
+                  Add to Calendar
                 </button>
               </div>
             )}
@@ -956,7 +984,7 @@ export default function App() {
                 />
               );
 
-              if (tab === 'all' && viewMode === 'scan') {
+              if ((tab === 'all' || tab === 'my-drives') && viewMode === 'scan') {
                 return (
                   <PracticeQuickScan
                     practices={visiblePractices}
