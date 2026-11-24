@@ -8,7 +8,7 @@ import {
 
 function shortGymLabel(location = '') {
   const lower = location.toLowerCase();
-  if (lower.includes("st. john's prep")) return 'SJP';
+  if (/st\.?\s*john/.test(lower)) return 'SJP';
   if (lower.includes('danvers indoor') || lower.startsWith('dis')) return 'DIS';
   return location;
 }
@@ -200,33 +200,64 @@ export default function PracticeQuickScan({
                 return (
                   <div key={p.id} className={isPast ? 'opacity-70' : ''}>
                     <div
-                      className={`flex items-center justify-between gap-2 px-3 py-2.5 transition-colors ${
+                      className={`px-3.5 py-3 transition-colors ${
                         isExpanded
                           ? 'bg-blue-500/10 border-l-2 border-blue-500'
                           : ''
                       }`}
                     >
-                      <button
-                        type="button"
-                        onClick={() => setExpandedId(isExpanded ? null : p.id)}
-                        className="flex items-center gap-3 min-w-0 flex-1 text-left"
-                      >
-                        <div className="w-12 shrink-0">
-                          <div className="flex items-center gap-1">
-                            <span className="text-xs font-bold text-slate-100 leading-tight">
-                              {fullDay.slice(0, 3)}
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                        {/* Row 1 on mobile (left side on desktop): Date + Time/Gym + View/Hide on mobile */}
+                        <div className="flex items-center justify-between gap-2 min-w-0 sm:flex-1">
+                          <button
+                            type="button"
+                            onClick={() => setExpandedId(isExpanded ? null : p.id)}
+                            className="flex items-baseline sm:items-center gap-2 sm:gap-3 min-w-0 flex-1 text-left"
+                          >
+                            <div className="flex items-center gap-1.5 shrink-0 sm:w-20">
+                              <span className="text-[13px] font-bold text-slate-100 whitespace-nowrap">
+                                {fullDay.slice(0, 3)}, {month} {dateNum}
+                              </span>
+                              {isNext && (
+                                <span className="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0" />
+                              )}
+                            </div>
+                            <span className="text-xs text-slate-400 truncate">
+                              {p.timeLabel} · {shortGymLabel(p.location)}
                             </span>
-                            {isNext && (
-                              <span className="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0" />
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => setExpandedId(isExpanded ? null : p.id)}
+                            aria-label={isExpanded ? 'Collapse practice' : 'Expand practice'}
+                            className={`sm:hidden inline-flex items-center gap-1 px-2.5 py-1 min-h-[30px] rounded-full text-xs font-semibold shrink-0 transition ${
+                              isExpanded
+                                ? 'bg-slate-800 hover:bg-slate-700 text-slate-100'
+                                : 'bg-slate-800/70 hover:bg-slate-800 text-slate-300 border border-slate-700/60'
+                            }`}
+                          >
+                            {isExpanded ? (
+                              <>
+                                <span>Hide</span>
+                                <ChevronUp className="w-3.5 h-3.5" />
+                              </>
+                            ) : (
+                              <>
+                                <span>View</span>
+                                <ChevronDown className="w-3.5 h-3.5" />
+                              </>
                             )}
-                          </div>
-                          <div className="text-xs text-slate-400 leading-tight mt-0.5 tabular-nums">
-                            {month} {dateNum}
-                          </div>
+                          </button>
                         </div>
 
-                        <div className="min-w-0 flex-1">
-                          <div className="flex flex-wrap items-center gap-x-2.5 gap-y-0.5">
+                        {/* Row 2 on mobile (right side on desktop): Status chips + Drive + desktop View/Hide */}
+                        <div className="flex items-center justify-between sm:justify-end gap-2.5">
+                          <button
+                            type="button"
+                            onClick={() => setExpandedId(isExpanded ? null : p.id)}
+                            className="flex flex-wrap items-center gap-x-3 gap-y-1 text-left"
+                          >
                             {isCancelled ? (
                               <span className="text-xs font-semibold text-rose-400">Cancelled</span>
                             ) : !hasCarpool ? (
@@ -237,49 +268,46 @@ export default function PracticeQuickScan({
                                 <LegChip label="From" summary={fromSum} />
                               </>
                             )}
-                          </div>
-                          <div className="text-[11px] text-slate-400 truncate mt-0.5">
-                            {p.timeLabel} · {shortGymLabel(p.location)}
+                          </button>
+
+                          <div className="flex items-center gap-2 shrink-0">
+                            {showDriveBtn && !isExpanded && (
+                              <button
+                                type="button"
+                                onClick={() => onOpenDriveModal(p.id, drivePref)}
+                                className={`px-3 py-1 min-h-[32px] rounded-full text-xs font-semibold transition ${
+                                  needsAnyDriver
+                                    ? 'bg-blue-600 hover:bg-blue-500 text-white'
+                                    : 'bg-slate-800 hover:bg-slate-700 text-slate-200'
+                                }`}
+                              >
+                                {drivesAll && isAdmin ? '+ Assign' : '+ Drive'}
+                              </button>
+                            )}
+                            <button
+                              type="button"
+                              onClick={() => setExpandedId(isExpanded ? null : p.id)}
+                              aria-label={isExpanded ? 'Collapse practice' : 'Expand practice'}
+                              className={`hidden sm:inline-flex items-center gap-1 px-2.5 py-1 min-h-[32px] rounded-full text-xs font-semibold transition ${
+                                isExpanded
+                                  ? 'bg-slate-800 hover:bg-slate-700 text-slate-100'
+                                  : 'bg-slate-800/70 hover:bg-slate-800 text-slate-300 hover:text-slate-100 border border-slate-700/60'
+                              }`}
+                            >
+                              {isExpanded ? (
+                                <>
+                                  <span>Hide</span>
+                                  <ChevronUp className="w-3.5 h-3.5" />
+                                </>
+                              ) : (
+                                <>
+                                  <span>View</span>
+                                  <ChevronDown className="w-3.5 h-3.5" />
+                                </>
+                              )}
+                            </button>
                           </div>
                         </div>
-                      </button>
-
-                      <div className="flex items-center gap-1.5 shrink-0">
-                        {showDriveBtn && !isExpanded && (
-                          <button
-                            type="button"
-                            onClick={() => onOpenDriveModal(p.id, drivePref)}
-                            className={`px-3 py-1.5 min-h-[34px] rounded-full text-xs font-semibold transition ${
-                              needsAnyDriver
-                                ? 'bg-blue-600 hover:bg-blue-500 text-white'
-                                : 'bg-slate-800 hover:bg-slate-700 text-slate-200'
-                            }`}
-                          >
-                            {drivesAll && isAdmin ? '+ Assign' : '+ Drive'}
-                          </button>
-                        )}
-                        <button
-                          type="button"
-                          onClick={() => setExpandedId(isExpanded ? null : p.id)}
-                          aria-label={isExpanded ? 'Collapse practice' : 'Expand practice'}
-                          className={`inline-flex items-center gap-1 px-2.5 py-1 min-h-[34px] rounded-full text-xs font-semibold transition ${
-                            isExpanded
-                              ? 'bg-slate-800 hover:bg-slate-700 text-slate-100'
-                              : 'bg-slate-800/70 hover:bg-slate-800 text-slate-300 hover:text-slate-100 border border-slate-700/60'
-                          }`}
-                        >
-                          {isExpanded ? (
-                            <>
-                              <span>Hide</span>
-                              <ChevronUp className="w-3.5 h-3.5" />
-                            </>
-                          ) : (
-                            <>
-                              <span>View</span>
-                              <ChevronDown className="w-3.5 h-3.5" />
-                            </>
-                          )}
-                        </button>
                       </div>
                     </div>
 
