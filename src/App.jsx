@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { CalendarPlus, ChevronDown, LayoutGrid, List, LogOut, MoreHorizontal, Plus } from 'lucide-react';
+import { BookOpen, CalendarPlus, ChevronDown, LayoutGrid, List, LogOut, MoreHorizontal, Plus } from 'lucide-react';
 import {
   auth,
   isFirebaseConfigured,
@@ -17,6 +17,7 @@ import StopsModal from './components/StopsModal';
 import AdminRoster from './components/AdminRoster';
 import AdminSeasonModal from './components/AdminSeasonModal';
 import AddPracticeModal from './components/AddPracticeModal';
+import UserGuideModal from './components/UserGuideModal';
 import TournamentsView from './components/TournamentsView';
 import { exportMyDrivesIcs } from './utils/calendar';
 import {
@@ -88,10 +89,16 @@ export default function App() {
   const [stopsModal, setStopsModal] = useState(null); // { practiceId, leg, carId }
   const [seasonModalOpen, setSeasonModalOpen] = useState(false);
   const [addPracticeModalOpen, setAddPracticeModalOpen] = useState(false);
+  const [guideModalOpen, setGuideModalOpen] = useState(false);
   const [toast, setToast] = useState('');
 
   const hasModalOpen = Boolean(
-    driveModal || assignModal || stopsModal || seasonModalOpen || addPracticeModalOpen
+    driveModal ||
+      assignModal ||
+      stopsModal ||
+      seasonModalOpen ||
+      addPracticeModalOpen ||
+      guideModalOpen
   );
   const hasModalOpenRef = React.useRef(hasModalOpen);
   hasModalOpenRef.current = hasModalOpen;
@@ -451,6 +458,15 @@ export default function App() {
                 </select>
               )}
               <button
+                type="button"
+                onClick={() => setGuideModalOpen(true)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 transition"
+                title="User Guide"
+              >
+                <BookOpen className="w-3.5 h-3.5 text-blue-400" />
+                <span>Guide</span>
+              </button>
+              <button
                 onClick={() => signOut(auth)}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 transition"
                 title="Sign Out"
@@ -527,6 +543,17 @@ export default function App() {
                       </div>
                     )
                   )}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMenuOpen(false);
+                      setGuideModalOpen(true);
+                    }}
+                    className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
+                  >
+                    <BookOpen className="w-3.5 h-3.5 text-blue-400" />
+                    User Guide
+                  </button>
                   <button
                     type="button"
                     onClick={() => {
@@ -1044,6 +1071,10 @@ export default function App() {
           />
         );
       })()}
+
+      {guideModalOpen && (
+        <UserGuideModal isAdmin={isAdmin} onClose={() => setGuideModalOpen(false)} />
+      )}
 
       {addPracticeModalOpen && isAdmin && (
         <AddPracticeModal
