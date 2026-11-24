@@ -15,6 +15,7 @@ import AssignModal from './components/AssignModal';
 import StopsModal from './components/StopsModal';
 import AdminRoster from './components/AdminRoster';
 import AdminSeasonModal from './components/AdminSeasonModal';
+import AddPracticeModal from './components/AddPracticeModal';
 import TournamentsView from './components/TournamentsView';
 import { exportMyDrivesIcs } from './utils/calendar';
 import {
@@ -54,9 +55,12 @@ export default function App() {
   const [assignModal, setAssignModal] = useState(null); // { practiceId, leg, playerId }
   const [stopsModal, setStopsModal] = useState(null); // { practiceId, leg, carId }
   const [seasonModalOpen, setSeasonModalOpen] = useState(false);
+  const [addPracticeModalOpen, setAddPracticeModalOpen] = useState(false);
   const [toast, setToast] = useState('');
 
-  const hasModalOpen = Boolean(driveModal || assignModal || stopsModal || seasonModalOpen);
+  const hasModalOpen = Boolean(
+    driveModal || assignModal || stopsModal || seasonModalOpen || addPracticeModalOpen
+  );
   const hasModalOpenRef = React.useRef(hasModalOpen);
   hasModalOpenRef.current = hasModalOpen;
   const pendingBuildIdRef = React.useRef(null);
@@ -177,6 +181,7 @@ export default function App() {
     upsertPlayerOnly,
     removeParent,
     createSeason,
+    createPractice,
     batchCreatePractices,
     saveTournament,
     deleteTournament,
@@ -686,6 +691,17 @@ export default function App() {
                     </button>
                   )}
                 </div>
+                {isAdmin && (
+                  <button
+                    type="button"
+                    onClick={() => setAddPracticeModalOpen(true)}
+                    className="inline-flex items-center gap-1 px-3.5 py-1.5 min-h-[36px] rounded-full text-[13px] font-semibold bg-blue-600 hover:bg-blue-500 text-white transition"
+                    title="Add a single practice event"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    Add Practice
+                  </button>
+                )}
               </div>
             )}
 
@@ -933,6 +949,16 @@ export default function App() {
           />
         );
       })()}
+
+      {addPracticeModalOpen && isAdmin && (
+        <AddPracticeModal
+          defaultDate={todayIso}
+          onClose={() => setAddPracticeModalOpen(false)}
+          onCreate={(payload) =>
+            runAction(() => createPractice(payload), 'Practice added')
+          }
+        />
+      )}
 
       {seasonModalOpen && isAdmin && (
         <AdminSeasonModal

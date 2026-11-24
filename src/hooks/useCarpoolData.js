@@ -524,6 +524,31 @@ export function useCarpoolData(user) {
     setActiveSeasonId(seasonId);
   }
 
+  async function createPractice({
+    isoDate,
+    timeLabel,
+    location,
+    address = '',
+    carpoolMode = 'both',
+  }) {
+    if (!activeSeasonId) return;
+    const existingIds = new Set(practices.map((p) => p.id));
+    const practiceId = existingIds.has(isoDate)
+      ? `${isoDate}-${Date.now().toString(36)}`
+      : isoDate;
+    await setDoc(doc(db, 'seasons', activeSeasonId, 'practices', practiceId), {
+      isoDate,
+      timeLabel: timeLabel.trim(),
+      location: location.trim(),
+      address: address.trim(),
+      status: 'scheduled',
+      carpoolMode: carpoolMode || 'both',
+      absentPlayerIds: [],
+      legs: { to: [], from: [] },
+      createdAt: serverTimestamp(),
+    });
+  }
+
   async function batchCreatePractices(practiceList) {
     const existingIds = new Set(practices.map((p) => p.id));
     const batch = writeBatch(db);
@@ -639,6 +664,7 @@ export function useCarpoolData(user) {
     upsertPlayerOnly,
     removeParent,
     createSeason,
+    createPractice,
     batchCreatePractices,
     saveTournament,
     deleteTournament,
