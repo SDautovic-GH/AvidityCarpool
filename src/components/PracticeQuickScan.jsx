@@ -200,13 +200,13 @@ export default function PracticeQuickScan({
                 return (
                   <div key={p.id} className={isPast ? 'opacity-70' : ''}>
                     <div
-                      className={`px-3.5 py-3 transition-colors ${
+                      className={`px-3.5 py-3.5 transition-colors ${
                         isExpanded
                           ? 'bg-blue-500/10 border-l-2 border-blue-500'
                           : ''
                       }`}
                     >
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3.5 sm:gap-3">
                         {/* Row 1 on mobile (left side on desktop): Date + Time/Gym + View/Hide on mobile */}
                         <div className="flex items-center justify-between gap-2 min-w-0 sm:flex-1">
                           <button
@@ -270,7 +270,7 @@ export default function PracticeQuickScan({
                             )}
                           </button>
 
-                          <div className="flex items-center gap-2 shrink-0">
+                          <div className="flex items-center gap-3 shrink-0">
                             {showDriveBtn && !isExpanded && (
                               <button
                                 type="button"
