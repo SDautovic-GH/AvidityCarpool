@@ -199,7 +199,13 @@ export default function PracticeQuickScan({
 
                 return (
                   <div key={p.id} className={isPast ? 'opacity-70' : ''}>
-                    <div className="flex items-center justify-between gap-2 px-3 py-2.5">
+                    <div
+                      className={`flex items-center justify-between gap-2 px-3 py-2.5 transition-colors ${
+                        isExpanded
+                          ? 'bg-blue-500/10 border-l-2 border-blue-500'
+                          : ''
+                      }`}
+                    >
                       <button
                         type="button"
                         onClick={() => setExpandedId(isExpanded ? null : p.id)}
@@ -256,10 +262,17 @@ export default function PracticeQuickScan({
                           type="button"
                           onClick={() => setExpandedId(isExpanded ? null : p.id)}
                           aria-label={isExpanded ? 'Collapse practice' : 'Expand practice'}
-                          className="p-1.5 min-w-[32px] min-h-[32px] flex items-center justify-center rounded-full text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition"
+                          className={
+                            isExpanded
+                              ? 'inline-flex items-center gap-1 px-2.5 py-1 min-h-[32px] rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition'
+                              : 'p-1.5 min-w-[32px] min-h-[32px] flex items-center justify-center rounded-full text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition'
+                          }
                         >
                           {isExpanded ? (
-                            <ChevronUp className="w-4 h-4" />
+                            <>
+                              <span>Hide</span>
+                              <ChevronUp className="w-3.5 h-3.5" />
+                            </>
                           ) : (
                             <ChevronDown className="w-4 h-4" />
                           )}
