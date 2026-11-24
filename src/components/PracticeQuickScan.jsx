@@ -172,6 +172,11 @@ export default function PracticeQuickScan({
                 const toNeedsDriver = Boolean(toSum && toSum.tone === 'error');
                 const fromNeedsDriver = Boolean(fromSum && fromSum.tone === 'error');
                 const needsAnyDriver = toNeedsDriver || fromNeedsDriver;
+                const isAllSet =
+                  !isCancelled &&
+                  hasCarpool &&
+                  (!toEnabled || toSum?.tone === 'success') &&
+                  (!fromEnabled || fromSum?.tone === 'success');
 
                 const drivePref =
                   toNeedsDriver && !fromNeedsDriver
@@ -189,7 +194,7 @@ export default function PracticeQuickScan({
                   !isReadOnly &&
                   hasCarpool &&
                   (canDrive || isAdmin) &&
-                  (needsAnyDriver || isAdmin) &&
+                  needsAnyDriver &&
                   (!drivesAll || isAdmin);
 
                 const isExpanded = expandedId === p.id;
@@ -273,15 +278,16 @@ export default function PracticeQuickScan({
                           </button>
 
                           <div className="flex items-center gap-3 shrink-0">
+                            {isAllSet && !isExpanded && (
+                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 whitespace-nowrap">
+                                ✓ All Set
+                              </span>
+                            )}
                             {showDriveBtn && !isExpanded && (
                               <button
                                 type="button"
                                 onClick={() => onOpenDriveModal(p.id, drivePref)}
-                                className={`px-3 py-1 min-h-[32px] rounded-full text-xs font-semibold transition ${
-                                  needsAnyDriver
-                                    ? 'bg-blue-600 hover:bg-blue-500 text-white'
-                                    : 'bg-slate-800 hover:bg-slate-700 text-slate-200'
-                                }`}
+                                className="px-3 py-1 min-h-[32px] rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition"
                               >
                                 {drivesAll && isAdmin ? '+ Assign' : '+ Drive'}
                               </button>
