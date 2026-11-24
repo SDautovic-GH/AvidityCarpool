@@ -612,6 +612,8 @@ export default function App() {
           <AdminRoster
             players={players}
             parents={parents}
+            practices={practices}
+            todayIso={todayIso}
             currentParent={currentParent}
             currentParentEmail={user.email}
             isAdmin={isAdmin}

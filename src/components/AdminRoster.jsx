@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Car, KeyRound, MapPin, MessageCircle, Pencil, Phone, Plus, Shield, Trash2, Upload, UserPlus, Users, X } from 'lucide-react';
 import { getAvatarColor, getCarpoolPlayerIdSet, getInitials } from '../utils/schedule';
 import { buildSmsUrl, getMapUrl } from '../utils/maps';
+import DriverEngagementView from './DriverEngagementView';
 
 const EMPTY_FORM = {
   existingParentId: null,
@@ -19,6 +20,8 @@ const EMPTY_FORM = {
 export default function AdminRoster({
   players,
   parents,
+  practices = [],
+  todayIso = '',
   currentParent,
   currentParentEmail,
   isAdmin,
@@ -33,6 +36,7 @@ export default function AdminRoster({
 }) {
   const [formOpen, setFormOpen] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
+  const [subView, setSubView] = useState('roster'); // 'roster' | 'drivers'
   const [saving, setSaving] = useState(false);
   const [editingPlayerId, setEditingPlayerId] = useState(null);
   const [playerNameDraft, setPlayerNameDraft] = useState('');
@@ -194,6 +198,44 @@ export default function AdminRoster({
 
   return (
     <div className="space-y-4">
+      {isAdmin && (
+        <div className="flex justify-center">
+          <div className="inline-flex p-1 rounded-full bg-slate-900 border border-slate-800 text-xs font-semibold">
+            <button
+              type="button"
+              onClick={() => setSubView('roster')}
+              className={`px-4 py-1.5 rounded-full transition ${
+                subView === 'roster'
+                  ? 'bg-blue-600 text-white'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              Roster &amp; Contacts
+            </button>
+            <button
+              type="button"
+              onClick={() => setSubView('drivers')}
+              className={`px-4 py-1.5 rounded-full transition ${
+                subView === 'drivers'
+                  ? 'bg-blue-600 text-white'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              Driver Engagement
+            </button>
+          </div>
+        </div>
+      )}
+
+      {isAdmin && subView === 'drivers' ? (
+        <DriverEngagementView
+          players={players}
+          parents={parents}
+          practices={practices}
+          todayIso={todayIso}
+        />
+      ) : (
+        <>
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-slate-900 border border-slate-800 p-4">
         <div>
           <h2 className="text-base font-bold text-slate-100 flex items-center gap-2">
@@ -862,6 +904,8 @@ export default function AdminRoster({
             </form>
           </div>
         </div>
+      )}
+        </>
       )}
     </div>
   );
