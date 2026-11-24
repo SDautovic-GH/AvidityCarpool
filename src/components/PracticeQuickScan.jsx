@@ -239,7 +239,7 @@ export default function PracticeQuickScan({
                       </button>
 
                       <div className="flex items-center gap-1.5 shrink-0">
-                        {showDriveBtn && (
+                        {showDriveBtn && !isExpanded && (
                           <button
                             type="button"
                             onClick={() => onOpenDriveModal(p.id, drivePref)}
@@ -268,7 +268,7 @@ export default function PracticeQuickScan({
                     </div>
 
                     {isExpanded && (
-                      <div className="px-2 pb-3 pt-1 bg-slate-950/60 border-t border-slate-800/80">
+                      <div className="border-t border-slate-800/80 [&>div]:border-0 [&>div]:rounded-none [&>div]:shadow-none">
                         {renderExpandedCard(p)}
                       </div>
                     )}
