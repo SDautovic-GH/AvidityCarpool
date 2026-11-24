@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { BarChart3, Car, MessageCircle } from 'lucide-react';
+import { ArrowLeft, BarChart3, Car, ChevronRight, MessageCircle } from 'lucide-react';
 import {
   formatPracticeDate,
   getAvatarColor,
@@ -7,6 +7,7 @@ import {
   getInitials,
   getLegSummary,
   getPracticeCarpoolLegs,
+  getShortPlayerNames,
 } from '../utils/schedule';
 import { buildSmsUrl } from '../utils/maps';
 
@@ -20,6 +21,9 @@ export default function DriverEngagementView({ players, parents, practices, toda
   const [timeframe, setTimeframe] = useState('all'); // 'all' | 'past' | 'upcoming'
   const [scope, setScope] = useState('carpool'); // 'carpool' | 'all'
   const [sortBy, setSortBy] = useState('most'); // 'most' | 'fewest' | 'name'
+  const [selectedDriverId, setSelectedDriverId] = useState(null);
+
+  const shortPlayerNames = useMemo(() => getShortPlayerNames(players), [players]);
 
   const { rows, summary } = useMemo(() => {
     const carpoolPlayerIds = getCarpoolPlayerIdSet(players, parents);
@@ -187,6 +191,222 @@ export default function DriverEngagementView({ players, parents, practices, toda
 
   const maxLegs = Math.max(1, ...rows.map((r) => r.legsCount));
 
+  const selectedDriverDetail = useMemo(() => {
+    if (!selectedDriverId) return null;
+    const driverRow = rows.find((r) => r.parent.id === selectedDriverId);
+    if (!driverRow) return null;
+
+    const carpoolPlayerIds = getCarpoolPlayerIdSet(players, parents);
+    const riderCounts = new Map();
+    const upcomingRides = [];
+    const pastRides = [];
+
+    practices.forEach((p) => {
+      if (p.status === 'cancelled') return;
+      const isPast = p.isoDate < todayIso;
+      const { toEnabled, fromEnabled } = getPracticeCarpoolLegs(p);
+      ['to', 'from'].forEach((leg) => {
+        const enabled = leg === 'to' ? toEnabled : fromEnabled;
+        if (!enabled) return;
+        const cars = p.legs?.[leg] || [];
+        cars.forEach((car) => {
+          if (car.driverParentId !== selectedDriverId) return;
+          const riderIds = (car.riderIds || []).filter((id) => carpoolPlayerIds.has(id));
+          if (car.status !== 'needs_sub') {
+            riderIds.forEach((id) => {
+              riderCounts.set(id, (riderCounts.get(id) || 0) + 1);
+            });
+          }
+          const item = {
+            key: `${p.id}-${leg}-${car.id}`,
+            isoDate: p.isoDate,
+            timeLabel: p.timeLabel,
+            location: p.location,
+            leg,
+            status: car.status || 'confirmed',
+            seatsTotal: car.seatsTotal || 1,
+            riderNames: riderIds.map((id) => shortPlayerNames[id] || 'Player'),
+          };
+          if (isPast) pastRides.push(item);
+          else upcomingRides.push(item);
+        });
+      });
+    });
+
+    pastRides.reverse();
+    const ridersSummary = [...riderCounts.entries()]
+      .map(([id, count]) => ({ id, name: shortPlayerNames[id] || 'Player', count }))
+      .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+
+    return { driverRow, upcomingRides, pastRides, ridersSummary };
+  }, [selectedDriverId, rows, players, parents, practices, todayIso, shortPlayerNames]);
+
+  if (selectedDriverDetail) {
+    const { driverRow, upcomingRides, pastRides, ridersSummary } = selectedDriverDetail;
+    const smsUrl = driverRow.parent.phone ? buildSmsUrl([driverRow.parent.phone]) : null;
+
+    const renderRideItem = (ride) => {
+      const { month, dateNum, fullDay } = formatPracticeDate(ride.isoDate);
+      const isNeedsSub = ride.status === 'needs_sub';
+      return (
+        <div
+          key={ride.key}
+          className="rounded-xl bg-slate-950/70 border border-slate-800/80 px-3.5 py-2.5 space-y-1.5"
+        >
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-xs font-bold text-slate-100">
+                {fullDay.slice(0, 3)}, {month} {dateNum}
+              </span>
+              <span className="text-[11px] text-slate-400">
+                {ride.timeLabel} · {ride.location}
+              </span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span
+                className={`px-2 py-0.5 rounded-full text-[11px] font-semibold ${
+                  ride.leg === 'to'
+                    ? 'bg-blue-500/15 text-blue-300'
+                    : 'bg-slate-800 text-slate-300'
+                }`}
+              >
+                {ride.leg === 'to' ? '→ To Practice' : '← From Practice'}
+              </span>
+              {isNeedsSub && (
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                  Needs Sub
+                </span>
+              )}
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-300">
+            <span>
+              {ride.riderNames.length > 0 ? (
+                <>
+                  <span className="text-slate-400">Riders: </span>
+                  <strong className="font-medium text-slate-100">
+                    {ride.riderNames.join(', ')}
+                  </strong>
+                </>
+              ) : (
+                <span className="text-slate-400 italic">No riders</span>
+              )}
+            </span>
+            <span className="text-[11px] text-slate-400 tabular-nums">
+              {ride.seatsTotal === 1
+                ? 'Driving solo'
+                : `${ride.riderNames.length}/${ride.seatsTotal} seats`}
+            </span>
+          </div>
+        </div>
+      );
+    };
+
+    return (
+      <div className="space-y-4">
+        <button
+          type="button"
+          onClick={() => setSelectedDriverId(null)}
+          className="inline-flex items-center gap-1.5 px-3.5 py-2 min-h-[36px] rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-200 transition"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" />
+          Back to Driver Engagement
+        </button>
+
+        <div className="rounded-2xl bg-slate-900 border border-slate-800 p-4 space-y-3">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-center gap-3 min-w-0">
+              <div
+                className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shrink-0 ${getAvatarColor(
+                  driverRow.parent.id
+                )}`}
+              >
+                {getInitials(driverRow.parent.name)}
+              </div>
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <h3 className="text-base font-bold text-slate-100">{driverRow.parent.name}</h3>
+                  {driverRow.playerName && (
+                    <span className="text-xs text-slate-400">({driverRow.playerName})</span>
+                  )}
+                </div>
+                <div className="text-xs text-slate-400 mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                  {driverRow.canDrive ? (
+                    <span>{driverRow.defaultSeats} default seats</span>
+                  ) : (
+                    <span>Can&apos;t drive</span>
+                  )}
+                  <span>·</span>
+                  <span>
+                    Past: <strong className="text-slate-200">{driverRow.pastTotal}</strong>
+                  </span>
+                  <span>·</span>
+                  <span>
+                    Upcoming: <strong className="text-slate-200">{driverRow.upcomingTotal}</strong>
+                  </span>
+                </div>
+              </div>
+            </div>
+            {smsUrl && (
+              <a
+                href={smsUrl}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-blue-300 transition shrink-0"
+              >
+                <MessageCircle className="w-3.5 h-3.5" />
+                Text
+              </a>
+            )}
+          </div>
+
+          <div className="pt-2 border-t border-slate-800/80 space-y-1.5">
+            <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">
+              Players Driven ({ridersSummary.length})
+            </div>
+            {ridersSummary.length > 0 ? (
+              <div className="flex flex-wrap gap-1.5">
+                {ridersSummary.map((rs) => (
+                  <span
+                    key={rs.id}
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-800 text-slate-200"
+                  >
+                    {rs.name}
+                    <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-slate-900 text-blue-300 tabular-nums">
+                      {rs.count}
+                    </span>
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-slate-400 italic">No riders recorded yet.</p>
+            )}
+          </div>
+        </div>
+
+        <div className="rounded-2xl bg-slate-900 border border-slate-800 p-4 space-y-2.5">
+          <h4 className="text-xs font-bold uppercase tracking-wide text-slate-300">
+            Upcoming Rides ({upcomingRides.length})
+          </h4>
+          {upcomingRides.length > 0 ? (
+            <div className="space-y-2">{upcomingRides.map(renderRideItem)}</div>
+          ) : (
+            <p className="text-xs text-slate-400 italic">No upcoming rides signed up.</p>
+          )}
+        </div>
+
+        <div className="rounded-2xl bg-slate-900 border border-slate-800 p-4 space-y-2.5">
+          <h4 className="text-xs font-bold uppercase tracking-wide text-slate-300">
+            Past Rides ({pastRides.length})
+          </h4>
+          {pastRides.length > 0 ? (
+            <div className="space-y-2">{pastRides.map(renderRideItem)}</div>
+          ) : (
+            <p className="text-xs text-slate-400 italic">No past rides recorded.</p>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
       <div className="rounded-2xl bg-slate-900 border border-slate-800 p-4 space-y-3">
@@ -324,9 +544,14 @@ export default function DriverEngagementView({ players, parents, practices, toda
                   </div>
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-1.5">
-                      <span className="text-sm font-semibold text-slate-100 truncate">
-                        {r.parent.name}
-                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedDriverId(r.parent.id)}
+                        className="inline-flex items-center gap-1 text-sm font-semibold text-slate-100 hover:text-blue-400 transition truncate text-left"
+                      >
+                        <span className="truncate">{r.parent.name}</span>
+                        <ChevronRight className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                      </button>
                       {r.playerName && (
                         <span className="text-xs text-slate-400">({r.playerName})</span>
                       )}
