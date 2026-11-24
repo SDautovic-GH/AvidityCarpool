@@ -72,6 +72,7 @@ service cloud.firestore {
     //   - dateLabel: string (required, 1..60 chars)
     //   - sortDate: string (required, YYYY-MM-DD, 10..30 chars)
     //   - location: string (required, 0..200 chars)
+    //   - address: string (optional, 0..300 chars)
     //   - notes: string (optional, 0..500 chars)
     //   - createdAt: timestamp (required, immutable)
     //
@@ -230,11 +231,12 @@ service cloud.firestore {
 
     function isValidTournament(data) {
       return hasRequiredFields(['name', 'dateLabel', 'sortDate', 'location', 'createdAt']) &&
-             hasOnlyAllowedFields(['name', 'dateLabel', 'sortDate', 'location', 'notes', 'createdAt']) &&
+             hasOnlyAllowedFields(['name', 'dateLabel', 'sortDate', 'location', 'address', 'notes', 'createdAt']) &&
              validString(data.name, 1, 150) &&
              validString(data.dateLabel, 1, 60) &&
              validString(data.sortDate, 10, 30) &&
              validString(data.location, 0, 200) &&
+             (!('address' in data) || validString(data.address, 0, 300)) &&
              (!('notes' in data) || validString(data.notes, 0, 500)) &&
              data.createdAt is timestamp;
     }
@@ -263,7 +265,7 @@ service cloud.firestore {
 
     // Seasons and subcollections
     match /seasons/{seasonId} {
-      allow read: if isSeasonMember(seasonId);
+      allow read: if isAuthenticated();
       allow create: if isGlobalAdmin() && isValidSeason(request.resource.data);
       allow update: if isSeasonAdmin(seasonId) &&
                        isValidSeason(request.resource.data) &&

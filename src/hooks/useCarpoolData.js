@@ -101,22 +101,26 @@ export function useCarpoolData(user) {
 
     const unsubPlayers = onSnapshot(
       query(collection(db, 'seasons', activeSeasonId, 'players'), orderBy('name')),
-      (snap) => setPlayers(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
+      (snap) => setPlayers(snap.docs.map((d) => ({ id: d.id, ...d.data() }))),
+      () => setPlayers([])
     );
 
     const unsubParents = onSnapshot(
       query(collection(db, 'seasons', activeSeasonId, 'parents'), orderBy('name')),
-      (snap) => setParents(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
+      (snap) => setParents(snap.docs.map((d) => ({ id: d.id, ...d.data() }))),
+      () => setParents([])
     );
 
     const unsubPractices = onSnapshot(
       query(collection(db, 'seasons', activeSeasonId, 'practices'), orderBy('isoDate')),
-      (snap) => setPractices(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
+      (snap) => setPractices(snap.docs.map((d) => ({ id: d.id, ...d.data() }))),
+      () => setPractices([])
     );
 
     const unsubTournaments = onSnapshot(
       query(collection(db, 'seasons', activeSeasonId, 'tournaments'), orderBy('sortDate')),
-      (snap) => setTournaments(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
+      (snap) => setTournaments(snap.docs.map((d) => ({ id: d.id, ...d.data() }))),
+      () => setTournaments([])
     );
 
     return () => {
