@@ -108,7 +108,7 @@ export default function DriveModal({
       className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 p-0 sm:p-4"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl bg-slate-900 border border-slate-800 p-5 space-y-4 shadow-2xl">
+      <div className="w-full sm:max-w-md max-h-[90dvh] overflow-y-auto rounded-t-2xl sm:rounded-2xl bg-slate-900 border border-slate-800 p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] space-y-4 shadow-2xl">
         <div className="flex items-center justify-between">
           <div>
             <h3 className="font-bold text-base">Offer to Drive</h3>

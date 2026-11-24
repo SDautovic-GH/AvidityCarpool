@@ -82,7 +82,7 @@ export default function AdminSeasonModal({
       className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-950/75 backdrop-blur-xs p-0 sm:p-4"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="w-full max-w-lg rounded-t-2xl sm:rounded-2xl bg-slate-900 border border-slate-800 shadow-2xl overflow-hidden">
+      <div className="w-full max-w-lg max-h-[90dvh] overflow-y-auto pb-[env(safe-area-inset-bottom)] rounded-t-2xl sm:rounded-2xl bg-slate-900 border border-slate-800 shadow-2xl">
         <div className="flex items-center justify-between px-5 py-4 border-b border-slate-800">
           <h2 className="text-base font-bold text-slate-100">Season &amp; Schedule</h2>
           <button

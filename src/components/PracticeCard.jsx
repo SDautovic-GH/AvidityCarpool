@@ -46,7 +46,15 @@ export default function PracticeCard({
   onDeletePractice,
   onToast,
 }) {
-  const [activeLeg, setActiveLeg] = useState('to');
+  const [activeLeg, setActiveLeg] = useState(() => {
+    const { toEnabled: tOn, fromEnabled: fOn } = getPracticeCarpoolLegs(practice);
+    if (!tOn && fOn) return 'from';
+    if (tOn && !fOn) return 'to';
+    const tSum = getLegSummary(practice, 'to', players);
+    const fSum = getLegSummary(practice, 'from', players);
+    if (tSum.tone === 'success' && fSum.tone !== 'success') return 'from';
+    return 'to';
+  });
   const [editingNote, setEditingNote] = useState(false);
   const [noteDraft, setNoteDraft] = useState('');
   const [editingPractice, setEditingPractice] = useState(false);
@@ -260,7 +268,7 @@ export default function PracticeCard({
                   Need a driver
                 </span>
               )}
-              {!isReadOnly && !isDesktop && canDrive && !isDrivingThisLeg && needsMoreDrivers && (
+              {!isReadOnly && !isDesktop && !isAdmin && canDrive && !isDrivingThisLeg && needsMoreDrivers && (
                 <button
                   onClick={() =>
                     onOpenDriveModal(practice.id, !drivesTo && !drivesFrom ? 'both' : leg)
