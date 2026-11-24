@@ -160,10 +160,6 @@ export default function PracticeCard({
   })();
 
   const carpoolPlayerIdSet = new Set(players.map((pl) => pl.id));
-  const carpoolPhones = carpoolParents
-    .filter((p) => p.id !== myParentId && carpoolPlayerIdSet.has(p.playerId) && p.phone)
-    .map((p) => p.phone);
-  const carpoolSmsUrl = buildSmsUrl(carpoolPhones);
 
   const myCarDriverParentIds = new Set();
   const myCarRiderPlayerIds = new Set();
@@ -756,16 +752,6 @@ export default function PracticeCard({
             >
               <MessageCircle className="w-3.5 h-3.5" />
               Text My Car
-            </a>
-          )}
-          {carpoolSmsUrl && (
-            <a
-              href={carpoolSmsUrl}
-              className="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-slate-700/75 hover:bg-slate-700 text-slate-100 transition"
-              title="Text all parents in the Melrose carpool"
-            >
-              <MessageCircle className="w-3.5 h-3.5" />
-              Text Carpool
             </a>
           )}
         </div>
