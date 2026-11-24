@@ -776,7 +776,11 @@ export default function App() {
                     </button>
                   )}
                 </div>
-                <div className="w-full sm:w-auto flex items-center justify-between sm:justify-center gap-2">
+                <div
+                  className={`w-full sm:w-auto flex items-center gap-2 ${
+                    isAdmin ? 'justify-between sm:justify-center' : 'justify-center'
+                  }`}
+                >
                   <div className="inline-flex p-0.5 rounded-full bg-slate-900 border border-slate-800 text-xs font-semibold">
                     <button
                       type="button"
