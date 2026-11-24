@@ -70,19 +70,18 @@ If your player is missing practice, tap the **`[Player Name]: Going`** button in
 Need to share a quick update (like *"Meet by the north doors"* or *"Running 5 min late"*)?
 - **+ Note:** Add an attributed note to any practice card (you can delete your own notes anytime).
 - **Text My Car:** Opens a group text with only the driver and rider parents in your car for that practice.
-- **Text Carpool:** Opens a group text with all carpool parents.
 - **Share:** Copies or shares a clean text summary of the practice carpool.
 
 ---
 
 ## 7. Navigation Tabs: My Drives, Events & Team
 
-- **Practices:** Upcoming practices with **All Upcoming** / month / **All Past** and **Needs Driver** filters (selecting a month scopes both the list and the **Needs Driver** count to that month).
-- **My Drives:** Shows only practices where you are driving, with an **Add My Drives to Calendar** button (`.ics` download).
+- **Practices:** Upcoming practices with **All Upcoming** / month / **All Past**, **Needs Driver**, and **Cards | Scan** (condensed Quick Scan with weekday filters, **View ▾**, and green **✓ All Set** indicators; your preference is remembered automatically).
+- **My Drives:** Shows only practices where you are driving (in **Cards** or **Scan** view), with an **Add to Calendar** button (`.ics` download).
 - **Events:** Full tournament schedule with Maps links and 1-tap **+ Calendar** (`.ics`) downloads.
 - **Team:** Full team roster and contacts:
   - **Call or Text:** Tap any phone number to call, tap **Text** to message one parent, or use **Text Carpool** / **Text Team** at the top.
   - **Directions:** Tap any home address to open Maps.
   - **Update your info:** Tap **Edit My Info** (or **Update** next to your name) to change your phone number, home address, or default car seats.
-- **Display Zoom:** On mobile, tap **`⋯`** in the top-right header to adjust text size (`80%–130%`).
+- **In-App Guide & Display Zoom:** Tap **`?`** (mobile) or **Guide** (desktop) in the header to view this guide anytime; on mobile, tap **`⋯`** to adjust text size (`80%–130%`).
 

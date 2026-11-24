@@ -32,9 +32,9 @@ This guide covers all team administrator capabilities in **Avidity Carpool** (`h
 
 ## 3. Managing Practices (`Practices` Tab)
 
-1. **Generate a Season Schedule:**
-   - Open **Team** → **Season & Schedule** → **Generate Practices** (or tap **Generate Practices** when no upcoming practices exist).
-   - Pick a **Start Date** and **End Date** to preview and batch-create practices.
+1. **Add a Single Practice or Generate a Season Schedule:**
+   - Tap **+ Practice** on the **Practices** tab to add a single practice event (date, time, facility/address, and carpool mode).
+   - Or open **Team** → **Season & Schedule** → **Generate Practices** (or tap **Generate Practices** when no upcoming practices exist) to preview and batch-create practices across a date range.
 2. **Edit, Reschedule, or Cancel a Practice:**
    - Tap the **pencil (Edit)** icon in the top-right of any practice card to change its **date**, **time**, **gym/address**, **status** (for example, **Cancelled**), or **Carpool Needed** (**Both Ways**, **From Practice Only**, **To Practice Only**, or **No Carpool Needed**).
    - Tap the **trash (Remove)** icon in the top-right of a practice card to delete it permanently.
@@ -50,6 +50,7 @@ Admins can step in to organize rides on any practice card:
 - **Override Need Sub / Adjust Seats / Remove a Driver:** On any car row, use the inline **`N seats ▾`** dropdown next to the open-seat count to adjust available seats for that practice leg, tap **Need Sub** / **Cancel Sub** to override sub status, **Take Over** on a sub-needed car, or **Drop** (with confirmation) to remove that driver from an individual practice leg without changing their roster `Can drive` status.
 - **Assign or Remove Riders:** Under **Still need a ride:**, tap any player's **`[Name] +`** button to open the **Assign** modal and place them into any confirmed car with open seats, or tap **`×`** next to any rider's name to remove them.
 - **Delete Any Note:** Admins can delete any parent's practice note on a card.
+- **Driver Engagement Overview (`Team` Tab):** Switch to **Driver Engagement** at the top of the **Team** tab to review legs driven across **All Season**, **Past**, or **Upcoming** (filtered to Carpool Parents or All Roster), and tap any driver's name to open their detail page showing upcoming/past rides and players driven.
 
 ---
 

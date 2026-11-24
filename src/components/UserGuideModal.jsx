@@ -62,9 +62,12 @@ export default function UserGuideModal({ isAdmin = false, onClose }) {
                 <h3 className="text-[15px] font-bold text-slate-100">1. Reading Practices &amp; Quick Scan</h3>
                 <ul className="list-disc pl-4 space-y-1.5">
                   <li>
-                    <strong className="text-slate-100">Cards vs. Quick Scan:</strong> Switch between{' '}
+                    <strong className="text-slate-100">Cards vs. Scan:</strong> Switch between{' '}
                     <strong className="text-slate-100">Cards</strong> (full details) and{' '}
-                    <strong className="text-slate-100">Quick Scan</strong> (condensed list grouped by month with weekday filters) — your preference is saved automatically. Tap any Quick Scan row to expand its full card.
+                    <strong className="text-slate-100">Scan</strong> (condensed list grouped by month with weekday filters, available on both{' '}
+                    <strong className="text-slate-100">Practices</strong> and <strong className="text-slate-100">My Drives</strong>) — your preference is saved automatically. Tap{' '}
+                    <strong className="text-slate-100">View ▾</strong> on any Scan row to expand its full card, or look for the green{' '}
+                    <strong className="text-emerald-400">✓ All Set</strong> pill.
                   </li>
                   <li>
                     <strong className="text-slate-100">Filters:</strong> Use{' '}
@@ -124,10 +127,11 @@ export default function UserGuideModal({ isAdmin = false, onClose }) {
                 <h3 className="text-[15px] font-bold text-slate-100">4. Notes, Texting, Calendar &amp; Team</h3>
                 <ul className="list-disc pl-4 space-y-1.5">
                   <li>
-                    <strong className="text-slate-100">Notes &amp; Group Text:</strong> Use{' '}
-                    <strong className="text-slate-100">+ Note</strong> on a card,{' '}
-                    <strong className="text-slate-100">Text My Car</strong>, or{' '}
-                    <strong className="text-slate-100">Text Carpool</strong>.
+                    <strong className="text-slate-100">Notes &amp; Car Texting:</strong> Use{' '}
+                    <strong className="text-slate-100">+ Note</strong> on a card or{' '}
+                    <strong className="text-slate-100">Text My Car</strong> to message the parents in your car for that practice. (Use{' '}
+                    <strong className="text-slate-100">Text Carpool</strong> / <strong className="text-slate-100">Text Team</strong> on the{' '}
+                    <strong className="text-slate-100">Team</strong> tab to message the full group.)
                   </li>
                   <li>
                     <strong className="text-slate-100">My Drives &amp; Events:</strong> Export your driving schedule (
@@ -162,7 +166,7 @@ export default function UserGuideModal({ isAdmin = false, onClose }) {
                 <h3 className="text-[15px] font-bold text-slate-100">2. Practices &amp; Carpool Mode</h3>
                 <ul className="list-disc pl-4 space-y-1.5">
                   <li>
-                    Use <strong className="text-slate-100">+ Add Practice</strong> on the Practices tab to add a single practice, or{' '}
+                    Use <strong className="text-slate-100">+ Practice</strong> on the Practices tab to add a single practice, or{' '}
                     <strong className="text-slate-100">Team → Season &amp; Schedule → Generate Practices</strong> to batch-create a date range.
                   </li>
                   <li>
