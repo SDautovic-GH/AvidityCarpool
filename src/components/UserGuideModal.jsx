@@ -11,7 +11,7 @@ export default function UserGuideModal({ isAdmin = false, onClose }) {
     >
       <div className="w-full max-w-lg max-h-[90dvh] flex flex-col rounded-t-2xl sm:rounded-2xl bg-slate-900 border border-slate-800 shadow-2xl overflow-hidden pb-[env(safe-area-inset-bottom)]">
         <div className="flex items-center justify-between px-5 py-4 border-b border-slate-800 shrink-0">
-          <h2 className="text-base font-bold text-slate-100 flex items-center gap-2">
+          <h2 className="text-lg font-bold text-slate-100 flex items-center gap-2">
             <BookOpen className="w-4 h-4 text-blue-400" />
             {tab === 'admin' ? 'Admin Guide' : 'Parent User Guide'}
           </h2>
@@ -27,7 +27,7 @@ export default function UserGuideModal({ isAdmin = false, onClose }) {
 
         {isAdmin && (
           <div className="px-5 pt-3 shrink-0">
-            <div className="inline-flex p-1 rounded-full bg-slate-950 border border-slate-800 text-xs font-semibold">
+            <div className="inline-flex p-1 rounded-full bg-slate-950 border border-slate-800 text-[13px] font-semibold">
               <button
                 type="button"
                 onClick={() => setTab('parent')}
@@ -55,12 +55,12 @@ export default function UserGuideModal({ isAdmin = false, onClose }) {
           </div>
         )}
 
-        <div className="p-5 overflow-y-auto space-y-4 text-xs text-slate-300 leading-relaxed">
+        <div className="p-5 overflow-y-auto space-y-5 text-sm text-slate-300 leading-relaxed">
           {tab === 'parent' ? (
             <>
               <section className="space-y-1.5">
-                <h3 className="text-sm font-bold text-slate-100">1. Reading Practices &amp; Quick Scan</h3>
-                <ul className="list-disc pl-4 space-y-1">
+                <h3 className="text-[15px] font-bold text-slate-100">1. Reading Practices &amp; Quick Scan</h3>
+                <ul className="list-disc pl-4 space-y-1.5">
                   <li>
                     <strong className="text-slate-100">Cards vs. Quick Scan:</strong> Switch between{' '}
                     <strong className="text-slate-100">Cards</strong> (full details) and{' '}
@@ -81,8 +81,8 @@ export default function UserGuideModal({ isAdmin = false, onClose }) {
               </section>
 
               <section className="space-y-1.5">
-                <h3 className="text-sm font-bold text-slate-100">2. Going / Out &amp; Claiming a Ride</h3>
-                <ul className="list-disc pl-4 space-y-1">
+                <h3 className="text-[15px] font-bold text-slate-100">2. Going / Out &amp; Claiming a Ride</h3>
+                <ul className="list-disc pl-4 space-y-1.5">
                   <li>
                     <strong className="text-slate-100">Missing a practice:</strong> Tap{' '}
                     <strong className="text-slate-100">[Name]: Going</strong> on that card to flip it to{' '}
@@ -98,8 +98,8 @@ export default function UserGuideModal({ isAdmin = false, onClose }) {
               </section>
 
               <section className="space-y-1.5">
-                <h3 className="text-sm font-bold text-slate-100">3. Offering to Drive</h3>
-                <ul className="list-disc pl-4 space-y-1">
+                <h3 className="text-[15px] font-bold text-slate-100">3. Offering to Drive</h3>
+                <ul className="list-disc pl-4 space-y-1.5">
                   <li>
                     Tap <strong className="text-slate-100">+ I can drive</strong> (or{' '}
                     <strong className="text-slate-100">+ Drive</strong> in Quick Scan), choose{' '}
@@ -121,8 +121,8 @@ export default function UserGuideModal({ isAdmin = false, onClose }) {
               </section>
 
               <section className="space-y-1.5">
-                <h3 className="text-sm font-bold text-slate-100">4. Notes, Texting, Calendar &amp; Team</h3>
-                <ul className="list-disc pl-4 space-y-1">
+                <h3 className="text-[15px] font-bold text-slate-100">4. Notes, Texting, Calendar &amp; Team</h3>
+                <ul className="list-disc pl-4 space-y-1.5">
                   <li>
                     <strong className="text-slate-100">Notes &amp; Group Text:</strong> Use{' '}
                     <strong className="text-slate-100">+ Note</strong> on a card,{' '}
@@ -144,8 +144,8 @@ export default function UserGuideModal({ isAdmin = false, onClose }) {
           ) : (
             <>
               <section className="space-y-1.5">
-                <h3 className="text-sm font-bold text-slate-100">1. Roster &amp; Carpool Membership (Team Tab)</h3>
-                <ul className="list-disc pl-4 space-y-1">
+                <h3 className="text-[15px] font-bold text-slate-100">1. Roster &amp; Carpool Membership (Team Tab)</h3>
+                <ul className="list-disc pl-4 space-y-1.5">
                   <li>
                     Add or edit families with <strong className="text-slate-100">+ Add Family</strong>,{' '}
                     <strong className="text-slate-100">Bulk Import</strong>, or the pencil icon. Toggle{' '}
@@ -159,8 +159,8 @@ export default function UserGuideModal({ isAdmin = false, onClose }) {
               </section>
 
               <section className="space-y-1.5">
-                <h3 className="text-sm font-bold text-slate-100">2. Practices &amp; Carpool Mode</h3>
-                <ul className="list-disc pl-4 space-y-1">
+                <h3 className="text-[15px] font-bold text-slate-100">2. Practices &amp; Carpool Mode</h3>
+                <ul className="list-disc pl-4 space-y-1.5">
                   <li>
                     Use <strong className="text-slate-100">+ Add Practice</strong> on the Practices tab to add a single practice, or{' '}
                     <strong className="text-slate-100">Team → Season &amp; Schedule → Generate Practices</strong> to batch-create a date range.
@@ -174,8 +174,8 @@ export default function UserGuideModal({ isAdmin = false, onClose }) {
               </section>
 
               <section className="space-y-1.5">
-                <h3 className="text-sm font-bold text-slate-100">3. Ride Overrides</h3>
-                <ul className="list-disc pl-4 space-y-1">
+                <h3 className="text-[15px] font-bold text-slate-100">3. Ride Overrides</h3>
+                <ul className="list-disc pl-4 space-y-1.5">
                   <li>
                     Assign any drivable parent via the <strong className="text-slate-100">Driver (Admin)</strong> dropdown in the Drive modal.
                   </li>
