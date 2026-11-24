@@ -105,35 +105,32 @@ export default function PracticeQuickScan({
   return (
     <div className="space-y-3">
       {availableDays.length > 1 && (
-        <div className="flex flex-wrap items-center justify-between gap-2 px-1">
-          <div className="inline-flex flex-wrap items-center gap-1 text-xs">
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5 text-xs">
+          <button
+            type="button"
+            onClick={() => setDayFilter('all')}
+            className={`px-2.5 py-1 min-h-[30px] rounded-full font-semibold shrink-0 transition ${
+              dayFilter === 'all'
+                ? 'bg-blue-600 text-white'
+                : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            All
+          </button>
+          {availableDays.map((d) => (
             <button
+              key={d}
               type="button"
-              onClick={() => setDayFilter('all')}
-              className={`px-2.5 py-1 min-h-[32px] rounded-full font-semibold transition ${
-                dayFilter === 'all'
+              onClick={() => setDayFilter(d)}
+              className={`px-2.5 py-1 min-h-[30px] rounded-full font-semibold shrink-0 transition ${
+                dayFilter === d
                   ? 'bg-blue-600 text-white'
                   : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-slate-200'
               }`}
             >
-              All Days
+              {d}
             </button>
-            {availableDays.map((d) => (
-              <button
-                key={d}
-                type="button"
-                onClick={() => setDayFilter(d)}
-                className={`px-2.5 py-1 min-h-[32px] rounded-full font-semibold transition ${
-                  dayFilter === d
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                {d}
-              </button>
-            ))}
-          </div>
-          <span className="text-[11px] text-slate-400">Tap any row for full details</span>
+          ))}
         </div>
       )}
 

@@ -638,7 +638,7 @@ export default function App() {
         </div>
       </header>
 
-      <main className="w-full max-w-4xl mx-auto px-3 sm:px-4 pt-5 pb-[max(2rem,env(safe-area-inset-bottom))] space-y-4">
+      <main className="w-full max-w-4xl mx-auto px-3 sm:px-4 pt-3 pb-[max(2rem,env(safe-area-inset-bottom))] space-y-3">
         {loading ? (
           <div className="py-12 text-center text-sm text-slate-400">
             Loading carpool schedule...
@@ -776,45 +776,47 @@ export default function App() {
                     </button>
                   )}
                 </div>
-                <div className="inline-flex p-1 rounded-full bg-slate-900 border border-slate-800 text-xs font-semibold">
-                  <button
-                    type="button"
-                    onClick={() => setViewMode('cards')}
-                    className={`inline-flex items-center gap-1 px-2.5 py-1.5 min-h-[36px] rounded-full transition ${
-                      viewMode === 'cards'
-                        ? 'bg-slate-800 text-slate-100'
-                        : 'text-slate-400 hover:text-slate-200'
-                    }`}
-                    title="Full practice cards"
-                  >
-                    <LayoutGrid className="w-3.5 h-3.5" />
-                    Cards
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setViewMode('scan')}
-                    className={`inline-flex items-center gap-1 px-2.5 py-1.5 min-h-[36px] rounded-full transition ${
-                      viewMode === 'scan'
-                        ? 'bg-slate-800 text-slate-100'
-                        : 'text-slate-400 hover:text-slate-200'
-                    }`}
-                    title="Condensed Quick Scan list"
-                  >
-                    <List className="w-3.5 h-3.5" />
-                    Quick Scan
-                  </button>
+                <div className="w-full sm:w-auto flex items-center justify-between sm:justify-center gap-2">
+                  <div className="inline-flex p-0.5 rounded-full bg-slate-900 border border-slate-800 text-xs font-semibold">
+                    <button
+                      type="button"
+                      onClick={() => setViewMode('cards')}
+                      className={`inline-flex items-center gap-1 px-2.5 py-1 min-h-[32px] rounded-full transition ${
+                        viewMode === 'cards'
+                          ? 'bg-slate-800 text-slate-100'
+                          : 'text-slate-400 hover:text-slate-200'
+                      }`}
+                      title="Full practice cards"
+                    >
+                      <LayoutGrid className="w-3.5 h-3.5" />
+                      Cards
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setViewMode('scan')}
+                      className={`inline-flex items-center gap-1 px-2.5 py-1 min-h-[32px] rounded-full transition ${
+                        viewMode === 'scan'
+                          ? 'bg-slate-800 text-slate-100'
+                          : 'text-slate-400 hover:text-slate-200'
+                      }`}
+                      title="Condensed Quick Scan list"
+                    >
+                      <List className="w-3.5 h-3.5" />
+                      Scan
+                    </button>
+                  </div>
+                  {isAdmin && (
+                    <button
+                      type="button"
+                      onClick={() => setAddPracticeModalOpen(true)}
+                      className="inline-flex items-center gap-1 px-3 py-1 min-h-[34px] rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition shrink-0"
+                      title="Add a single practice event"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      Practice
+                    </button>
+                  )}
                 </div>
-                {isAdmin && (
-                  <button
-                    type="button"
-                    onClick={() => setAddPracticeModalOpen(true)}
-                    className="inline-flex items-center gap-1 px-3.5 py-1.5 min-h-[36px] rounded-full text-[13px] font-semibold bg-blue-600 hover:bg-blue-500 text-white transition"
-                    title="Add a single practice event"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                    Add Practice
-                  </button>
-                )}
               </div>
             )}
 
