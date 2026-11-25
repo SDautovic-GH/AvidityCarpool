@@ -462,32 +462,35 @@ export default function AdminRoster({
                             </span>
                           ) : null;
                         })()}
-                        {isAdmin && (
-                          <button
-                            onClick={() => {
-                              setEditingPlayerId(player.id);
-                              setPlayerNameDraft(player.name);
-                              setPlayerJerseyDraft(player.jerseyNumber || '');
-                            }}
-                            className="p-2 min-w-[32px] min-h-[32px] flex items-center justify-center rounded-full text-slate-500 hover:text-slate-200 hover:bg-slate-800 transition"
-                            title="Edit player name & jersey #"
-                          >
-                            <Pencil className="w-3 h-3" />
-                          </button>
-                        )}
                       </div>
                     )}
                   </div>
 
                   {isAdmin && (
-                    <button
-                      onClick={() => openAddParentToPlayer(player.id)}
-                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition shrink-0"
-                    >
-                      <Plus className="w-3 h-3" />
-                      <span className="hidden sm:inline">Add Parent</span>
-                      <span className="sm:hidden">Parent</span>
-                    </button>
+                    <div className="flex items-center gap-1 shrink-0">
+                      {!isEditingName && (
+                        <button
+                          onClick={() => {
+                            setEditingPlayerId(player.id);
+                            setPlayerNameDraft(player.name);
+                            setPlayerJerseyDraft(player.jerseyNumber || '');
+                          }}
+                          className="p-2 min-w-[34px] min-h-[34px] flex items-center justify-center rounded-full text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition"
+                          title="Edit player name & jersey #"
+                          aria-label="Edit player"
+                        >
+                          <Pencil className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                      <button
+                        onClick={() => openAddParentToPlayer(player.id)}
+                        className="inline-flex items-center gap-1 px-3 py-1.5 min-h-[34px] rounded-full text-xs font-semibold bg-slate-700/75 hover:bg-slate-700 text-slate-100 transition shrink-0"
+                      >
+                        <Plus className="w-3 h-3" />
+                        <span className="hidden sm:inline">Add Parent</span>
+                        <span className="sm:hidden">Parent</span>
+                      </button>
+                    </div>
                   )}
                 </div>
 
@@ -530,10 +533,12 @@ export default function AdminRoster({
                                 </span>
                               )}
                             </div>
-                            <div className="text-xs text-slate-400 truncate mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5">
-                              <span className="truncate">{parent.email || parent.id}</span>
-                              {isAdmin && (
-                                parent.activatedAt || parent.lastLoginAt ? (
+                            <div className="text-xs text-slate-400 truncate mt-1">
+                              {parent.email || parent.id}
+                            </div>
+                            {isAdmin && (
+                              <div className="mt-1">
+                                {parent.activatedAt || parent.lastLoginAt ? (
                                   <span className="inline-flex flex-wrap items-center gap-1.5 text-[11px]">
                                     <span
                                       className="inline-flex items-center justify-center w-4 h-4 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
@@ -553,13 +558,13 @@ export default function AdminRoster({
                                     )}
                                   </span>
                                 ) : (
-                                  <span className="inline-flex items-center gap-1 text-[11px] text-amber-300/90">
+                                  <span className="inline-flex items-center gap-1.5 text-[11px] text-amber-300/90">
                                     <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
                                     Pending Setup
                                   </span>
-                                )
-                              )}
-                            </div>
+                                )}
+                              </div>
+                            )}
                             {(parent.phone || parent.address) && (
                               <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-400 mt-1">
                                 {parent.phone && (
