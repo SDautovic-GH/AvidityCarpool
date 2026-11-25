@@ -387,7 +387,7 @@ export default function AdminRoster({
                 className="rounded-2xl bg-slate-900 border border-slate-800 overflow-hidden"
               >
                 <div className="flex items-start sm:items-center justify-between gap-2.5 px-3.5 sm:px-4 py-3 bg-slate-950/50 border-b border-slate-800/80">
-                  <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                  <div className="flex items-start gap-2.5 min-w-0 flex-1">
                     <span
                       className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0 ${getAvatarColor(
                         player.name
