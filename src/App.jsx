@@ -71,6 +71,25 @@ export default function App() {
   }, [viewMode]);
   const [showAllUpcoming, setShowAllUpcoming] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const menuContainerRef = React.useRef(null);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const handlePointerDown = (e) => {
+      if (menuContainerRef.current && !menuContainerRef.current.contains(e.target)) {
+        setMenuOpen(false);
+      }
+    };
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') setMenuOpen(false);
+    };
+    document.addEventListener('pointerdown', handlePointerDown, true);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown, true);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [menuOpen]);
   const [zoomPct, setZoomPct] = useState(() => {
     try {
       const saved = Number(localStorage.getItem('avidity_zoom_pct'));
@@ -587,22 +606,19 @@ export default function App() {
               <CircleHelp className="w-4 h-4 text-blue-400" />
             </button>
 
-            <button
-              type="button"
-              onClick={() => setMenuOpen((v) => !v)}
-              className="sm:hidden w-8 h-8 rounded-full bg-slate-900 hover:bg-slate-800 border border-slate-800 flex items-center justify-center text-slate-300 transition"
-              aria-label="Menu"
-            >
-              <MoreHorizontal className="w-4 h-4" />
-            </button>
+            <div ref={menuContainerRef} className="relative sm:hidden">
+              <button
+                type="button"
+                onClick={() => setMenuOpen((v) => !v)}
+                className="w-8 h-8 rounded-full bg-slate-900 hover:bg-slate-800 border border-slate-800 flex items-center justify-center text-slate-300 transition"
+                aria-label="Menu"
+                aria-expanded={menuOpen}
+              >
+                <MoreHorizontal className="w-4 h-4" />
+              </button>
 
-            {menuOpen && (
-              <>
-                <div
-                  className="fixed inset-0 z-40 sm:hidden"
-                  onClick={() => setMenuOpen(false)}
-                />
-                <div className="sm:hidden absolute right-0 top-10 z-50 w-52 rounded-2xl bg-slate-900 border border-slate-800 p-3 shadow-2xl space-y-2.5">
+              {menuOpen && (
+                <div className="absolute right-0 top-10 z-50 w-52 rounded-2xl bg-slate-900 border border-slate-800 p-3 shadow-2xl space-y-2.5">
                   <div className="flex items-center justify-between gap-2">
                     <span className="text-xs font-semibold text-slate-400">Zoom</span>
                     <div className="inline-flex items-center rounded-full bg-slate-950 border border-slate-800 text-[11px] font-semibold text-slate-200">
@@ -666,8 +682,8 @@ export default function App() {
                     Sign Out
                   </button>
                 </div>
-              </>
-            )}
+              )}
+            </div>
           </div>
         </div>
 
