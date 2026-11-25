@@ -50,9 +50,9 @@ export default function NotificationsModal({
         if (e.target === dialogRef.current) onClose();
       }}
       aria-label="Recent Alerts"
-      className="fixed inset-x-0 bottom-0 top-auto sm:inset-0 m-0 sm:m-auto p-0 w-full max-w-full sm:max-w-md max-h-[85dvh] bg-transparent border-0 overflow-hidden rounded-t-2xl sm:rounded-2xl shadow-2xl"
+      className="fixed top-16 bottom-auto inset-x-0 sm:inset-0 mx-auto my-0 sm:m-auto p-0 w-[calc(100%-1.5rem)] max-w-md max-h-[75dvh] bg-transparent border-0 overflow-hidden rounded-2xl shadow-2xl"
     >
-      <div className="w-full max-h-[85dvh] flex flex-col rounded-t-2xl sm:rounded-2xl bg-slate-900 border border-slate-800 text-slate-100 overflow-hidden pb-[env(safe-area-inset-bottom)]">
+      <div className="w-full max-h-[75dvh] flex flex-col rounded-2xl bg-slate-900 border border-slate-800 text-slate-100 overflow-hidden">
         <div className="flex items-center justify-between px-5 py-4 border-b border-slate-800 shrink-0 touch-none">
           <h2 className="text-base font-bold text-slate-100 flex items-center gap-2">
             <Bell className="w-4 h-4 text-blue-400" />
