@@ -30,6 +30,8 @@ export function useCarpoolData(user) {
   const [practices, setPractices] = useState([]);
   const [tournaments, setTournaments] = useState([]);
   const [isGlobalAdmin, setIsGlobalAdmin] = useState(false);
+  const [adminCheckDone, setAdminCheckDone] = useState(false);
+  const [parentsLoaded, setParentsLoaded] = useState(false);
   const [loading, setLoading] = useState(true);
   const [deniedSeasonIds, setDeniedSeasonIds] = useState(() => new Set());
 
@@ -52,15 +54,23 @@ export function useCarpoolData(user) {
   useEffect(() => {
     if (!isFirebaseConfigured || !db || !userEmail) {
       setIsGlobalAdmin(false);
+      setAdminCheckDone(true);
       return;
     }
     let cancelled = false;
+    setAdminCheckDone(false);
     getDoc(doc(db, 'admins', userEmail))
       .then((snap) => {
-        if (!cancelled) setIsGlobalAdmin(snap.exists());
+        if (!cancelled) {
+          setIsGlobalAdmin(snap.exists());
+          setAdminCheckDone(true);
+        }
       })
       .catch(() => {
-        if (!cancelled) setIsGlobalAdmin(false);
+        if (!cancelled) {
+          setIsGlobalAdmin(false);
+          setAdminCheckDone(true);
+        }
       });
     return () => {
       cancelled = true;
@@ -107,8 +117,10 @@ export function useCarpoolData(user) {
       setParents([]);
       setPractices([]);
       setTournaments([]);
+      setParentsLoaded(true);
       return;
     }
+    setParentsLoaded(false);
 
     const unsubPlayers = onSnapshot(
       query(collection(db, 'seasons', activeSeasonId, 'players'), orderBy('name')),
@@ -118,9 +130,13 @@ export function useCarpoolData(user) {
 
     const unsubParents = onSnapshot(
       query(collection(db, 'seasons', activeSeasonId, 'parents'), orderBy('name')),
-      (snap) => setParents(snap.docs.map((d) => ({ id: d.id, ...d.data() }))),
+      (snap) => {
+        setParents(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+        setParentsLoaded(true);
+      },
       (err) => {
         setParents([]);
+        setParentsLoaded(true);
         if (err?.code === 'permission-denied') {
           setDeniedSeasonIds((prev) => {
             if (prev.has(activeSeasonId)) return prev;
@@ -839,7 +855,9 @@ export function useCarpoolData(user) {
     tournaments,
     currentParent,
     isAdmin,
-    loading,
+    loading:
+      loading ||
+      (Boolean(userEmail) && (!adminCheckDone || (Boolean(activeSeasonId) && !parentsLoaded))),
     toggleAttendance,
     offerToDrive,
     dropDrive,
