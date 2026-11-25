@@ -185,9 +185,11 @@ export default function UserGuideModal({ isAdmin = false, onClose }) {
                     <strong className="text-slate-100">✓ Carpool</strong> / <strong className="text-slate-100">+ Carpool</strong> on any player to include or exclude them from carpool headcounts.
                   </li>
                   <li>
-                    Tap <strong className="text-slate-100">Alerts</strong> in <strong className="text-slate-100">Team → Roster</strong> to see how many carpool drivers have alerts active and globally enable or disable{' '}
+                    Tap <strong className="text-slate-100">Alerts</strong> in <strong className="text-slate-100">Team → Roster</strong> to see how many carpool drivers have alerts active, globally enable or disable{' '}
                     <strong className="text-slate-100">Instant &ldquo;Needs Sub&rdquo; Alerts</strong> and the{' '}
-                    <strong className="text-slate-100">6:00 PM Night-Before Sweep</strong>.
+                    <strong className="text-slate-100">6:00 PM Night-Before Sweep</strong>, or tap{' '}
+                    <strong className="text-slate-100">Send Test Alert (Me Only)</strong> to verify push delivery and the top-bar{' '}
+                    <strong className="text-slate-100">Bell</strong> Alerts inbox without notifying other parents.
                   </li>
                   <li>
                     Use the <strong className="text-slate-100">Guest Pool</strong> tab inside{' '}
