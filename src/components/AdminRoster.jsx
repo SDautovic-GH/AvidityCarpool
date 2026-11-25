@@ -508,19 +508,20 @@ export default function AdminRoster({
                               <span className="truncate">{parent.email || parent.id}</span>
                               {isAdmin && (
                                 parent.activatedAt || parent.lastLoginAt ? (
-                                  <span
-                                    className="inline-flex items-center gap-1 text-[11px] text-emerald-400"
-                                    title={
-                                      parent.activatedAt
-                                        ? `Account setup completed ${formatTimestamp(parent.activatedAt)}`
-                                        : 'Account setup completed'
-                                    }
-                                  >
-                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                                    Account Ready
+                                  <span className="inline-flex flex-wrap items-center gap-1.5 text-[11px]">
+                                    <span
+                                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-medium bg-emerald-500/15 text-emerald-300 border border-emerald-500/30"
+                                      title={
+                                        parent.activatedAt
+                                          ? `Account setup completed ${formatTimestamp(parent.activatedAt)}`
+                                          : 'Account setup completed'
+                                      }
+                                    >
+                                      ✓ Setup Complete
+                                    </span>
                                     {parent.lastLoginAt && (
                                       <span className="text-slate-400">
-                                        · Last seen {formatTimestamp(parent.lastLoginAt)}
+                                        Last seen {formatTimestamp(parent.lastLoginAt)}
                                       </span>
                                     )}
                                   </span>
