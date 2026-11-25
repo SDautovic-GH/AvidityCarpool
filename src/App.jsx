@@ -566,17 +566,6 @@ export default function App() {
                     type="button"
                     onClick={() => {
                       setMenuOpen(false);
-                      setGuideModalOpen(true);
-                    }}
-                    className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
-                  >
-                    <BookOpen className="w-3.5 h-3.5 text-blue-400" />
-                    User Guide
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMenuOpen(false);
                       signOut(auth);
                     }}
                     className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
