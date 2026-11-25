@@ -311,7 +311,7 @@ export default function PracticeCard({
 
         <div className="divide-y divide-slate-800/80">
           {cars.length === 0 ? (
-            <div className="py-4 text-center text-xs text-slate-400">
+            <div className="py-4 text-center text-[13px] text-slate-400">
               No drivers signed up yet
             </div>
           ) : (
@@ -428,15 +428,15 @@ export default function PracticeCard({
                   {fullDay}
                 </span>
                 {timingLabel && !isCancelled && (
-                  <span className="px-2 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-blue-600 text-white">
+                  <span className="px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-600 text-white">
                     {timingLabel}
                   </span>
                 )}
                 {isSatisfied && (
-                  <span className="text-xs font-semibold text-emerald-400">All Set</span>
+                  <span className="text-[13px] font-semibold text-emerald-400">All Set</span>
                 )}
                 {!isCancelled && carpoolMode !== 'both' && (
-                  <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-slate-800 text-slate-300 border border-slate-700">
+                  <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700">
                     {carpoolMode === 'from_only'
                       ? 'Carpool From Only'
                       : carpoolMode === 'to_only'
@@ -445,7 +445,7 @@ export default function PracticeCard({
                   </span>
                 )}
               </div>
-              <div className="text-[11px] sm:text-xs text-slate-400 mt-0.5 whitespace-nowrap">
+              <div className="text-[13px] text-slate-400 mt-0.5 whitespace-nowrap">
                 {practice.timeLabel}
                 {!isCancelled && ` • ${goingCount}/${players.length} going`}
               </div>
@@ -623,7 +623,7 @@ export default function PracticeCard({
           href={getMapUrl(practice.location, practice.address)}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-400 hover:underline"
+          className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-blue-400 hover:underline"
         >
           <MapPin className="w-3.5 h-3.5 shrink-0" />
           <span>{practice.location}</span>
@@ -637,7 +637,7 @@ export default function PracticeCard({
       </div>
 
       {notesList.length > 0 && (
-        <div className="rounded-xl bg-amber-500/10 border border-amber-500/30 border-l-4 border-l-amber-400 px-3.5 py-2.5 space-y-2 text-[13px] text-slate-100">
+        <div className="rounded-xl bg-amber-500/10 border border-amber-500/30 border-l-4 border-l-amber-400 px-3.5 py-2.5 space-y-2 text-sm text-slate-100">
           {notesList.map((note) => {
             const canDelete =
               !isReadOnly && (isAdmin || (note.authorId && note.authorId === myParentId));
@@ -669,7 +669,7 @@ export default function PracticeCard({
 
       {!isCancelled && (
         !hasAnyCarpool ? (
-          <div className="rounded-xl bg-slate-950/55 border border-slate-800/80 px-3.5 py-2.5 text-xs text-slate-400">
+          <div className="rounded-xl bg-slate-950/55 border border-slate-800/80 px-3.5 py-2.5 text-[13px] text-slate-400">
             No carpool needed for this practice.
           </div>
         ) : toEnabled && fromEnabled ? (

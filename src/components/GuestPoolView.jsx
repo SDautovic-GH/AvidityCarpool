@@ -122,7 +122,7 @@ export default function GuestPoolView({
             <Users className="w-4 h-4 text-blue-400" />
             Guest Pool
           </h2>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <p className="text-[13px] text-slate-400 mt-0.5">
             Ad-hoc or day-specific riders (e.g. siblings). Set recurring weekdays or add them to individual practices with <strong>+ Guest</strong>.
           </p>
         </div>
@@ -139,7 +139,7 @@ export default function GuestPoolView({
       {guestPlayers.length === 0 ? (
         <div className="rounded-2xl bg-slate-900 border border-slate-800 p-8 text-center space-y-2">
           <p className="text-sm text-slate-400">No guest riders in the pool yet.</p>
-          <p className="text-xs text-slate-500">
+          <p className="text-[13px] text-slate-500">
             Add a sibling or guest rider here with parent contact &amp; home address so drivers see their stop in Stops.
           </p>
         </div>
@@ -156,7 +156,7 @@ export default function GuestPoolView({
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <div className="space-y-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="text-sm font-bold text-slate-100">{guest.name}</span>
+                      <span className="text-[15px] font-bold text-slate-100">{guest.name}</span>
                       <span
                         className="inline-flex items-center justify-center px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-violet-500/20 text-violet-300 border border-violet-500/30"
                         title="Guest rider"
@@ -164,27 +164,27 @@ export default function GuestPoolView({
                         G
                       </span>
                       {days.length > 0 ? (
-                        <span className="px-2 py-0.5 rounded-full text-[11px] font-medium bg-blue-500/15 text-blue-300">
+                        <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-blue-500/15 text-blue-300">
                           Every {days.join(', ')}
                         </span>
                       ) : (
-                        <span className="px-2 py-0.5 rounded-full text-[11px] font-medium bg-slate-800 text-slate-400">
+                        <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-slate-800 text-slate-400">
                           Manual (+ Guest) only
                         </span>
                       )}
                     </div>
 
                     {parent && (
-                      <div className="text-xs text-slate-400 space-y-1">
+                      <div className="text-[13px] text-slate-400 space-y-1">
                         <div className="flex flex-wrap items-center gap-2">
                           <span className="font-medium text-slate-200">{parent.name}</span>
                           {parent.canDrive ? (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-500/15 text-emerald-300">
-                              <Car className="w-2.5 h-2.5" />
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-500/15 text-emerald-300">
+                              <Car className="w-3 h-3" />
                               Can drive ({parent.defaultSeats ?? 4} seats)
                             </span>
                           ) : (
-                            <span className="px-2 py-0.5 rounded-full text-[11px] bg-slate-800 text-slate-400">
+                            <span className="px-2 py-0.5 rounded-full text-xs bg-slate-800 text-slate-400">
                               Rider only
                             </span>
                           )}
@@ -201,7 +201,7 @@ export default function GuestPoolView({
                               </a>
                               <a
                                 href={buildSmsUrl([parent.phone])}
-                                className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200"
+                                className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200"
                               >
                                 <MessageCircle className="w-2.5 h-2.5 text-blue-400" />
                                 Text

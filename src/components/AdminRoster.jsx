@@ -296,7 +296,7 @@ export default function AdminRoster({
             <Users className="w-4 h-4 text-blue-400" />
             Team Roster &amp; Contacts
           </h2>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <p className="text-[13px] text-slate-400 mt-0.5">
             {regularPlayers.length} {regularPlayers.length === 1 ? 'player' : 'players'} · {regularParents.length}{' '}
             {regularParents.length === 1 ? 'parent' : 'parents'}
             {isAdmin && regularParents.length > 0 ? ` · ${activatedCount}/${regularParents.length} activated` : ''} · Tap
@@ -438,16 +438,16 @@ export default function AdminRoster({
                             {getInitials(player.name)}
                           </span>
                           <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1 min-w-0">
-                            <span className="text-sm font-bold text-slate-100 leading-snug">
+                            <span className="text-[15px] font-bold text-slate-100 leading-snug">
                               {player.name}
                             </span>
                             {player.jerseyNumber && (
-                              <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-slate-800 text-blue-300 shrink-0">
+                              <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-slate-800 text-blue-300 shrink-0">
                                 #{player.jerseyNumber}
                               </span>
                             )}
                             {!isAdmin && carpoolPlayerIds.has(player.id) && (
-                              <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-500/15 text-blue-300 border border-blue-500/30 shrink-0">
+                              <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-500/15 text-blue-300 border border-blue-500/30 shrink-0">
                                 Carpool
                               </span>
                             )}
@@ -525,7 +525,7 @@ export default function AdminRoster({
 
                 <div className="divide-y divide-slate-800/70">
                   {linkedParents.length === 0 ? (
-                    <div className="px-4 py-3 text-xs text-slate-500">
+                    <div className="px-4 py-3 text-[13px] text-slate-500">
                       No parents linked yet.
                     </div>
                   ) : (
@@ -542,33 +542,33 @@ export default function AdminRoster({
                         >
                           <div className="min-w-0">
                             <div className="flex flex-wrap items-center gap-1.5">
-                              <span className="text-sm font-semibold text-slate-100">
+                              <span className="text-[15px] font-semibold text-slate-100">
                                 {parent.name}
                               </span>
                               {parent.role === 'admin' && (
-                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue-500/15 text-blue-300 border border-blue-500/30">
-                                  <Shield className="w-2.5 h-2.5" />
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-500/15 text-blue-300 border border-blue-500/30">
+                                  <Shield className="w-3 h-3" />
                                   Admin
                                 </span>
                               )}
                               {canDrive ? (
-                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
-                                  <Car className="w-2.5 h-2.5" />
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                                  <Car className="w-3 h-3" />
                                   {parent.defaultSeats ?? 4} seats
                                 </span>
                               ) : (
-                                <span className="px-2 py-0.5 rounded-full text-[11px] font-medium bg-slate-800 text-slate-400">
+                                <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-slate-800 text-slate-400">
                                   Non-driver
                                 </span>
                               )}
                             </div>
-                            <div className="text-xs text-slate-400 truncate mt-1">
+                            <div className="text-[13px] text-slate-400 truncate mt-1">
                               {parent.email || parent.id}
                             </div>
                             {isAdmin && (
                               <div className="mt-1">
                                 {parent.activatedAt || parent.lastLoginAt ? (
-                                  <span className="inline-flex flex-wrap items-center gap-1.5 text-[11px]">
+                                  <span className="inline-flex flex-wrap items-center gap-1.5 text-xs">
                                     <span
                                       className="inline-flex items-center justify-center w-4 h-4 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
                                       aria-label="Account setup complete"
@@ -587,7 +587,7 @@ export default function AdminRoster({
                                     )}
                                   </span>
                                 ) : (
-                                  <span className="inline-flex items-center gap-1.5 text-[11px] text-amber-300/90">
+                                  <span className="inline-flex items-center gap-1.5 text-xs text-amber-300/90">
                                     <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
                                     Pending Setup
                                   </span>
@@ -595,7 +595,7 @@ export default function AdminRoster({
                               </div>
                             )}
                             {(parent.phone || parent.address) && (
-                              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-400 mt-1">
+                              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px] text-slate-400 mt-1">
                                 {parent.phone && (
                                   <span className="inline-flex items-center gap-2">
                                     <a

@@ -70,20 +70,20 @@ export default function StopsModal({
                   key={pid}
                   className="rounded-xl bg-slate-950/70 border border-slate-800 p-3.5 space-y-2"
                 >
-                  <div className="text-sm font-bold text-slate-100">{displayName}</div>
+                  <div className="text-[15px] font-bold text-slate-100">{displayName}</div>
                   {displayParents.length === 0 ? (
-                    <div className="text-xs text-slate-400 italic">
+                    <div className="text-[13px] text-slate-400 italic">
                       No parent contact on file
                     </div>
                   ) : (
                     displayParents.map((par) => {
                       const smsUrl = par.phone ? buildSmsUrl(par.phone) : '';
                       return (
-                        <div key={par.id} className="space-y-1.5 text-xs">
+                        <div key={par.id} className="space-y-1.5 text-[13px]">
                           <div className="flex flex-wrap items-center justify-between gap-2">
                             <span className="font-semibold text-slate-200">{par.name}</span>
                             {par.phone && (
-                              <div className="flex items-center gap-1.5">
+                              <div className="flex items-center gap-1.5 text-xs">
                                 <a
                                   href={`tel:${par.phone}`}
                                   className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold transition"
@@ -127,7 +127,7 @@ export default function StopsModal({
           )}
 
           {practice.location && (
-            <div className="pt-1 border-t border-slate-800/80 flex items-center justify-between text-xs">
+            <div className="pt-1 border-t border-slate-800/80 flex items-center justify-between text-[13px]">
               <span className="text-slate-400 font-medium">Gym</span>
               <a
                 href={getMapUrl(practice.location, practice.address)}

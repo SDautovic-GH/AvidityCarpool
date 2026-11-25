@@ -112,7 +112,7 @@ export default function DriveModal({
         <div className="flex items-center justify-between">
           <div>
             <h3 className="font-bold text-base">Offer to Drive</h3>
-            <p className="text-xs text-slate-400">
+            <p className="text-[13px] text-slate-400">
               {fullDay}, {month} {dateNum} • {practice.timeLabel}
             </p>
           </div>
@@ -126,7 +126,7 @@ export default function DriveModal({
 
         {isAdmin && drivableParents.length > 0 && (
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-400">Driver (Admin)</label>
+            <label className="text-[13px] font-semibold text-slate-400">Driver (Admin)</label>
             <select
               value={driverParentId}
               onChange={(e) => handleDriverChange(e.target.value)}
@@ -143,14 +143,14 @@ export default function DriveModal({
         )}
 
         <div className="space-y-2">
-          <label className="text-xs font-semibold text-slate-400">Which direction?</label>
+          <label className="text-[13px] font-semibold text-slate-400">Which direction?</label>
           <div className="flex gap-2">
             {dirBtn('both', 'Both Ways', !toEnabled || !fromEnabled)}
             {dirBtn('to', 'To Only', !toEnabled || (drivesTo && !drivesFrom))}
             {dirBtn('from', 'From Only', !fromEnabled || (drivesFrom && !drivesTo))}
           </div>
           {(drivesTo || drivesFrom) && (
-            <p className="text-[11px] text-slate-400">
+            <p className="text-xs text-slate-400">
               {isSelf ? "You're" : `${driverParent?.name || 'Driver'} is`} already signed up for{' '}
               <strong className="text-slate-200">
                 {drivesTo && drivesFrom
@@ -169,7 +169,7 @@ export default function DriveModal({
             <div className="text-sm font-semibold">
               {isSelf ? 'Player seats in your car' : `Player seats in ${driverParent?.name || 'driver'}'s car`}
             </div>
-            <div className="text-xs text-slate-400">
+            <div className="text-[13px] text-slate-400">
               {seats === 1
                 ? `Driving solo (just ${effectivePlayerName})`
                 : `${effectivePlayerName} + ${seats - 1} other rider${seats - 1 === 1 ? '' : 's'}`}
@@ -202,7 +202,7 @@ export default function DriveModal({
               onChange={(e) => setRepeatSameWeekday(e.target.checked)}
               className="mt-0.5 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500"
             />
-            <span className="text-xs text-slate-300 leading-relaxed">
+            <span className="text-[13px] text-slate-300 leading-relaxed">
               Repeat for all <strong className="text-slate-100">{upcomingSameWeekdayCount + 1}</strong> upcoming{' '}
               <strong className="text-slate-100">{fullDay}</strong> practices this season
             </span>

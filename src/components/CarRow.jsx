@@ -93,12 +93,12 @@ export default function CarRow({
           </div>
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
-              <span className="font-semibold text-sm whitespace-nowrap">{car.driverName}</span>
+              <span className="font-semibold text-[15px] whitespace-nowrap">{car.driverName}</span>
               {isMyDrive && (
-                <span className="text-xs text-blue-400 font-medium whitespace-nowrap">• You</span>
+                <span className="text-[13px] text-blue-400 font-medium whitespace-nowrap">• You</span>
               )}
               {isNeedsSub && (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wide bg-amber-500/20 text-amber-300 border border-amber-500/40 whitespace-nowrap">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide bg-amber-500/20 text-amber-300 border border-amber-500/40 whitespace-nowrap">
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
                   Needs Sub
                 </span>
@@ -119,7 +119,7 @@ export default function CarRow({
                 ))}
               </div>
               <span
-                className={`text-xs ${
+                className={`text-[13px] ${
                   isFull ? 'text-slate-400' : 'text-emerald-400 font-medium'
                 }`}
               >
@@ -134,7 +134,7 @@ export default function CarRow({
                     onChange={(e) =>
                       onUpdateCarSeats(practice.id, leg, car.id, Number(e.target.value))
                     }
-                    className="appearance-none cursor-pointer pl-2 pr-5 py-0.5 rounded-full text-[11px] font-medium bg-slate-800 border border-slate-700/80 text-slate-300 hover:text-slate-100 focus:outline-none transition"
+                    className="appearance-none cursor-pointer pl-2.5 pr-5 py-0.5 rounded-full text-xs font-medium bg-slate-800 border border-slate-700/80 text-slate-300 hover:text-slate-100 focus:outline-none transition"
                   >
                     {[1, 2, 3, 4, 5, 6, 7].map((n) => (
                       <option
@@ -189,7 +189,7 @@ export default function CarRow({
         <div className="flex flex-wrap items-center gap-1.5 min-w-0">
           {isAdmin ? (
             riderIds.length === 0 ? (
-              <span className="text-xs text-slate-400 italic">No riders yet</span>
+              <span className="text-[13px] text-slate-400 italic">No riders yet</span>
             ) : (
               riderIds.map((pid) => {
                 const isMine = pid === myPlayerId;
@@ -218,7 +218,7 @@ export default function CarRow({
                 <span className="font-medium text-slate-200">{otherRiders.join(', ')}</span>
               ) : (
                 !isMyKidInCar && myGuestIds.length === 0 && (
-                  <span className="text-xs text-slate-400 italic">No riders yet</span>
+                  <span className="text-[13px] text-slate-400 italic">No riders yet</span>
                 )
               )}
               {isMyKidInCar && (

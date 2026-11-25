@@ -144,10 +144,10 @@ export default function PracticeQuickScan({
         grouped.map((group) => (
           <div key={group.key} className="space-y-1.5">
             <div className="flex items-center justify-between px-1.5 pt-1">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
                 {group.label}
               </span>
-              <span className="text-[11px] text-slate-500 tabular-nums">
+              <span className="text-xs text-slate-500 tabular-nums">
                 {group.items.length} {group.items.length === 1 ? 'practice' : 'practices'}
               </span>
             </div>
@@ -228,15 +228,15 @@ export default function PracticeQuickScan({
                             onClick={() => setExpandedId(isExpanded ? null : p.id)}
                             className="flex items-baseline sm:items-center gap-2 sm:gap-3 min-w-0 flex-1 text-left"
                           >
-                            <div className="flex items-center gap-1.5 shrink-0 sm:w-20">
-                              <span className="text-[13px] font-bold text-slate-100 whitespace-nowrap">
+                            <div className="flex items-center gap-1.5 shrink-0 sm:w-24">
+                              <span className="text-sm font-bold text-slate-100 whitespace-nowrap">
                                 {fullDay.slice(0, 3)}, {month} {dateNum}
                               </span>
                               {isNext && (
                                 <span className="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0" />
                               )}
                             </div>
-                            <span className="text-xs text-slate-400 truncate">
+                            <span className="text-[13px] text-slate-400 truncate">
                               {p.timeLabel} · {shortGymLabel(p.location)}
                             </span>
                           </button>

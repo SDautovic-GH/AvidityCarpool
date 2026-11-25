@@ -153,13 +153,13 @@ export default function TournamentsView({
                           {t.name}
                         </h3>
                         {isNext && (
-                          <span className="px-2 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-blue-600 text-white shrink-0">
+                          <span className="px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-600 text-white shrink-0">
                             Next
                           </span>
                         )}
                       </div>
 
-                      <div className="text-[11px] sm:text-xs text-slate-400 mt-0.5">
+                      <div className="text-[13px] text-slate-400 mt-0.5">
                         {t.dateLabel}
                         {t.sortDate ? `, ${t.sortDate.slice(0, 4)}` : ''}
                       </div>
@@ -199,7 +199,7 @@ export default function TournamentsView({
                             href={getMapUrl(t.location, t.address)}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-400 hover:underline"
+                            className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-blue-400 hover:underline"
                           >
                             <MapPin className="w-3.5 h-3.5 shrink-0" />
                             <span>{t.location}</span>
@@ -210,14 +210,14 @@ export default function TournamentsView({
                             href={getMapUrl(t.address)}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-400 hover:underline"
+                            className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-blue-400 hover:underline"
                           >
                             <MapPin className="w-3.5 h-3.5 shrink-0" />
                             <span>{t.address}</span>
                             <span className="text-slate-400 font-normal">↗</span>
                           </a>
                         ) : (
-                          <span className="text-xs text-slate-400">{t.location}</span>
+                          <span className="text-[13px] text-slate-400">{t.location}</span>
                         )
                       ) : null}
                     </div>
@@ -233,7 +233,7 @@ export default function TournamentsView({
                   </div>
 
                   {t.notes && (
-                    <div className="rounded-xl bg-slate-950/70 border border-slate-800/90 px-3 py-2 text-xs text-slate-300 break-words">
+                    <div className="rounded-xl bg-slate-950/70 border border-slate-800/90 px-3 py-2 text-[13px] text-slate-300 break-words">
                       {t.notes}
                     </div>
                   )}
