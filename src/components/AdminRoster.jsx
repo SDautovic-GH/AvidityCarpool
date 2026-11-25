@@ -235,11 +235,11 @@ export default function AdminRoster({
     <div className="space-y-4">
       {isAdmin && (
         <div className="flex justify-center">
-          <div className="inline-flex p-1 rounded-full bg-slate-900 border border-slate-800 text-xs font-semibold">
+          <div className="inline-flex max-w-full overflow-x-auto no-scrollbar p-1 rounded-full bg-slate-900 border border-slate-800 text-xs font-semibold">
             <button
               type="button"
               onClick={() => setSubView('roster')}
-              className={`px-3.5 py-1.5 rounded-full transition ${
+              className={`px-3 sm:px-3.5 py-1.5 rounded-full whitespace-nowrap transition ${
                 subView === 'roster'
                   ? 'bg-blue-600 text-white'
                   : 'text-slate-400 hover:text-slate-200'
@@ -250,7 +250,7 @@ export default function AdminRoster({
             <button
               type="button"
               onClick={() => setSubView('guests')}
-              className={`inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full transition ${
+              className={`inline-flex items-center gap-1 px-3 sm:px-3.5 py-1.5 rounded-full whitespace-nowrap transition ${
                 subView === 'guests'
                   ? 'bg-blue-600 text-white'
                   : 'text-slate-400 hover:text-slate-200'
@@ -261,13 +261,14 @@ export default function AdminRoster({
             <button
               type="button"
               onClick={() => setSubView('drivers')}
-              className={`px-3.5 py-1.5 rounded-full transition ${
+              className={`px-3 sm:px-3.5 py-1.5 rounded-full whitespace-nowrap transition ${
                 subView === 'drivers'
                   ? 'bg-blue-600 text-white'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              Driver Engagement
+              <span className="sm:hidden">Drivers</span>
+              <span className="hidden sm:inline">Driver Engagement</span>
             </button>
           </div>
         </div>
