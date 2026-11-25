@@ -407,49 +407,65 @@ export default function AdminRoster({
                   {subscribedDrivers}/{carpoolDrivers.length} carpool drivers have push alerts active on a device. Parents can opt out individually in Update My Info.
                 </p>
               </div>
-              {currentParent && onEnablePushOnDevice && isPushConfigured() && (
-                <div className="flex flex-wrap items-center gap-2 shrink-0">
-                  <button
-                    type="button"
-                    disabled={enablingPush}
-                    onClick={async () => {
-                      setEnablingPush(true);
-                      try {
-                        await onEnablePushOnDevice();
-                      } finally {
-                        setEnablingPush(false);
-                      }
-                    }}
-                    className="px-3.5 py-1.5 min-h-[34px] rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white transition shrink-0"
-                  >
-                    {enablingPush ? 'Enabling...' : 'Enable on This Device'}
-                  </button>
-                  {activeSeason?.id && (
+              {currentParent && onEnablePushOnDevice && isPushConfigured() && (() => {
+                const isDeviceEnabled =
+                  currentParent.pushEnabled !== false &&
+                  getNotificationPermission() === 'granted' &&
+                  Array.isArray(currentParent.fcmTokens) &&
+                  currentParent.fcmTokens.length > 0;
+
+                return (
+                  <div className="flex flex-wrap items-center gap-2 max-w-full">
                     <button
                       type="button"
                       disabled={enablingPush}
                       onClick={async () => {
                         setEnablingPush(true);
                         try {
-                          const res = await sendTestPushToSelf(activeSeason.id);
-                          window.alert(
-                            res?.sent > 0
-                              ? `Test alert sent to ${res.sent} device(s) and logged to your Alerts inbox (only you).`
-                              : 'Logged to your Alerts inbox (only you). Tap "Enable on This Device" first to also receive a lock-screen push.'
-                          );
-                        } catch (err) {
-                          window.alert(err?.message || 'Could not send test alert.');
+                          await onEnablePushOnDevice();
                         } finally {
                           setEnablingPush(false);
                         }
                       }}
-                      className="px-3.5 py-1.5 min-h-[34px] rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-slate-200 transition shrink-0"
+                      className={`px-3.5 py-1.5 min-h-[34px] rounded-full text-xs font-semibold transition whitespace-nowrap disabled:opacity-50 ${
+                        isDeviceEnabled
+                          ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 hover:bg-emerald-500/25'
+                          : 'bg-blue-600 hover:bg-blue-500 text-white'
+                      }`}
                     >
-                      Send Test Alert (Me Only)
+                      {enablingPush
+                        ? 'Enabling...'
+                        : isDeviceEnabled
+                          ? '✓ Alerts Enabled'
+                          : 'Enable on This Device'}
                     </button>
-                  )}
-                </div>
-              )}
+                    {activeSeason?.id && (
+                      <button
+                        type="button"
+                        disabled={enablingPush}
+                        onClick={async () => {
+                          setEnablingPush(true);
+                          try {
+                            const res = await sendTestPushToSelf(activeSeason.id);
+                            window.alert(
+                              res?.sent > 0
+                                ? `Test alert sent to ${res.sent} device(s) and logged to your Alerts inbox (only you).`
+                                : 'Logged to your Alerts inbox (only you). Tap "Enable on This Device" first to also receive a lock-screen push.'
+                            );
+                          } catch (err) {
+                            window.alert(err?.message || 'Could not send test alert.');
+                          } finally {
+                            setEnablingPush(false);
+                          }
+                        }}
+                        className="px-3.5 py-1.5 min-h-[34px] rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-slate-200 transition whitespace-nowrap"
+                      >
+                        Test Alert (Me)
+                      </button>
+                    )}
+                  </div>
+                );
+              })()}
             </div>
 
             <div className="divide-y divide-slate-800/80 rounded-xl bg-slate-950/60 border border-slate-800/80">
@@ -1153,24 +1169,39 @@ export default function AdminRoster({
                 {selfPushEnabled &&
                   onEnablePushOnDevice &&
                   isPushConfigured() &&
-                  getNotificationPermission() !== 'denied' && (
-                    <button
-                      type="button"
-                      disabled={enablingPush}
-                      onClick={async () => {
-                        setEnablingPush(true);
-                        try {
-                          await onEnablePushOnDevice();
-                        } finally {
-                          setEnablingPush(false);
-                        }
-                      }}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-blue-300 transition"
-                    >
-                      <Bell className="w-3.5 h-3.5" />
-                      {enablingPush ? 'Enabling...' : 'Enable Alerts on This Device'}
-                    </button>
-                  )}
+                  getNotificationPermission() !== 'denied' &&
+                  (() => {
+                    const isDeviceEnabled =
+                      getNotificationPermission() === 'granted' &&
+                      Array.isArray(currentParent?.fcmTokens) &&
+                      currentParent.fcmTokens.length > 0;
+                    return (
+                      <button
+                        type="button"
+                        disabled={enablingPush}
+                        onClick={async () => {
+                          setEnablingPush(true);
+                          try {
+                            await onEnablePushOnDevice();
+                          } finally {
+                            setEnablingPush(false);
+                          }
+                        }}
+                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition ${
+                          isDeviceEnabled
+                            ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 hover:bg-emerald-500/25'
+                            : 'bg-slate-800 hover:bg-slate-700 text-blue-300'
+                        }`}
+                      >
+                        <Bell className="w-3.5 h-3.5" />
+                        {enablingPush
+                          ? 'Enabling...'
+                          : isDeviceEnabled
+                            ? '✓ Alerts Enabled on This Device'
+                            : 'Enable Alerts on This Device'}
+                      </button>
+                    );
+                  })()}
               </div>
               <div className="flex justify-end gap-2 pt-2">
                 <button
