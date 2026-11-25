@@ -9,8 +9,7 @@ import {
 } from 'firebase/auth';
 import {
   initializeFirestore,
-  persistentLocalCache,
-  persistentMultipleTabManager,
+  memoryLocalCache,
 } from 'firebase/firestore';
 
 const firebaseConfig = {
@@ -34,9 +33,7 @@ if (isFirebaseConfigured) {
   app = initializeApp(firebaseConfig);
   auth = getAuth(app);
   db = initializeFirestore(app, {
-    localCache: persistentLocalCache({
-      tabManager: persistentMultipleTabManager(),
-    }),
+    localCache: memoryLocalCache(),
     experimentalForceLongPolling: true,
   });
 }

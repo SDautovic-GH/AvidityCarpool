@@ -165,20 +165,33 @@ export function useCarpoolData(user) {
     if (currentParent.id !== userEmail && (currentParent.email || '').toLowerCase() !== userEmail) return;
 
     const sessionKey = `${activeSeasonId}:${currentParent.id}`;
-    const lastMs = currentParent.lastLoginAt?.toMillis?.() || 0;
-    const stale = Date.now() - lastMs > 15 * 60 * 1000;
-    if (recordedLoginRef.current === sessionKey && !stale) return;
+    if (recordedLoginRef.current === sessionKey) return;
+
+    const storageKey = `avidity_login_ping_${sessionKey}`;
+    try {
+      const lastPing = Number(localStorage.getItem(storageKey) || 0);
+      if (currentParent.activatedAt && Date.now() - lastPing < 60 * 60 * 1000) {
+        recordedLoginRef.current = sessionKey;
+        return;
+      }
+    } catch {
+      // ignore storage errors
+    }
 
     recordedLoginRef.current = sessionKey;
     const updates = { lastLoginAt: serverTimestamp() };
     if (!currentParent.activatedAt) {
       updates.activatedAt = serverTimestamp();
     }
-    updateDoc(doc(db, 'seasons', activeSeasonId, 'parents', currentParent.id), updates).catch(
-      () => {
-        recordedLoginRef.current = '';
-      }
-    );
+    updateDoc(doc(db, 'seasons', activeSeasonId, 'parents', currentParent.id), updates)
+      .then(() => {
+        try {
+          localStorage.setItem(storageKey, String(Date.now()));
+        } catch {
+          // ignore storage errors
+        }
+      })
+      .catch(() => {});
   }, [activeSeasonId, currentParent?.id, currentParent?.email, currentParent?.activatedAt, userEmail]);
   const activeSeason = seasons.find((s) => s.id === activeSeasonId) || null;
   const carpoolPlayerIds = getCarpoolPlayerIdSet(players, parents);
