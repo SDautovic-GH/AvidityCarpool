@@ -100,43 +100,49 @@ try {
         & git rebase --abort 2>$null
     }
 
-    Invoke-GitChecked -Arguments @("checkout", $MainBranch) -ActionDescription "Checkout $MainBranch"
-
-    # PULL-FIRST flow: stash local edits, fast-forward to origin, then pop.
-    $isDirty = [bool](& git status --porcelain 2>$null)
-    $stashed = $false
-    if ($isDirty) {
-        Write-Host "Local changes detected - stashing before pull."
-        $stashLabel = "auto-sync-prepull-$(Get-Date -Format 'yyyyMMddHHmmss')"
-        Invoke-GitChecked -Arguments @("stash", "push", "-u", "-m", $stashLabel) `
-            -ActionDescription "Stash local changes before pull"
-        $stashed = $true
+    $currentBranch = (& git rev-parse --abbrev-ref HEAD 2>$null).Trim()
+    if ($currentBranch -ne $MainBranch) {
+        Invoke-GitChecked -Arguments @("checkout", $MainBranch) -ActionDescription "Checkout $MainBranch"
     }
 
-    # Check if remote main exists before trying to fetch
+    # Fetch first (read-only on working tree) so we only stash/pop when origin actually has incoming commits.
     $hasRemoteRef = & git ls-remote --heads $RemoteName $MainBranch 2>$null
     if ($hasRemoteRef) {
         Invoke-GitChecked -Arguments @("fetch", $RemoteName, $MainBranch) `
             -ActionDescription "Fetch $MainBranch from $RemoteName"
-        try {
-            Invoke-GitChecked -Arguments @("merge", "--ff-only", "$RemoteName/$MainBranch") `
-                -ActionDescription "Fast-forward $MainBranch to $RemoteName/$MainBranch"
-        }
-        catch {
-            if ($stashed) { & git stash pop 2>$null }
-            Stop-WithError -Message ("Cannot fast-forward $MainBranch from $RemoteName/$MainBranch.`n" +
-                "Local branch has commits that aren't on the remote, or history has diverged.`n" +
-                "Resolve manually: review 'git log HEAD..$RemoteName/$MainBranch' and " +
-                "'git log $RemoteName/$MainBranch..HEAD', then merge or rebase deliberately.")
-        }
-    }
 
-    if ($stashed) {
-        $popOutput = & git stash pop 2>&1
-        if ($LASTEXITCODE -ne 0) {
-            Stop-WithError -Message ("Stash-pop conflict after pull. Your local changes remain in the stash.`n" +
-                "Resolve the conflict in the working tree, then run 'git stash drop' when done.`n" +
-                "Conflict output:`n$($popOutput | Out-String)")
+        $behindCount = [int](& git rev-list --count "HEAD..$RemoteName/$MainBranch" 2>$null)
+        if ($behindCount -gt 0) {
+            $isDirty = [bool](& git status --porcelain 2>$null)
+            $stashed = $false
+            if ($isDirty) {
+                Write-Host "Incoming commits ($behindCount) and local changes detected - stashing before pull."
+                $stashLabel = "auto-sync-prepull-$(Get-Date -Format 'yyyyMMddHHmmss')"
+                Invoke-GitChecked -Arguments @("stash", "push", "-u", "-m", $stashLabel) `
+                    -ActionDescription "Stash local changes before pull"
+                $stashed = $true
+            }
+
+            try {
+                Invoke-GitChecked -Arguments @("merge", "--ff-only", "$RemoteName/$MainBranch") `
+                    -ActionDescription "Fast-forward $MainBranch to $RemoteName/$MainBranch"
+            }
+            catch {
+                if ($stashed) { & git stash pop 2>$null }
+                Stop-WithError -Message ("Cannot fast-forward $MainBranch from $RemoteName/$MainBranch.`n" +
+                    "Local branch has commits that aren't on the remote, or history has diverged.`n" +
+                    "Resolve manually: review 'git log HEAD..$RemoteName/$MainBranch' and " +
+                    "'git log $RemoteName/$MainBranch..HEAD', then merge or rebase deliberately.")
+            }
+
+            if ($stashed) {
+                $popOutput = & git stash pop 2>&1
+                if ($LASTEXITCODE -ne 0) {
+                    Stop-WithError -Message ("Stash-pop conflict after pull. Your local changes remain in the stash.`n" +
+                        "Resolve the conflict in the working tree, then run 'git stash drop' when done.`n" +
+                        "Conflict output:`n$($popOutput | Out-String)")
+                }
+            }
         }
     }
 
