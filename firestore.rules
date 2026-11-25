@@ -33,6 +33,9 @@ service cloud.firestore {
     //   - name: string (required, 1..100 chars)
     //   - jerseyNumber: string (optional, 0..10 chars)
     //   - inCarpool: bool (optional)
+    //   - isGuest: bool (optional)
+    //   - guestDays: list (optional, max 7 items)
+    //   - linkedParentId: string (optional, 0..128 chars)
     //   - createdAt: timestamp (required, immutable)
     //
     // Subcollection: seasons/{seasonId}/parents
@@ -64,7 +67,8 @@ service cloud.firestore {
     //   - notesAuthor: string (optional, 0..100 chars)
     //   - notesList: list (optional, max 50 items)
     //   - carpoolMode: string (optional, 'both' | 'to_only' | 'from_only' | 'none', immutable for non-admins)
-    //   - guestRiders: list (optional, max 10 items)
+    //   - guestRiders: list (optional, max 10 items, immutable for non-admins)
+    //   - guestIds: list (optional, max 10 items, immutable for non-admins)
     //   - createdAt: timestamp (optional, immutable)
     //   - updatedAt: timestamp (optional)
     //
@@ -186,10 +190,13 @@ service cloud.firestore {
 
     function isValidPlayer(data) {
       return hasRequiredFields(['name', 'createdAt']) &&
-             hasOnlyAllowedFields(['name', 'jerseyNumber', 'inCarpool', 'createdAt']) &&
+             hasOnlyAllowedFields(['name', 'jerseyNumber', 'inCarpool', 'isGuest', 'guestDays', 'linkedParentId', 'createdAt']) &&
              validString(data.name, 1, 100) &&
              (!('jerseyNumber' in data) || validString(data.jerseyNumber, 0, 10)) &&
              (!('inCarpool' in data) || data.inCarpool is bool) &&
+             (!('isGuest' in data) || data.isGuest is bool) &&
+             (!('guestDays' in data) || isValidList(data.guestDays, 7)) &&
+             (!('linkedParentId' in data) || validString(data.linkedParentId, 0, 128)) &&
              data.createdAt is timestamp;
     }
 
@@ -213,7 +220,7 @@ service cloud.firestore {
 
     function isValidPractice(data) {
       return hasRequiredFields(['isoDate', 'timeLabel', 'location', 'address', 'status', 'absentPlayerIds', 'legs']) &&
-             hasOnlyAllowedFields(['isoDate', 'timeLabel', 'location', 'address', 'status', 'absentPlayerIds', 'legs', 'notes', 'notesAuthor', 'notesList', 'carpoolMode', 'guestRiders', 'createdAt', 'updatedAt']) &&
+             hasOnlyAllowedFields(['isoDate', 'timeLabel', 'location', 'address', 'status', 'absentPlayerIds', 'legs', 'notes', 'notesAuthor', 'notesList', 'carpoolMode', 'guestRiders', 'guestIds', 'createdAt', 'updatedAt']) &&
              validString(data.isoDate, 10, 30) &&
              data.isoDate.matches("^\\d{4}-\\d{2}-\\d{2}.*") &&
              validString(data.timeLabel, 1, 50) &&
@@ -231,6 +238,7 @@ service cloud.firestore {
              (!('notesList' in data) || isValidList(data.notesList, 50)) &&
              (!('carpoolMode' in data) || (data.carpoolMode is string && data.carpoolMode in ['both', 'to_only', 'from_only', 'none'])) &&
              (!('guestRiders' in data) || isValidList(data.guestRiders, 10)) &&
+             (!('guestIds' in data) || isValidList(data.guestIds, 10)) &&
              (!('createdAt' in data) || data.createdAt is timestamp) &&
              (!('updatedAt' in data) || data.updatedAt is timestamp);
     }

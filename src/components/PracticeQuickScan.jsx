@@ -59,6 +59,7 @@ function LegChip({ label, summary }) {
 export default function PracticeQuickScan({
   practices,
   players,
+  allPlayers = [],
   currentParent,
   isAdmin,
   todayIso,
@@ -161,7 +162,7 @@ export default function PracticeQuickScan({
                 const { toEnabled, fromEnabled } = getPracticeCarpoolLegs(p);
                 const hasCarpool = toEnabled || fromEnabled;
 
-                const effectivePlayers = getEffectivePlayers(p, players);
+                const effectivePlayers = getEffectivePlayers(p, players, allPlayers);
                 const toSum = toEnabled ? getLegSummary(p, 'to', effectivePlayers) : null;
                 const fromSum = fromEnabled ? getLegSummary(p, 'from', effectivePlayers) : null;
 

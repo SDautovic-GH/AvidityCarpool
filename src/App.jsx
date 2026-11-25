@@ -210,6 +210,9 @@ export default function App() {
     joinCar,
     joinBothWays,
     leaveCar,
+    togglePracticeGuest,
+    saveGuestPlayer,
+    deleteGuestPlayer,
     addGuestRider,
     removeGuestRider,
     addPracticeNote,
@@ -245,7 +248,7 @@ export default function App() {
 
   const practiceNeedsDriver = (p) => {
     if (p.status === 'cancelled') return false;
-    const effPlayers = getEffectivePlayers(p, carpoolPlayers);
+    const effPlayers = getEffectivePlayers(p, carpoolPlayers, players);
     const { toEnabled, fromEnabled } = getPracticeCarpoolLegs(p);
     const toSum = toEnabled ? getLegSummary(p, 'to', effPlayers) : null;
     const fromSum = fromEnabled ? getLegSummary(p, 'from', effPlayers) : null;
@@ -375,7 +378,7 @@ export default function App() {
     ? practices.find((p) => p.id === assignModal.practiceId)
     : null;
   const activeAssignPlayer = assignModal
-    ? getEffectivePlayers(activeAssignPractice, players).find(
+    ? getEffectivePlayers(activeAssignPractice, players, players).find(
         (pl) => pl.id === assignModal.playerId
       )
     : null;
@@ -720,6 +723,12 @@ export default function App() {
               )
             }
             onOpenSeasonModal={() => setSeasonModalOpen(true)}
+            onSaveGuest={(payload) =>
+              runAction(() => saveGuestPlayer(payload), 'Guest saved')
+            }
+            onDeleteGuest={(guestId, ownParentId) =>
+              runAction(() => deleteGuestPlayer(guestId, ownParentId), 'Guest removed')
+            }
           />
         ) : (
           <>
@@ -906,6 +915,7 @@ export default function App() {
                   isFirstUpcoming={practice.id === firstUpcomingId}
                   isPast={practice.isoDate < todayIso}
                   players={carpoolPlayers}
+                  allPlayers={players}
                   carpoolParents={carpoolParents}
                   shortPlayerNames={shortPlayerNames}
                   currentParent={currentParent}
@@ -995,6 +1005,12 @@ export default function App() {
                       'Guest rider removed'
                     )
                   }
+                  onTogglePracticeGuest={(practiceId, guestId, add) =>
+                    runAction(
+                      () => togglePracticeGuest(practiceId, guestId, add),
+                      add ? 'Guest added to practice' : 'Guest removed from practice'
+                    )
+                  }
                   onUpdatePractice={(practiceId, details) =>
                     runAction(
                       () => updatePracticeDetails(practiceId, details),
@@ -1013,6 +1029,7 @@ export default function App() {
                   <PracticeQuickScan
                     practices={visiblePractices}
                     players={carpoolPlayers}
+                    allPlayers={players}
                     currentParent={currentParent}
                     isAdmin={isAdmin}
                     todayIso={todayIso}

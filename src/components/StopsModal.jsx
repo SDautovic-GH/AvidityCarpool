@@ -55,13 +55,15 @@ export default function StopsModal({
             riderIds.map((pid) => {
               const player = playerMap.get(pid);
               const displayName = shortPlayerNames?.[pid] || player?.name || 'Player';
+              const matchesRiderParent = (p) =>
+                p.playerId === pid || (player?.linkedParentId && p.id === player.linkedParentId);
               const linkedParents = parents.filter(
-                (p) => p.playerId === pid && p.id !== currentParentId
+                (p) => matchesRiderParent(p) && p.id !== currentParentId
               );
               const displayParents =
                 linkedParents.length > 0
                   ? linkedParents
-                  : parents.filter((p) => p.playerId === pid);
+                  : parents.filter(matchesRiderParent);
 
               return (
                 <div

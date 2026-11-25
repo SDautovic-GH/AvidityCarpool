@@ -3,6 +3,7 @@ import { Car, KeyRound, MapPin, MessageCircle, Pencil, Phone, Plus, Shield, Tras
 import { getAvatarColor, getCarpoolPlayerIdSet, getInitials } from '../utils/schedule';
 import { buildSmsUrl, getMapUrl } from '../utils/maps';
 import DriverEngagementView from './DriverEngagementView';
+import GuestPoolView from './GuestPoolView';
 
 const EMPTY_FORM = {
   existingParentId: null,
@@ -33,17 +34,19 @@ export default function AdminRoster({
   onRemoveParent,
   onSendResetEmail,
   onOpenSeasonModal,
+  onSaveGuest,
+  onDeleteGuest,
 }) {
   const [formOpen, setFormOpen] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
   const [subView, setSubView] = useState(() => {
     try {
       const saved = sessionStorage.getItem('avidity_team_subview');
-      return saved === 'drivers' ? 'drivers' : 'roster';
+      return ['roster', 'guests', 'drivers'].includes(saved) ? saved : 'roster';
     } catch {
       return 'roster';
     }
-  }); // 'roster' | 'drivers'
+  }); // 'roster' | 'guests' | 'drivers'
 
   React.useEffect(() => {
     try {
@@ -195,22 +198,27 @@ export default function AdminRoster({
     }
   };
 
-  const unassignedParents = parents.filter(
-    (p) => !players.some((pl) => pl.id === p.playerId)
+  const regularPlayers = players.filter((pl) => !pl.isGuest);
+  const guestPlayersCount = players.length - regularPlayers.length;
+  const guestPlayerIds = new Set(players.filter((pl) => pl.isGuest).map((pl) => pl.id));
+  const regularParents = parents.filter((p) => !guestPlayerIds.has(p.playerId));
+
+  const unassignedParents = regularParents.filter(
+    (p) => !regularPlayers.some((pl) => pl.id === p.playerId)
   );
 
-  const carpoolPlayerIds = getCarpoolPlayerIdSet(players, parents);
+  const carpoolPlayerIds = getCarpoolPlayerIdSet(regularPlayers, regularParents);
   const myParentId = currentParent?.id || '';
-  const carpoolPhones = parents
+  const carpoolPhones = regularParents
     .filter((p) => p.id !== myParentId && carpoolPlayerIds.has(p.playerId) && p.phone)
     .map((p) => p.phone);
   const carpoolSmsUrl = buildSmsUrl(carpoolPhones);
 
-  const teamPhones = parents
+  const teamPhones = regularParents
     .filter((p) => p.id !== myParentId && p.phone)
     .map((p) => p.phone);
   const teamSmsUrl = buildSmsUrl(teamPhones);
-  const activatedCount = parents.filter((p) => Boolean(p.activatedAt || p.lastLoginAt)).length;
+  const activatedCount = regularParents.filter((p) => Boolean(p.activatedAt || p.lastLoginAt)).length;
 
   const formatTimestamp = (ts) => {
     const dt = ts?.toDate?.();
@@ -231,18 +239,29 @@ export default function AdminRoster({
             <button
               type="button"
               onClick={() => setSubView('roster')}
-              className={`px-4 py-1.5 rounded-full transition ${
+              className={`px-3.5 py-1.5 rounded-full transition ${
                 subView === 'roster'
                   ? 'bg-blue-600 text-white'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              Roster &amp; Contacts
+              Roster
+            </button>
+            <button
+              type="button"
+              onClick={() => setSubView('guests')}
+              className={`inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full transition ${
+                subView === 'guests'
+                  ? 'bg-blue-600 text-white'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              Guest Pool{guestPlayersCount > 0 ? ` (${guestPlayersCount})` : ''}
             </button>
             <button
               type="button"
               onClick={() => setSubView('drivers')}
-              className={`px-4 py-1.5 rounded-full transition ${
+              className={`px-3.5 py-1.5 rounded-full transition ${
                 subView === 'drivers'
                   ? 'bg-blue-600 text-white'
                   : 'text-slate-400 hover:text-slate-200'
@@ -256,10 +275,17 @@ export default function AdminRoster({
 
       {isAdmin && subView === 'drivers' ? (
         <DriverEngagementView
-          players={players}
-          parents={parents}
+          players={regularPlayers}
+          parents={regularParents}
           practices={practices}
           todayIso={todayIso}
+        />
+      ) : isAdmin && subView === 'guests' ? (
+        <GuestPoolView
+          players={players}
+          parents={regularParents}
+          onSaveGuest={onSaveGuest}
+          onDeleteGuest={onDeleteGuest}
         />
       ) : (
         <>
@@ -270,9 +296,9 @@ export default function AdminRoster({
             Team Roster &amp; Contacts
           </h2>
           <p className="text-xs text-slate-400 mt-0.5">
-            {players.length} {players.length === 1 ? 'player' : 'players'} · {parents.length}{' '}
-            {parents.length === 1 ? 'parent' : 'parents'}
-            {isAdmin && parents.length > 0 ? ` · ${activatedCount}/${parents.length} activated` : ''} · Tap
+            {regularPlayers.length} {regularPlayers.length === 1 ? 'player' : 'players'} · {regularParents.length}{' '}
+            {regularParents.length === 1 ? 'parent' : 'parents'}
+            {isAdmin && regularParents.length > 0 ? ` · ${activatedCount}/${regularParents.length} activated` : ''} · Tap
             phone to call/text or address for directions.
           </p>
         </div>
@@ -345,14 +371,14 @@ export default function AdminRoster({
       </div>
 
       <div className="space-y-3">
-        {players.length === 0 ? (
+        {regularPlayers.length === 0 ? (
           <div className="rounded-2xl bg-slate-900 border border-slate-800 p-8 text-center text-sm text-slate-400">
             No players in this season yet. Click <strong>Add Family / Parent</strong> to start
             building your roster.
           </div>
         ) : (
-          players.map((player) => {
-            const linkedParents = parents.filter((p) => p.playerId === player.id);
+          regularPlayers.map((player) => {
+            const linkedParents = regularParents.filter((p) => p.playerId === player.id);
             const isEditingName = editingPlayerId === player.id;
 
             return (
@@ -735,7 +761,7 @@ export default function AdminRoster({
                   className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-slate-100 focus:outline-none focus:border-blue-500"
                 >
                   <option value="__new__">+ New Player</option>
-                  {players.map((pl) => (
+                  {regularPlayers.map((pl) => (
                     <option key={pl.id} value={pl.id}>
                       {pl.name}
                     </option>

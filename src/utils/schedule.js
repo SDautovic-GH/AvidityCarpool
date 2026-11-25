@@ -283,6 +283,7 @@ export function getCarpoolPlayerIdSet(players = [], parents = []) {
   );
   const result = new Set();
   players.forEach((pl) => {
+    if (pl.isGuest) return;
     const included = typeof pl.inCarpool === 'boolean' ? pl.inCarpool : melroseIds.has(pl.id);
     if (included) result.add(pl.id);
   });
@@ -300,12 +301,21 @@ export function getPracticeCarpoolLegs(practice) {
   };
 }
 
-export function getEffectivePlayers(practice, carpoolPlayers = []) {
-  const guests = Array.isArray(practice?.guestRiders) ? practice.guestRiders : [];
-  if (guests.length === 0) return carpoolPlayers;
+export function getEffectivePlayers(practice, carpoolPlayers = [], allPlayers = []) {
+  const dayShort = practice?.isoDate ? formatPracticeDate(practice.isoDate).fullDay.slice(0, 3) : '';
+  const manualGuestIds = new Set(Array.isArray(practice?.guestIds) ? practice.guestIds : []);
+  const poolGuests = allPlayers.filter(
+    (pl) =>
+      pl.isGuest &&
+      ((dayShort && Array.isArray(pl.guestDays) && pl.guestDays.includes(dayShort)) ||
+        manualGuestIds.has(pl.id))
+  );
+  const inlineGuests = Array.isArray(practice?.guestRiders) ? practice.guestRiders : [];
+  if (poolGuests.length === 0 && inlineGuests.length === 0) return carpoolPlayers;
   return [
     ...carpoolPlayers,
-    ...guests.map((g) => ({
+    ...poolGuests,
+    ...inlineGuests.map((g) => ({
       id: g.id,
       name: g.name,
       isGuest: true,

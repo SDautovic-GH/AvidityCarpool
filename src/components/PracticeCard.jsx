@@ -25,6 +25,7 @@ export default function PracticeCard({
   isFirstUpcoming,
   isPast = false,
   players,
+  allPlayers = [],
   carpoolParents = [],
   shortPlayerNames,
   currentParent,
@@ -45,12 +46,13 @@ export default function PracticeCard({
   onDeleteNote,
   onAddGuest,
   onRemoveGuest,
+  onTogglePracticeGuest,
   onUpdatePractice,
   onDeletePractice,
   onToast,
 }) {
   const [activeLeg, setActiveLeg] = useState(() => {
-    const eff = getEffectivePlayers(practice, players);
+    const eff = getEffectivePlayers(practice, players, allPlayers);
     const { toEnabled: tOn, fromEnabled: fOn } = getPracticeCarpoolLegs(practice);
     if (!tOn && fOn) return 'from';
     if (tOn && !fOn) return 'to';
@@ -79,13 +81,16 @@ export default function PracticeCard({
   const isCancelled = practice.status === 'cancelled';
   const canDrive = currentParent?.canDrive !== false;
   const myPlayer = players.find((pl) => pl.id === myPlayerId);
-  const effectivePlayers = getEffectivePlayers(practice, players);
+  const effectivePlayers = getEffectivePlayers(practice, players, allPlayers);
   const guestRiders = Array.isArray(practice.guestRiders) ? practice.guestRiders : [];
+  const manualGuestIds = Array.isArray(practice.guestIds) ? practice.guestIds : [];
+  const poolGuests = allPlayers.filter((pl) => pl.isGuest);
+  const availablePoolGuests = poolGuests.filter(
+    (pl) => !effectivePlayers.some((ep) => ep.id === pl.id)
+  );
   const shortNames = shortPlayerNames || getShortPlayerNames(players);
   const shortNameOf = (pl) => {
-    if (pl?.isGuest) {
-      return /guest/i.test(pl.name || '') ? pl.name : `${pl.name} (Guest)`;
-    }
+    if (pl?.isGuest) return pl.name || 'Guest';
     return shortNames[pl?.id] || pl?.name || 'Player';
   };
 
@@ -249,20 +254,31 @@ export default function PracticeCard({
                         <button
                           key={pl.id}
                           onClick={() => onOpenAssignModal(practice.id, leg, pl.id)}
-                          className="px-3 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-slate-700/75 hover:bg-blue-600 text-slate-100 transition"
+                          className="inline-flex items-center gap-1 px-3 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-slate-700/75 hover:bg-blue-600 text-slate-100 transition"
                         >
-                          {shortNameOf(pl)} +
+                          <span>{shortNameOf(pl)}</span>
+                          {pl.isGuest && (
+                            <span className="px-1 rounded text-[10px] font-bold bg-violet-500/25 text-violet-300">
+                              G
+                            </span>
+                          )}
+                          <span>+</span>
                         </button>
                       );
                     }
                     return (
                       <span
                         key={pl.id}
-                        className={`text-sm ${
+                        className={`inline-flex items-center gap-1 text-sm ${
                           pl.id === myPlayerId ? 'font-bold text-slate-100' : 'font-medium text-slate-200'
                         }`}
                       >
-                        {shortNameOf(pl)}
+                        <span>{shortNameOf(pl)}</span>
+                        {pl.isGuest && (
+                          <span className="px-1 rounded text-[10px] font-bold bg-violet-500/20 text-violet-300">
+                            G
+                          </span>
+                        )}
                       </span>
                     );
                   })}
@@ -711,15 +727,44 @@ export default function PracticeCard({
         )
       )}
 
-      {guestRiders.length > 0 && !isCancelled && (
+      {(guestRiders.length > 0 || manualGuestIds.length > 0) && !isCancelled && (
         <div className="flex flex-wrap items-center gap-1.5 text-xs">
           <span className="text-slate-400 font-medium">Guests:</span>
+          {manualGuestIds.map((gid) => {
+            const gPlayer = poolGuests.find((pl) => pl.id === gid);
+            if (!gPlayer) return null;
+            return (
+              <span
+                key={gid}
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-800 text-slate-200 font-medium"
+              >
+                {gPlayer.name}
+                <span className="px-1 rounded text-[10px] font-bold bg-violet-500/20 text-violet-300">
+                  G
+                </span>
+                {isAdmin && !isReadOnly && onTogglePracticeGuest && (
+                  <button
+                    type="button"
+                    onClick={() => onTogglePracticeGuest(practice.id, gid, false)}
+                    title="Remove guest from this practice"
+                    aria-label={`Remove guest ${gPlayer.name}`}
+                    className="px-1 rounded-full text-slate-400 hover:text-rose-400 font-bold"
+                  >
+                    ×
+                  </button>
+                )}
+              </span>
+            );
+          })}
           {guestRiders.map((g) => (
             <span
               key={g.id}
               className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-800 text-slate-200 font-medium"
             >
               {g.name}
+              <span className="px-1 rounded text-[10px] font-bold bg-violet-500/20 text-violet-300">
+                G
+              </span>
               {isAdmin && !isReadOnly && onRemoveGuest && (
                 <button
                   type="button"
@@ -736,40 +781,65 @@ export default function PracticeCard({
         </div>
       )}
 
-      {addingGuest && onAddGuest ? (
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (!guestDraft.trim()) return;
-            onAddGuest(practice.id, guestDraft.trim());
-            setGuestDraft('');
-            setAddingGuest(false);
-          }}
-          className={`flex flex-wrap items-center gap-2 ${!isCancelled ? 'pt-2.5 border-t border-slate-800/60' : ''}`}
-        >
-          <input
-            type="text"
-            maxLength={50}
-            value={guestDraft}
-            onChange={(e) => setGuestDraft(e.target.value)}
-            placeholder="Guest rider name (e.g., Emma)"
-            className="w-full sm:w-auto sm:flex-1 min-w-0 px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-700 text-xs text-slate-100 focus:outline-none focus:border-blue-500"
-            autoFocus
-          />
-          <button
-            type="submit"
-            className="px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition"
-          >
-            Add
-          </button>
-          <button
-            type="button"
-            onClick={() => setAddingGuest(false)}
-            className="px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 transition"
-          >
-            Cancel
-          </button>
-        </form>
+      {addingGuest && (onAddGuest || onTogglePracticeGuest) ? (
+        <div className={`space-y-2 ${!isCancelled ? 'pt-2.5 border-t border-slate-800/60' : ''}`}>
+          {availablePoolGuests.length > 0 && onTogglePracticeGuest && (
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="text-[11px] font-semibold text-slate-400">From Guest Pool:</span>
+              {availablePoolGuests.map((gp) => (
+                <button
+                  key={gp.id}
+                  type="button"
+                  onClick={() => {
+                    onTogglePracticeGuest(practice.id, gp.id, true);
+                    setAddingGuest(false);
+                  }}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 min-h-[32px] rounded-full text-xs font-semibold bg-slate-700/75 hover:bg-blue-600 text-slate-100 transition"
+                >
+                  <span>+ {gp.name}</span>
+                  <span className="px-1 rounded text-[10px] font-bold bg-violet-500/25 text-violet-300">
+                    G
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
+          {onAddGuest && (
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (!guestDraft.trim()) return;
+                onAddGuest(practice.id, guestDraft.trim());
+                setGuestDraft('');
+                setAddingGuest(false);
+              }}
+              className="flex flex-wrap items-center gap-2"
+            >
+              <input
+                type="text"
+                maxLength={50}
+                value={guestDraft}
+                onChange={(e) => setGuestDraft(e.target.value)}
+                placeholder="Or type one-off guest name..."
+                className="w-full sm:w-auto sm:flex-1 min-w-0 px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-700 text-xs text-slate-100 focus:outline-none focus:border-blue-500"
+                autoFocus={availablePoolGuests.length === 0}
+              />
+              <button
+                type="submit"
+                className="px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition"
+              >
+                Add
+              </button>
+              <button
+                type="button"
+                onClick={() => setAddingGuest(false)}
+                className="px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 transition"
+              >
+                Cancel
+              </button>
+            </form>
+          )}
+        </div>
       ) : null}
 
       {editingNote ? (

@@ -182,10 +182,11 @@ export function useCarpoolData(user) {
   }, [activeSeasonId, currentParent?.id, currentParent?.email, currentParent?.activatedAt, userEmail]);
   const activeSeason = seasons.find((s) => s.id === activeSeasonId) || null;
   const carpoolPlayerIds = getCarpoolPlayerIdSet(players, parents);
+  const poolGuestIds = new Set(players.filter((pl) => pl.isGuest).map((pl) => pl.id));
   const filterCarpoolRiders = (ids = [], practice = null) => {
-    const guestIds = new Set((practice?.guestRiders || []).map((g) => g.id));
+    const inlineGuestIds = new Set((practice?.guestRiders || []).map((g) => g.id));
     return carpoolPlayerIds.size > 0
-      ? ids.filter((id) => carpoolPlayerIds.has(id) || guestIds.has(id))
+      ? ids.filter((id) => carpoolPlayerIds.has(id) || poolGuestIds.has(id) || inlineGuestIds.has(id))
       : [...ids];
   };
 
@@ -365,6 +366,99 @@ export function useCarpoolData(user) {
       car.riderIds = (car.riderIds || []).filter((id) => id !== playerId);
       return { legs };
     });
+  }
+
+  async function togglePracticeGuest(practiceId, guestId, add = true) {
+    await updatePracticeTx(practiceId, (p) => {
+      const guestIds = new Set(Array.isArray(p.guestIds) ? p.guestIds : []);
+      if (add) {
+        if (guestIds.size >= 10 && !guestIds.has(guestId)) {
+          throw new Error('Maximum 10 manual guests allowed per practice');
+        }
+        guestIds.add(guestId);
+        return { guestIds: [...guestIds] };
+      }
+      guestIds.delete(guestId);
+      const legs = p.legs || { to: [], from: [] };
+      ['to', 'from'].forEach((leg) => {
+        legs[leg] = (legs[leg] || []).map((car) => ({
+          ...car,
+          riderIds: (car.riderIds || []).filter((id) => id !== guestId),
+        }));
+      });
+      return { guestIds: [...guestIds], legs };
+    });
+  }
+
+  async function saveGuestPlayer({
+    existingGuestId,
+    guestName,
+    guestDays = [],
+    parentMode,
+    linkedParentId = '',
+    existingParentDocId = null,
+    parentName = '',
+    email = '',
+    phone = '',
+    address = '',
+    canDrive = false,
+    defaultSeats = 4,
+  }) {
+    if (!activeSeasonId) return;
+    let finalGuestId = existingGuestId;
+    const playerPayload = {
+      name: guestName.trim(),
+      isGuest: true,
+      guestDays: Array.isArray(guestDays) ? guestDays : [],
+      linkedParentId: parentMode === 'existing' ? linkedParentId : '',
+    };
+
+    if (finalGuestId) {
+      await updateDoc(doc(db, 'seasons', activeSeasonId, 'players', finalGuestId), playerPayload);
+    } else {
+      const pRef = doc(collection(db, 'seasons', activeSeasonId, 'players'));
+      finalGuestId = pRef.id;
+      await setDoc(pRef, {
+        ...playerPayload,
+        createdAt: serverTimestamp(),
+      });
+    }
+
+    if (parentMode === 'new' && email.trim()) {
+      const cleanEmail = email.toLowerCase().trim();
+      if (existingParentDocId && existingParentDocId !== cleanEmail) {
+        await deleteDoc(doc(db, 'seasons', activeSeasonId, 'parents', existingParentDocId));
+      }
+      const parentRef = doc(db, 'seasons', activeSeasonId, 'parents', cleanEmail);
+      const parentPayload = {
+        name: parentName.trim(),
+        email: cleanEmail,
+        phone: (phone || '').trim(),
+        address: (address || '').trim(),
+        playerId: finalGuestId,
+        defaultSeats: Number(defaultSeats) || 4,
+        canDrive: Boolean(canDrive),
+        role: 'parent',
+      };
+      if (existingParentDocId && existingParentDocId === cleanEmail) {
+        await updateDoc(parentRef, parentPayload);
+      } else {
+        await setDoc(parentRef, {
+          ...parentPayload,
+          createdAt: serverTimestamp(),
+        });
+      }
+    } else if (parentMode === 'existing' && existingParentDocId) {
+      await deleteDoc(doc(db, 'seasons', activeSeasonId, 'parents', existingParentDocId));
+    }
+  }
+
+  async function deleteGuestPlayer(guestId, ownParentId = null) {
+    if (!activeSeasonId || !guestId) return;
+    await deleteDoc(doc(db, 'seasons', activeSeasonId, 'players', guestId));
+    if (ownParentId) {
+      await deleteDoc(doc(db, 'seasons', activeSeasonId, 'parents', ownParentId));
+    }
   }
 
   async function addGuestRider(practiceId, name, authorParent, fallbackEmail = '') {
@@ -742,6 +836,9 @@ export function useCarpoolData(user) {
     joinCar,
     joinBothWays,
     leaveCar,
+    togglePracticeGuest,
+    saveGuestPlayer,
+    deleteGuestPlayer,
     addGuestRider,
     removeGuestRider,
     addPracticeNote,
