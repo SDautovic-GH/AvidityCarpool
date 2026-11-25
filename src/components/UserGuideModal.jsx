@@ -97,6 +97,12 @@ export default function UserGuideModal({ isAdmin = false, onClose }) {
                     <strong className="text-slate-100">Both Ways</strong> when available). Tap{' '}
                     <strong className="text-slate-100">×</strong> next to your player&apos;s name to leave a car.
                   </li>
+                  <li>
+                    <strong className="text-slate-100">Guest Riders (G):</strong> Riders marked with a{' '}
+                    <strong className="text-violet-300">G</strong> badge are approved guest or sibling riders for that practice and count toward seat capacity and{' '}
+                    <strong className="text-slate-100">Stops</strong>. To request a guest rider, please reach out to{' '}
+                    <strong className="text-slate-100">Lee-Anne</strong>.
+                  </li>
                 </ul>
               </section>
 
@@ -156,6 +162,10 @@ export default function UserGuideModal({ isAdmin = false, onClose }) {
                     <strong className="text-slate-100">✓ Carpool</strong> / <strong className="text-slate-100">+ Carpool</strong> on any player to include or exclude them from carpool headcounts.
                   </li>
                   <li>
+                    Use the <strong className="text-slate-100">Guest Pool</strong> tab inside{' '}
+                    <strong className="text-slate-100">Team</strong> to register siblings or guest riders (linked to an existing parent or new contact/address) and optionally set recurring weekdays (e.g., <em>Sun</em>) or leave manual.
+                  </li>
+                  <li>
                     Use the <strong className="text-slate-100">Driver Engagement</strong> view at the top of{' '}
                     <strong className="text-slate-100">Team</strong> to review legs driven, past vs. upcoming coverage, and tap any driver&apos;s name for their ride history and riders.
                   </li>
@@ -191,6 +201,9 @@ export default function UserGuideModal({ isAdmin = false, onClose }) {
                   <li>
                     Under <em>Still need a ride</em>, tap <strong className="text-slate-100">[Name] +</strong> to place a rider into a confirmed car, or{' '}
                     <strong className="text-slate-100">×</strong> to remove a rider.
+                  </li>
+                  <li>
+                    Tap <strong className="text-slate-100">+ Guest</strong> on any practice card to add a guest from the Guest Pool (or a one-off guest, max 10 per practice) and assign them to a car.
                   </li>
                 </ul>
               </section>
