@@ -46,6 +46,8 @@ service cloud.firestore {
     //   - role: string (required, 'admin' | 'parent')
     //   - phone: string (optional, 0..40 chars)
     //   - address: string (optional, 0..300 chars)
+    //   - activatedAt: timestamp (optional, set once on first login)
+    //   - lastLoginAt: timestamp (optional)
     //   - createdAt: timestamp (required, immutable)
     //
     // Subcollection: seasons/{seasonId}/practices
@@ -192,7 +194,7 @@ service cloud.firestore {
 
     function isValidParent(data, parentId) {
       return hasRequiredFields(['name', 'email', 'playerId', 'canDrive', 'defaultSeats', 'role', 'createdAt']) &&
-             hasOnlyAllowedFields(['name', 'email', 'playerId', 'canDrive', 'defaultSeats', 'role', 'phone', 'address', 'createdAt']) &&
+             hasOnlyAllowedFields(['name', 'email', 'playerId', 'canDrive', 'defaultSeats', 'role', 'phone', 'address', 'activatedAt', 'lastLoginAt', 'createdAt']) &&
              validString(data.name, 1, 100) &&
              isValidEmail(data.email) &&
              data.email == data.email.lower() &&
@@ -203,6 +205,8 @@ service cloud.firestore {
              data.role in ['admin', 'parent'] &&
              (!('phone' in data) || validString(data.phone, 0, 40)) &&
              (!('address' in data) || validString(data.address, 0, 300)) &&
+             (!('activatedAt' in data) || data.activatedAt is timestamp) &&
+             (!('lastLoginAt' in data) || data.lastLoginAt is timestamp) &&
              data.createdAt is timestamp;
     }
 
@@ -297,7 +301,8 @@ service cloud.firestore {
                            (
                              isParentInSeason(seasonId) &&
                              parentId == authEmail() &&
-                             request.resource.data.diff(resource.data).affectedKeys().hasOnly(['phone', 'address', 'name', 'defaultSeats'])
+                             request.resource.data.diff(resource.data).affectedKeys().hasOnly(['phone', 'address', 'name', 'defaultSeats', 'activatedAt', 'lastLoginAt']) &&
+                             (!('activatedAt' in resource.data) || !request.resource.data.diff(resource.data).affectedKeys().hasAny(['activatedAt']))
                            )
                          );
         allow delete: if isSeasonAdmin(seasonId);

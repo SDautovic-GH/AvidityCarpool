@@ -210,6 +210,18 @@ export default function AdminRoster({
     .filter((p) => p.id !== myParentId && p.phone)
     .map((p) => p.phone);
   const teamSmsUrl = buildSmsUrl(teamPhones);
+  const activatedCount = parents.filter((p) => Boolean(p.activatedAt || p.lastLoginAt)).length;
+
+  const formatTimestamp = (ts) => {
+    const dt = ts?.toDate?.();
+    if (!dt) return '';
+    return dt.toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+    });
+  };
 
   return (
     <div className="space-y-4">
@@ -259,8 +271,9 @@ export default function AdminRoster({
           </h2>
           <p className="text-xs text-slate-400 mt-0.5">
             {players.length} {players.length === 1 ? 'player' : 'players'} · {parents.length}{' '}
-            {parents.length === 1 ? 'parent' : 'parents'} · Tap phone to call/text or address for
-            directions.
+            {parents.length === 1 ? 'parent' : 'parents'}
+            {isAdmin && parents.length > 0 ? ` · ${activatedCount}/${parents.length} activated` : ''} · Tap
+            phone to call/text or address for directions.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -491,8 +504,26 @@ export default function AdminRoster({
                                 </span>
                               )}
                             </div>
-                            <div className="text-xs text-slate-400 truncate mt-0.5">
-                              {parent.email || parent.id}
+                            <div className="text-xs text-slate-400 truncate mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                              <span className="truncate">{parent.email || parent.id}</span>
+                              {isAdmin && (
+                                parent.activatedAt || parent.lastLoginAt ? (
+                                  <span className="inline-flex items-center gap-1 text-[11px] text-emerald-400">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                                    Active
+                                    {parent.lastLoginAt && (
+                                      <span className="text-slate-400">
+                                        · Last seen {formatTimestamp(parent.lastLoginAt)}
+                                      </span>
+                                    )}
+                                  </span>
+                                ) : (
+                                  <span className="inline-flex items-center gap-1 text-[11px] text-amber-300/90">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                                    Not signed in yet
+                                  </span>
+                                )
+                              )}
                             </div>
                             {(parent.phone || parent.address) && (
                               <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-400 mt-1">

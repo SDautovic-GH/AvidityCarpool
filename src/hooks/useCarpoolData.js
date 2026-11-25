@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   collection,
   doc,
@@ -158,6 +158,28 @@ export function useCarpoolData(user) {
 
   const currentParent = parents.find((p) => p.id === userEmail || p.email === userEmail) || null;
   const isAdmin = Boolean(isGlobalAdmin || currentParent?.role === 'admin');
+
+  const recordedLoginRef = useRef('');
+  useEffect(() => {
+    if (!isFirebaseConfigured || !db || !activeSeasonId || !currentParent?.id || !userEmail) return;
+    if (currentParent.id !== userEmail && (currentParent.email || '').toLowerCase() !== userEmail) return;
+
+    const sessionKey = `${activeSeasonId}:${currentParent.id}`;
+    const lastMs = currentParent.lastLoginAt?.toMillis?.() || 0;
+    const stale = Date.now() - lastMs > 15 * 60 * 1000;
+    if (recordedLoginRef.current === sessionKey && !stale) return;
+
+    recordedLoginRef.current = sessionKey;
+    const updates = { lastLoginAt: serverTimestamp() };
+    if (!currentParent.activatedAt) {
+      updates.activatedAt = serverTimestamp();
+    }
+    updateDoc(doc(db, 'seasons', activeSeasonId, 'parents', currentParent.id), updates).catch(
+      () => {
+        recordedLoginRef.current = '';
+      }
+    );
+  }, [activeSeasonId, currentParent?.id, currentParent?.email, currentParent?.activatedAt, userEmail]);
   const activeSeason = seasons.find((s) => s.id === activeSeasonId) || null;
   const carpoolPlayerIds = getCarpoolPlayerIdSet(players, parents);
   const filterCarpoolRiders = (ids = []) =>
