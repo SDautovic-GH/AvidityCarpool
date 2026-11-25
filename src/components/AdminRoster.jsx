@@ -386,17 +386,17 @@ export default function AdminRoster({
                 key={player.id}
                 className="rounded-2xl bg-slate-900 border border-slate-800 overflow-hidden"
               >
-                <div className="flex items-start sm:items-center justify-between gap-2.5 px-3.5 sm:px-4 py-3 bg-slate-950/50 border-b border-slate-800/80">
-                  <div className="flex items-start gap-2.5 min-w-0 flex-1">
-                    <span
-                      className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0 ${getAvatarColor(
-                        player.name
-                      )}`}
-                    >
-                      {getInitials(player.name)}
-                    </span>
-                    {isEditingName ? (
-                      <div className="flex flex-wrap items-center gap-1.5">
+                <div className="px-3.5 sm:px-4 py-3 bg-slate-950/50 border-b border-slate-800/80">
+                  {isEditingName ? (
+                    <div className="flex items-start gap-2.5">
+                      <span
+                        className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0 ${getAvatarColor(
+                          player.name
+                        )}`}
+                      >
+                        {getInitials(player.name)}
+                      </span>
+                      <div className="flex flex-wrap items-center gap-1.5 min-w-0 flex-1">
                         <input
                           type="text"
                           value={playerJerseyDraft}
@@ -408,7 +408,7 @@ export default function AdminRoster({
                           type="text"
                           value={playerNameDraft}
                           onChange={(e) => setPlayerNameDraft(e.target.value)}
-                          className="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700 text-sm text-slate-100 focus:outline-none focus:border-blue-500"
+                          className="min-w-0 flex-1 sm:flex-none px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700 text-sm text-slate-100 focus:outline-none focus:border-blue-500"
                           autoFocus
                         />
                         <button
@@ -424,72 +424,100 @@ export default function AdminRoster({
                           Cancel
                         </button>
                       </div>
-                    ) : (
-                      <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1 min-w-0">
-                        <span className="text-sm font-bold text-slate-100 leading-snug">
-                          {player.name}
-                        </span>
-                        {player.jerseyNumber && (
-                          <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-slate-800 text-blue-300 shrink-0">
-                            #{player.jerseyNumber}
+                    </div>
+                  ) : (
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5">
+                      <div className="flex items-center justify-between sm:justify-start gap-2 min-w-0">
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <span
+                            className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0 ${getAvatarColor(
+                              player.name
+                            )}`}
+                          >
+                            {getInitials(player.name)}
                           </span>
-                        )}
-                        {(() => {
-                          const inCarpool = carpoolPlayerIds.has(player.id);
-                          if (isAdmin && onTogglePlayerCarpool) {
-                            return (
-                              <button
-                                type="button"
-                                onClick={() => onTogglePlayerCarpool(player.id, !inCarpool)}
-                                title={
-                                  inCarpool
-                                    ? 'In carpool — tap to remove'
-                                    : 'Not in carpool — tap to add'
-                                }
-                                className={`min-h-[32px] px-2.5 py-1 rounded-full text-[11px] font-semibold border shrink-0 transition cursor-pointer ${
-                                  inCarpool
-                                    ? 'bg-blue-500/15 text-blue-300 border-blue-500/30 hover:bg-blue-500/25'
-                                    : 'bg-slate-800/70 text-slate-400 border-slate-700 hover:text-slate-200 hover:border-slate-500'
-                                }`}
-                              >
-                                {inCarpool ? '✓ Carpool' : '+ Carpool'}
-                              </button>
-                            );
-                          }
-                          return inCarpool ? (
-                            <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-500/15 text-blue-300 border border-blue-500/30 shrink-0">
-                              Carpool
+                          <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1 min-w-0">
+                            <span className="text-sm font-bold text-slate-100 leading-snug">
+                              {player.name}
                             </span>
-                          ) : null;
-                        })()}
-                      </div>
-                    )}
-                  </div>
+                            {player.jerseyNumber && (
+                              <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-slate-800 text-blue-300 shrink-0">
+                                #{player.jerseyNumber}
+                              </span>
+                            )}
+                            {!isAdmin && carpoolPlayerIds.has(player.id) && (
+                              <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-500/15 text-blue-300 border border-blue-500/30 shrink-0">
+                                Carpool
+                              </span>
+                            )}
+                          </div>
+                        </div>
 
-                  {isAdmin && (
-                    <div className="flex items-center gap-1 shrink-0">
-                      {!isEditingName && (
-                        <button
-                          onClick={() => {
-                            setEditingPlayerId(player.id);
-                            setPlayerNameDraft(player.name);
-                            setPlayerJerseyDraft(player.jerseyNumber || '');
-                          }}
-                          className="p-2 min-w-[34px] min-h-[34px] flex items-center justify-center rounded-full text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition"
-                          title="Edit player name & jersey #"
-                          aria-label="Edit player"
-                        >
-                          <Pencil className="w-3.5 h-3.5" />
-                        </button>
+                        {isAdmin && (
+                          <button
+                            onClick={() => {
+                              setEditingPlayerId(player.id);
+                              setPlayerNameDraft(player.name);
+                              setPlayerJerseyDraft(player.jerseyNumber || '');
+                            }}
+                            className="sm:hidden p-1.5 min-w-[32px] min-h-[32px] flex items-center justify-center rounded-full text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition shrink-0"
+                            title="Edit player name & jersey #"
+                            aria-label="Edit player"
+                          >
+                            <Pencil className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
+
+                      {isAdmin && (
+                        <div className="flex items-center justify-between sm:justify-end gap-2 shrink-0">
+                          {onTogglePlayerCarpool &&
+                            (() => {
+                              const inCarpool = carpoolPlayerIds.has(player.id);
+                              return (
+                                <button
+                                  type="button"
+                                  onClick={() => onTogglePlayerCarpool(player.id, !inCarpool)}
+                                  title={
+                                    inCarpool
+                                      ? 'In carpool — tap to remove'
+                                      : 'Not in carpool — tap to add'
+                                  }
+                                  className={`min-h-[32px] px-3 py-1 rounded-full text-xs font-semibold border shrink-0 transition cursor-pointer ${
+                                    inCarpool
+                                      ? 'bg-blue-500/15 text-blue-300 border-blue-500/30 hover:bg-blue-500/25'
+                                      : 'bg-slate-800/70 text-slate-400 border-slate-700 hover:text-slate-200 hover:border-slate-500'
+                                  }`}
+                                >
+                                  {inCarpool ? '✓ Carpool' : '+ Carpool'}
+                                </button>
+                              );
+                            })()}
+
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            <button
+                              onClick={() => {
+                                setEditingPlayerId(player.id);
+                                setPlayerNameDraft(player.name);
+                                setPlayerJerseyDraft(player.jerseyNumber || '');
+                              }}
+                              className="hidden sm:flex p-1.5 min-w-[32px] min-h-[32px] items-center justify-center rounded-full text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition"
+                              title="Edit player name & jersey #"
+                              aria-label="Edit player"
+                            >
+                              <Pencil className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              onClick={() => openAddParentToPlayer(player.id)}
+                              className="inline-flex items-center gap-1 px-3 py-1 min-h-[32px] rounded-full text-xs font-semibold bg-slate-700/75 hover:bg-slate-700 text-slate-100 transition shrink-0"
+                            >
+                              <Plus className="w-3 h-3" />
+                              <span className="hidden sm:inline">Add Parent</span>
+                              <span className="sm:hidden">Parent</span>
+                            </button>
+                          </div>
+                        </div>
                       )}
-                      <button
-                        onClick={() => openAddParentToPlayer(player.id)}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 min-h-[34px] rounded-full text-xs font-semibold bg-slate-700/75 hover:bg-slate-700 text-slate-100 transition shrink-0"
-                      >
-                        <Plus className="w-3 h-3" />
-                        <span className="hidden sm:inline">Add Parent</span>
-                        <span className="sm:hidden">Parent</span>
-                      </button>
                     </div>
                   )}
                 </div>
