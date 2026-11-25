@@ -916,7 +916,7 @@ export default function App() {
                   isPast={practice.isoDate < todayIso}
                   players={carpoolPlayers}
                   allPlayers={players}
-                  carpoolParents={carpoolParents}
+                  carpoolParents={parents}
                   shortPlayerNames={shortPlayerNames}
                   currentParent={currentParent}
                   isAdmin={isAdmin}

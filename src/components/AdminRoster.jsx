@@ -276,7 +276,7 @@ export default function AdminRoster({
       {isAdmin && subView === 'drivers' ? (
         <DriverEngagementView
           players={regularPlayers}
-          parents={regularParents}
+          parents={parents}
           practices={practices}
           todayIso={todayIso}
         />

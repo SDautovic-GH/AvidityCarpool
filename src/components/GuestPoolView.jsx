@@ -399,6 +399,26 @@ export default function GuestPoolView({
                       />
                       <span>Enable parent to drive in carpool</span>
                     </label>
+                    {form.canDrive && (
+                      <div>
+                        <label className="block text-xs font-semibold text-slate-300 mb-1">
+                          Default Car Seats
+                        </label>
+                        <select
+                          value={form.defaultSeats}
+                          onChange={(e) =>
+                            setForm((f) => ({ ...f, defaultSeats: Number(e.target.value) }))
+                          }
+                          className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-100 focus:outline-none focus:border-blue-500"
+                        >
+                          {[1, 2, 3, 4, 5, 6, 7].map((n) => (
+                            <option key={n} value={n} className="bg-slate-900 text-slate-100">
+                              {n === 1 ? '1 seat (Solo)' : `${n} seats`}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
