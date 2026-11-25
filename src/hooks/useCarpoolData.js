@@ -372,8 +372,8 @@ export function useCarpoolData(user) {
     if (!trimmed) return;
     await updatePracticeTx(practiceId, (p) => {
       const existing = Array.isArray(p.guestRiders) ? [...p.guestRiders] : [];
-      if (existing.length >= 20) {
-        throw new Error('Maximum guest riders reached for this practice');
+      if (existing.length >= 10) {
+        throw new Error('Maximum 10 guest riders allowed for a practice');
       }
       existing.push({
         id: `guest_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
