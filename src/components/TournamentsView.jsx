@@ -96,7 +96,7 @@ export default function TournamentsView({
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition"
             >
               <Plus className="w-3.5 h-3.5" />
-              Add Tournament
+              Tournament
             </button>
           </div>
         )}

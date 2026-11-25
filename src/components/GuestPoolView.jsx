@@ -132,7 +132,7 @@ export default function GuestPoolView({
           className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition"
         >
           <UserPlus className="w-3.5 h-3.5" />
-          Add Guest
+          + Guest
         </button>
       </div>
 

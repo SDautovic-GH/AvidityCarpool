@@ -180,7 +180,7 @@ export default function UserGuideModal({ isAdmin = false, onClose }) {
                 <h3 className="text-[15px] font-bold text-slate-100">1. Roster, Carpool Membership &amp; Alerts (Team Tab)</h3>
                 <ul className="list-disc pl-4 space-y-1.5">
                   <li>
-                    Add or edit families with <strong className="text-slate-100">+ Add Family</strong>,{' '}
+                    Add or edit families with <strong className="text-slate-100">+ Family / Parent</strong>,{' '}
                     <strong className="text-slate-100">Bulk Import</strong>, or the pencil icon. Toggle{' '}
                     <strong className="text-slate-100">✓ Carpool</strong> / <strong className="text-slate-100">+ Carpool</strong> on any player to include or exclude them from carpool headcounts.
                   </li>

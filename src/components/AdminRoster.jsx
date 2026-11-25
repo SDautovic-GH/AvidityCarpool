@@ -378,7 +378,7 @@ export default function AdminRoster({
                 className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition"
               >
                 <UserPlus className="w-3.5 h-3.5" />
-                Add Family / Parent
+                + Family / Parent
               </button>
             </>
           )}
@@ -664,8 +664,7 @@ export default function AdminRoster({
                               className="inline-flex items-center gap-1 px-3 py-1 min-h-[32px] rounded-full text-xs font-semibold bg-slate-700/75 hover:bg-slate-700 text-slate-100 transition shrink-0"
                             >
                               <Plus className="w-3 h-3" />
-                              <span className="hidden sm:inline">Add Parent</span>
-                              <span className="sm:hidden">Parent</span>
+                              <span>Parent</span>
                             </button>
                           </div>
                         </div>
