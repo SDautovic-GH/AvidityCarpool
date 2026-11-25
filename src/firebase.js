@@ -11,6 +11,7 @@ import {
   initializeFirestore,
   memoryLocalCache,
 } from 'firebase/firestore';
+import { getFunctions } from 'firebase/functions';
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -28,6 +29,7 @@ export const isFirebaseConfigured = Boolean(
 let app = null;
 let auth = null;
 let db = null;
+let functions = null;
 
 if (isFirebaseConfigured) {
   app = initializeApp(firebaseConfig);
@@ -36,12 +38,14 @@ if (isFirebaseConfigured) {
     localCache: memoryLocalCache(),
     experimentalForceLongPolling: true,
   });
+  functions = getFunctions(app, 'us-central1');
 }
 
 export {
   app,
   auth,
   db,
+  functions,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,

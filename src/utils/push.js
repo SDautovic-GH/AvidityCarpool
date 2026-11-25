@@ -1,5 +1,6 @@
 import { getMessaging, getToken, isSupported } from 'firebase/messaging';
-import { app, isFirebaseConfigured } from '../firebase';
+import { httpsCallable } from 'firebase/functions';
+import { app, functions, isFirebaseConfigured } from '../firebase';
 
 const VAPID_KEY = (import.meta.env.VITE_FIREBASE_VAPID_KEY || '').trim();
 
@@ -77,4 +78,13 @@ export async function requestPushToken() {
     throw new Error('Could not obtain a push notification token for this device.');
   }
   return token;
+}
+
+export async function sendTestPushToSelf(seasonId) {
+  if (!functions || !seasonId) {
+    throw new Error('Firebase Functions not initialized.');
+  }
+  const callable = httpsCallable(functions, 'sendTestPushToSelf');
+  const res = await callable({ seasonId });
+  return res.data;
 }

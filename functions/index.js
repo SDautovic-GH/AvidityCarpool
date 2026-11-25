@@ -1,5 +1,6 @@
 const { onDocumentUpdated } = require('firebase-functions/v2/firestore');
 const { onSchedule } = require('firebase-functions/v2/scheduler');
+const { onCall, HttpsError } = require('firebase-functions/v2/https');
 const { logger } = require('firebase-functions');
 const admin = require('firebase-admin');
 
@@ -385,3 +386,46 @@ exports.nightBeforeCarpoolSweep = onSchedule(
     }
   }
 );
+
+/**
+ * 3. Admin-only self-test callable: sends a test push + in-app alert ONLY to the signed-in admin.
+ */
+exports.sendTestPushToSelf = onCall({ region: 'us-central1' }, async (request) => {
+  const email = request.auth?.token?.email?.toLowerCase()?.trim();
+  if (!email) {
+    throw new HttpsError('unauthenticated', 'You must be signed in.');
+  }
+
+  const seasonId = String(request.data?.seasonId || '').trim();
+  if (!seasonId) {
+    throw new HttpsError('invalid-argument', 'Missing seasonId.');
+  }
+
+  const [adminSnap, parentSnap] = await Promise.all([
+    db.doc(`admins/${email}`).get(),
+    db.doc(`seasons/${seasonId}/parents/${email}`).get(),
+  ]);
+
+  const parentData = parentSnap.exists ? { id: parentSnap.id, ...parentSnap.data() } : null;
+  const isAdmin = adminSnap.exists || parentData?.role === 'admin';
+  if (!isAdmin) {
+    throw new HttpsError('permission-denied', 'Admin access required.');
+  }
+
+  const targetDoc = parentData || { id: email, pushEnabled: true, fcmTokens: [] };
+  const result = await sendToParentDocs(
+    seasonId,
+    [{ ...targetDoc, pushEnabled: true }],
+    {
+      title: 'Test Alert · Avidity Carpool',
+      body: 'Push alerts and your in-app Alerts inbox are working! (Sent only to you.)',
+    },
+    { type: 'test', seasonId }
+  );
+
+  logger.info('Sent admin self-test push', { seasonId, email, ...result });
+  return {
+    sent: result.sent,
+    tokenCount: Array.isArray(targetDoc.fcmTokens) ? targetDoc.fcmTokens.length : 0,
+  };
+});

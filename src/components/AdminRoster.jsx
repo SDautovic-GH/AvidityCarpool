@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Bell, Car, KeyRound, MapPin, MessageCircle, Pencil, Phone, Plus, Shield, Trash2, Upload, UserPlus, Users, X } from 'lucide-react';
 import { getAvatarColor, getCarpoolPlayerIdSet, getInitials } from '../utils/schedule';
 import { buildSmsUrl, getMapUrl } from '../utils/maps';
-import { getNotificationPermission, isPushConfigured } from '../utils/push';
+import { getNotificationPermission, isPushConfigured, sendTestPushToSelf } from '../utils/push';
 import DriverEngagementView from './DriverEngagementView';
 import GuestPoolView from './GuestPoolView';
 
@@ -408,21 +408,47 @@ export default function AdminRoster({
                 </p>
               </div>
               {currentParent && onEnablePushOnDevice && isPushConfigured() && (
-                <button
-                  type="button"
-                  disabled={enablingPush}
-                  onClick={async () => {
-                    setEnablingPush(true);
-                    try {
-                      await onEnablePushOnDevice();
-                    } finally {
-                      setEnablingPush(false);
-                    }
-                  }}
-                  className="px-3.5 py-1.5 min-h-[34px] rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white transition shrink-0"
-                >
-                  {enablingPush ? 'Enabling...' : 'Enable on This Device'}
-                </button>
+                <div className="flex flex-wrap items-center gap-2 shrink-0">
+                  <button
+                    type="button"
+                    disabled={enablingPush}
+                    onClick={async () => {
+                      setEnablingPush(true);
+                      try {
+                        await onEnablePushOnDevice();
+                      } finally {
+                        setEnablingPush(false);
+                      }
+                    }}
+                    className="px-3.5 py-1.5 min-h-[34px] rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white transition shrink-0"
+                  >
+                    {enablingPush ? 'Enabling...' : 'Enable on This Device'}
+                  </button>
+                  {activeSeason?.id && (
+                    <button
+                      type="button"
+                      disabled={enablingPush}
+                      onClick={async () => {
+                        setEnablingPush(true);
+                        try {
+                          const res = await sendTestPushToSelf(activeSeason.id);
+                          window.alert(
+                            res?.sent > 0
+                              ? `Test alert sent to ${res.sent} device(s) and logged to your Alerts inbox (only you).`
+                              : 'Logged to your Alerts inbox (only you). Tap "Enable on This Device" first to also receive a lock-screen push.'
+                          );
+                        } catch (err) {
+                          window.alert(err?.message || 'Could not send test alert.');
+                        } finally {
+                          setEnablingPush(false);
+                        }
+                      }}
+                      className="px-3.5 py-1.5 min-h-[34px] rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-slate-200 transition shrink-0"
+                    >
+                      Send Test Alert (Me Only)
+                    </button>
+                  )}
+                </div>
               )}
             </div>
 
