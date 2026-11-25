@@ -299,3 +299,18 @@ export function getPracticeCarpoolLegs(practice) {
     fromEnabled: mode === 'both' || mode === 'from_only',
   };
 }
+
+export function getEffectivePlayers(practice, carpoolPlayers = []) {
+  const guests = Array.isArray(practice?.guestRiders) ? practice.guestRiders : [];
+  if (guests.length === 0) return carpoolPlayers;
+  return [
+    ...carpoolPlayers,
+    ...guests.map((g) => ({
+      id: g.id,
+      name: g.name,
+      isGuest: true,
+      addedByParentId: g.addedByParentId || '',
+      addedByName: g.addedByName || '',
+    })),
+  ];
+}

@@ -182,8 +182,12 @@ export function useCarpoolData(user) {
   }, [activeSeasonId, currentParent?.id, currentParent?.email, currentParent?.activatedAt, userEmail]);
   const activeSeason = seasons.find((s) => s.id === activeSeasonId) || null;
   const carpoolPlayerIds = getCarpoolPlayerIdSet(players, parents);
-  const filterCarpoolRiders = (ids = []) =>
-    carpoolPlayerIds.size > 0 ? ids.filter((id) => carpoolPlayerIds.has(id)) : [...ids];
+  const filterCarpoolRiders = (ids = [], practice = null) => {
+    const guestIds = new Set((practice?.guestRiders || []).map((g) => g.id));
+    return carpoolPlayerIds.size > 0
+      ? ids.filter((id) => carpoolPlayerIds.has(id) || guestIds.has(id))
+      : [...ids];
+  };
 
   // Transactional Practice Mutations
   async function updatePracticeTx(practiceId, mutator) {
@@ -229,14 +233,14 @@ export function useCarpoolData(user) {
         const list = legs[leg] || [];
         const existing = list.find((c) => c.driverParentId === parentDoc.id);
         if (existing) {
-          existing.riderIds = filterCarpoolRiders(existing.riderIds);
+          existing.riderIds = filterCarpoolRiders(existing.riderIds, p);
           existing.seatsTotal = Math.max(seatsTotal, existing.riderIds.length);
           legs[leg] = list;
           return;
         }
         if (parentDoc.playerId) {
           list.forEach((c) => {
-            c.riderIds = filterCarpoolRiders(c.riderIds).filter(
+            c.riderIds = filterCarpoolRiders(c.riderIds, p).filter(
               (id) => id !== parentDoc.playerId
             );
           });
@@ -281,7 +285,7 @@ export function useCarpoolData(user) {
       const legs = p.legs || { to: [], from: [] };
       const car = (legs[leg] || []).find((c) => c.id === carId);
       if (!car) return null;
-      const riders = filterCarpoolRiders(car.riderIds);
+      const riders = filterCarpoolRiders(car.riderIds, p);
       const minSeats = Math.max(1, riders.length);
       car.seatsTotal = Math.min(7, Math.max(minSeats, Number(seatsTotal) || minSeats));
       return { legs };
@@ -293,7 +297,7 @@ export function useCarpoolData(user) {
       const legs = p.legs || { to: [], from: [] };
       const car = (legs[leg] || []).find((c) => c.id === carId);
       if (!car) return null;
-      car.riderIds = filterCarpoolRiders(car.riderIds);
+      car.riderIds = filterCarpoolRiders(car.riderIds, p);
       car.driverParentId = parentDoc.id;
       car.driverName = parentDoc.name;
       car.seatsTotal = Math.max(parentDoc.defaultSeats || 4, car.riderIds.length);
@@ -308,7 +312,7 @@ export function useCarpoolData(user) {
         car.riderIds.length < car.seatsTotal
       ) {
         (legs[leg] || []).forEach((c) => {
-          c.riderIds = filterCarpoolRiders(c.riderIds).filter(
+          c.riderIds = filterCarpoolRiders(c.riderIds, p).filter(
             (id) => id !== parentDoc.playerId
           );
         });
@@ -323,12 +327,12 @@ export function useCarpoolData(user) {
       const legs = p.legs || { to: [], from: [] };
       const car = (legs[leg] || []).find((c) => c.id === carId);
       if (!car) throw new Error('Car not found');
-      car.riderIds = filterCarpoolRiders(car.riderIds);
+      car.riderIds = filterCarpoolRiders(car.riderIds, p);
       if (car.riderIds.length >= car.seatsTotal) {
         throw new Error('This car is already full');
       }
       (legs[leg] || []).forEach((c) => {
-        c.riderIds = filterCarpoolRiders(c.riderIds).filter((id) => id !== playerId);
+        c.riderIds = filterCarpoolRiders(c.riderIds, p).filter((id) => id !== playerId);
       });
       car.riderIds = [...car.riderIds, playerId];
       return { legs };
@@ -341,10 +345,10 @@ export function useCarpoolData(user) {
       ['to', 'from'].forEach((leg) => {
         const car = (legs[leg] || []).find((c) => c.driverParentId === driverParentId);
         if (!car) return;
-        car.riderIds = filterCarpoolRiders(car.riderIds);
+        car.riderIds = filterCarpoolRiders(car.riderIds, p);
         if (car.status !== 'needs_sub' && car.riderIds.length < car.seatsTotal) {
           (legs[leg] || []).forEach((c) => {
-            c.riderIds = filterCarpoolRiders(c.riderIds).filter((id) => id !== playerId);
+            c.riderIds = filterCarpoolRiders(c.riderIds, p).filter((id) => id !== playerId);
           });
           car.riderIds = [...car.riderIds, playerId];
         }
@@ -360,6 +364,40 @@ export function useCarpoolData(user) {
       if (!car) return null;
       car.riderIds = (car.riderIds || []).filter((id) => id !== playerId);
       return { legs };
+    });
+  }
+
+  async function addGuestRider(practiceId, name, authorParent, fallbackEmail = '') {
+    const trimmed = (name || '').trim();
+    if (!trimmed) return;
+    await updatePracticeTx(practiceId, (p) => {
+      const existing = Array.isArray(p.guestRiders) ? [...p.guestRiders] : [];
+      if (existing.length >= 20) {
+        throw new Error('Maximum guest riders reached for this practice');
+      }
+      existing.push({
+        id: `guest_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+        name: trimmed,
+        addedByParentId: authorParent?.id || '',
+        addedByName: (authorParent?.name || fallbackEmail || '').trim(),
+      });
+      return { guestRiders: existing };
+    });
+  }
+
+  async function removeGuestRider(practiceId, guestId) {
+    await updatePracticeTx(practiceId, (p) => {
+      const guestRiders = (Array.isArray(p.guestRiders) ? p.guestRiders : []).filter(
+        (g) => g.id !== guestId
+      );
+      const legs = p.legs || { to: [], from: [] };
+      ['to', 'from'].forEach((leg) => {
+        legs[leg] = (legs[leg] || []).map((car) => ({
+          ...car,
+          riderIds: (car.riderIds || []).filter((id) => id !== guestId),
+        }));
+      });
+      return { guestRiders, legs };
     });
   }
 
@@ -704,6 +742,8 @@ export function useCarpoolData(user) {
     joinCar,
     joinBothWays,
     leaveCar,
+    addGuestRider,
+    removeGuestRider,
     addPracticeNote,
     deletePracticeNote,
     updatePracticeDetails,

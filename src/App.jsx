@@ -22,6 +22,7 @@ import TournamentsView from './components/TournamentsView';
 import { exportMyDrivesIcs } from './utils/calendar';
 import {
   getCarpoolPlayerIdSet,
+  getEffectivePlayers,
   getLegSummary,
   getPracticeCarpoolLegs,
   getShortPlayerNames,
@@ -209,6 +210,8 @@ export default function App() {
     joinCar,
     joinBothWays,
     leaveCar,
+    addGuestRider,
+    removeGuestRider,
     addPracticeNote,
     deletePracticeNote,
     updatePracticeDetails,
@@ -242,9 +245,10 @@ export default function App() {
 
   const practiceNeedsDriver = (p) => {
     if (p.status === 'cancelled') return false;
+    const effPlayers = getEffectivePlayers(p, carpoolPlayers);
     const { toEnabled, fromEnabled } = getPracticeCarpoolLegs(p);
-    const toSum = toEnabled ? getLegSummary(p, 'to', carpoolPlayers) : null;
-    const fromSum = fromEnabled ? getLegSummary(p, 'from', carpoolPlayers) : null;
+    const toSum = toEnabled ? getLegSummary(p, 'to', effPlayers) : null;
+    const fromSum = fromEnabled ? getLegSummary(p, 'from', effPlayers) : null;
     return (toSum && toSum.tone !== 'success') || (fromSum && fromSum.tone !== 'success');
   };
 
@@ -371,7 +375,9 @@ export default function App() {
     ? practices.find((p) => p.id === assignModal.practiceId)
     : null;
   const activeAssignPlayer = assignModal
-    ? players.find((pl) => pl.id === assignModal.playerId)
+    ? getEffectivePlayers(activeAssignPractice, players).find(
+        (pl) => pl.id === assignModal.playerId
+      )
     : null;
 
   return (
@@ -969,6 +975,24 @@ export default function App() {
                     runAction(
                       () => deletePracticeNote(practiceId, noteId),
                       'Note removed'
+                    )
+                  }
+                  onAddGuest={(practiceId, guestName) =>
+                    runAction(
+                      () =>
+                        addGuestRider(
+                          practiceId,
+                          guestName,
+                          currentParent,
+                          user?.email || ''
+                        ),
+                      'Guest rider added'
+                    )
+                  }
+                  onRemoveGuest={(practiceId, guestId) =>
+                    runAction(
+                      () => removeGuestRider(practiceId, guestId),
+                      'Guest rider removed'
                     )
                   }
                   onUpdatePractice={(practiceId, details) =>

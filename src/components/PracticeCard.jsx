@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Check, MapPin, MessageCircle, MessageSquare, Pencil, Trash2 } from 'lucide-react';
+import { Check, MapPin, MessageCircle, MessageSquare, Pencil, Trash2, UserPlus } from 'lucide-react';
 import CarRow from './CarRow';
 import { buildSmsUrl, getMapUrl } from '../utils/maps';
 import {
   formatPracticeDate,
+  getEffectivePlayers,
   getGoingPlayers,
   getLegSummary,
   getPracticeCarpoolLegs,
@@ -42,21 +43,26 @@ export default function PracticeCard({
   onAdminRemoveRider,
   onAddNote,
   onDeleteNote,
+  onAddGuest,
+  onRemoveGuest,
   onUpdatePractice,
   onDeletePractice,
   onToast,
 }) {
   const [activeLeg, setActiveLeg] = useState(() => {
+    const eff = getEffectivePlayers(practice, players);
     const { toEnabled: tOn, fromEnabled: fOn } = getPracticeCarpoolLegs(practice);
     if (!tOn && fOn) return 'from';
     if (tOn && !fOn) return 'to';
-    const tSum = getLegSummary(practice, 'to', players);
-    const fSum = getLegSummary(practice, 'from', players);
+    const tSum = getLegSummary(practice, 'to', eff);
+    const fSum = getLegSummary(practice, 'from', eff);
     if (tSum.tone === 'success' && fSum.tone !== 'success') return 'from';
     return 'to';
   });
   const [editingNote, setEditingNote] = useState(false);
   const [noteDraft, setNoteDraft] = useState('');
+  const [addingGuest, setAddingGuest] = useState(false);
+  const [guestDraft, setGuestDraft] = useState('');
   const [editingPractice, setEditingPractice] = useState(false);
   const [practiceDraft, setPracticeDraft] = useState({
     isoDate: practice.isoDate,
@@ -73,8 +79,15 @@ export default function PracticeCard({
   const isCancelled = practice.status === 'cancelled';
   const canDrive = currentParent?.canDrive !== false;
   const myPlayer = players.find((pl) => pl.id === myPlayerId);
+  const effectivePlayers = getEffectivePlayers(practice, players);
+  const guestRiders = Array.isArray(practice.guestRiders) ? practice.guestRiders : [];
   const shortNames = shortPlayerNames || getShortPlayerNames(players);
-  const shortNameOf = (pl) => shortNames[pl?.id] || pl?.name || 'Player';
+  const shortNameOf = (pl) => {
+    if (pl?.isGuest) {
+      return /guest/i.test(pl.name || '') ? pl.name : `${pl.name} (Guest)`;
+    }
+    return shortNames[pl?.id] || pl?.name || 'Player';
+  };
 
   const { mode: carpoolMode, toEnabled, fromEnabled } = getPracticeCarpoolLegs(practice);
   const hasAnyCarpool = toEnabled || fromEnabled;
@@ -83,11 +96,11 @@ export default function PracticeCard({
 
   const { month, dateNum, fullDay } = formatPracticeDate(practice.isoDate);
   const timingLabel = getTimingBadge(practice.isoDate, isFirstUpcoming);
-  const goingCount = getGoingPlayers(practice, players).length;
+  const goingCount = getGoingPlayers(practice, effectivePlayers).length;
   const isOut = myPlayerId && (practice.absentPlayerIds || []).includes(myPlayerId);
 
-  const toSum = getLegSummary(practice, 'to', players);
-  const fromSum = getLegSummary(practice, 'from', players);
+  const toSum = getLegSummary(practice, 'to', effectivePlayers);
+  const fromSum = getLegSummary(practice, 'from', effectivePlayers);
   const isSatisfied =
     !isCancelled &&
     hasAnyCarpool &&
@@ -187,7 +200,7 @@ export default function PracticeCard({
 
   const renderLegBody = (leg, isDesktop) => {
     const cars = practice.legs?.[leg] || [];
-    const unassigned = getUnassignedPlayers(practice, leg, players);
+    const unassigned = getUnassignedPlayers(practice, leg, effectivePlayers);
     const isDrivingThisLeg = (practice.legs?.[leg] || []).some(
       (c) => c.driverParentId === myParentId
     );
@@ -227,30 +240,32 @@ export default function PracticeCard({
               {unassigned.length > 0 ? (
                 <>
                   <span className="text-amber-400 font-medium">Still need a ride:</span>
-                  {isAdmin ? (
-                    unassigned.map((pl) => (
-                      <button
+                  {unassigned.map((pl) => {
+                    const canAssignThis =
+                      !isReadOnly &&
+                      (isAdmin || (pl.isGuest && pl.addedByParentId === myParentId));
+                    if (canAssignThis) {
+                      return (
+                        <button
+                          key={pl.id}
+                          onClick={() => onOpenAssignModal(practice.id, leg, pl.id)}
+                          className="px-3 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-slate-700/75 hover:bg-blue-600 text-slate-100 transition"
+                        >
+                          {shortNameOf(pl)} +
+                        </button>
+                      );
+                    }
+                    return (
+                      <span
                         key={pl.id}
-                        onClick={() => onOpenAssignModal(practice.id, leg, pl.id)}
-                        className="px-3 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-slate-700/75 hover:bg-blue-600 text-slate-100 transition"
+                        className={`text-sm ${
+                          pl.id === myPlayerId ? 'font-bold text-slate-100' : 'font-medium text-slate-200'
+                        }`}
                       >
-                        {shortNameOf(pl)} +
-                      </button>
-                    ))
-                  ) : (
-                    <span className="font-medium text-slate-200">
-                      {unassigned.map((pl, idx) => (
-                        <React.Fragment key={pl.id}>
-                          {idx > 0 && ', '}
-                          {pl.id === myPlayerId ? (
-                            <strong>{shortNameOf(pl)}</strong>
-                          ) : (
-                            shortNameOf(pl)
-                          )}
-                        </React.Fragment>
-                      ))}
-                    </span>
-                  )}
+                        {shortNameOf(pl)}
+                      </span>
+                    );
+                  })}
                 </>
               ) : (
                 <span className="text-emerald-400 font-medium">Everyone going has a ride</span>
@@ -290,7 +305,7 @@ export default function PracticeCard({
                 practice={practice}
                 leg={leg}
                 car={car}
-                players={players}
+                players={effectivePlayers}
                 shortPlayerNames={shortNames}
                 currentParent={currentParent}
                 isAdmin={isAdmin}
@@ -696,6 +711,70 @@ export default function PracticeCard({
         )
       )}
 
+      {guestRiders.length > 0 && !isCancelled && (
+        <div className="flex flex-wrap items-center gap-1.5 text-xs">
+          <span className="text-slate-400 font-medium">Guests:</span>
+          {guestRiders.map((g) => {
+            const canRemoveGuest = !isReadOnly && (isAdmin || g.addedByParentId === myParentId);
+            return (
+              <span
+                key={g.id}
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-800 text-slate-200 font-medium"
+              >
+                {g.name}
+                {canRemoveGuest && onRemoveGuest && (
+                  <button
+                    type="button"
+                    onClick={() => onRemoveGuest(practice.id, g.id)}
+                    title="Remove guest rider"
+                    aria-label={`Remove guest ${g.name}`}
+                    className="px-1 rounded-full text-slate-400 hover:text-rose-400 font-bold"
+                  >
+                    ×
+                  </button>
+                )}
+              </span>
+            );
+          })}
+        </div>
+      )}
+
+      {addingGuest && onAddGuest ? (
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!guestDraft.trim()) return;
+            onAddGuest(practice.id, guestDraft.trim());
+            setGuestDraft('');
+            setAddingGuest(false);
+          }}
+          className={`flex flex-wrap items-center gap-2 ${!isCancelled ? 'pt-2.5 border-t border-slate-800/60' : ''}`}
+        >
+          <input
+            type="text"
+            maxLength={50}
+            value={guestDraft}
+            onChange={(e) => setGuestDraft(e.target.value)}
+            placeholder="Guest rider name (e.g., Emma)"
+            className="w-full sm:w-auto sm:flex-1 min-w-0 px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-700 text-xs text-slate-100 focus:outline-none focus:border-blue-500"
+            autoFocus
+          />
+          <button
+            type="submit"
+            className="px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition"
+          >
+            Add
+          </button>
+          <button
+            type="button"
+            onClick={() => setAddingGuest(false)}
+            className="px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 transition"
+          >
+            Cancel
+          </button>
+        </form>
+      ) : null}
+
       {editingNote ? (
         <form
           onSubmit={(e) => {
@@ -737,11 +816,27 @@ export default function PracticeCard({
               onClick={() => {
                 setNoteDraft('');
                 setEditingNote(true);
+                setAddingGuest(false);
               }}
               className="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-slate-700/75 hover:bg-slate-700 text-slate-100 transition"
             >
               <MessageSquare className="w-3.5 h-3.5" />
               + Note
+            </button>
+          )}
+          {!isReadOnly && !isCancelled && hasAnyCarpool && onAddGuest && (
+            <button
+              type="button"
+              onClick={() => {
+                setGuestDraft('');
+                setAddingGuest(true);
+                setEditingNote(false);
+              }}
+              className="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-slate-700/75 hover:bg-slate-700 text-slate-100 transition"
+              title="Add a guest or sibling rider for this practice"
+            >
+              <UserPlus className="w-3.5 h-3.5" />
+              + Guest
             </button>
           )}
           {myCarSmsUrl && (

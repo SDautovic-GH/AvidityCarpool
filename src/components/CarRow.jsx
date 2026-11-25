@@ -63,8 +63,18 @@ export default function CarRow({
     (otherCar.riderIds || []).length < (otherCar.seatsTotal || 0);
 
   const shortNames = shortPlayerNames || getShortPlayerNames(players);
-  const getPlayerName = (pid) => shortNames[pid] || 'Player';
-  const otherRiders = riderIds.filter((id) => id !== myPlayerId).map(getPlayerName);
+  const getPlayerName = (pid) => {
+    const pl = players.find((p) => p.id === pid);
+    if (pl?.isGuest) return /guest/i.test(pl.name || '') ? pl.name : `${pl.name} (Guest)`;
+    return shortNames[pid] || pl?.name || 'Player';
+  };
+  const myGuestIds = riderIds.filter((id) => {
+    const pl = players.find((p) => p.id === id);
+    return Boolean(pl?.isGuest && pl.addedByParentId === myParentId);
+  });
+  const otherRiders = riderIds
+    .filter((id) => id !== myPlayerId && !myGuestIds.includes(id))
+    .map(getPlayerName);
 
   return (
     <div
@@ -207,7 +217,7 @@ export default function CarRow({
               {otherRiders.length > 0 ? (
                 <span className="font-medium text-slate-200">{otherRiders.join(', ')}</span>
               ) : (
-                !isMyKidInCar && (
+                !isMyKidInCar && myGuestIds.length === 0 && (
                   <span className="text-xs text-slate-400 italic">No riders yet</span>
                 )
               )}
@@ -225,6 +235,23 @@ export default function CarRow({
                   )}
                 </span>
               )}
+              {myGuestIds.map((gid) => (
+                <span
+                  key={gid}
+                  className="inline-flex items-center gap-1 pl-3 pr-1.5 py-1 rounded-full text-sm font-semibold bg-slate-800 text-slate-200"
+                >
+                  {getPlayerName(gid)}
+                  {!isReadOnly && (
+                    <button
+                      onClick={() => onLeave(practice.id, leg, car.id, gid)}
+                      title="Remove guest from car"
+                      className="px-1.5 py-0.5 rounded-full hover:bg-slate-700/60 hover:opacity-80 font-bold"
+                    >
+                      ×
+                    </button>
+                  )}
+                </span>
+              ))}
             </>
           )}
         </div>

@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import {
   formatPracticeDate,
+  getEffectivePlayers,
   getLegSummary,
   getPracticeCarpoolLegs,
 } from '../utils/schedule';
@@ -160,8 +161,9 @@ export default function PracticeQuickScan({
                 const { toEnabled, fromEnabled } = getPracticeCarpoolLegs(p);
                 const hasCarpool = toEnabled || fromEnabled;
 
-                const toSum = toEnabled ? getLegSummary(p, 'to', players) : null;
-                const fromSum = fromEnabled ? getLegSummary(p, 'from', players) : null;
+                const effectivePlayers = getEffectivePlayers(p, players);
+                const toSum = toEnabled ? getLegSummary(p, 'to', effectivePlayers) : null;
+                const fromSum = fromEnabled ? getLegSummary(p, 'from', effectivePlayers) : null;
 
                 const drivesTo =
                   toEnabled && (p.legs?.to || []).some((c) => c.driverParentId === myParentId);
