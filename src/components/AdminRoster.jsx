@@ -508,9 +508,16 @@ export default function AdminRoster({
                               <span className="truncate">{parent.email || parent.id}</span>
                               {isAdmin && (
                                 parent.activatedAt || parent.lastLoginAt ? (
-                                  <span className="inline-flex items-center gap-1 text-[11px] text-emerald-400">
+                                  <span
+                                    className="inline-flex items-center gap-1 text-[11px] text-emerald-400"
+                                    title={
+                                      parent.activatedAt
+                                        ? `Account setup completed ${formatTimestamp(parent.activatedAt)}`
+                                        : 'Account setup completed'
+                                    }
+                                  >
                                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                                    Active
+                                    Account Ready
                                     {parent.lastLoginAt && (
                                       <span className="text-slate-400">
                                         · Last seen {formatTimestamp(parent.lastLoginAt)}
@@ -520,7 +527,7 @@ export default function AdminRoster({
                                 ) : (
                                   <span className="inline-flex items-center gap-1 text-[11px] text-amber-300/90">
                                     <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-                                    Not signed in yet
+                                    Pending Setup
                                   </span>
                                 )
                               )}
