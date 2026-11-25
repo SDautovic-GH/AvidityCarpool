@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import {
+  arrayUnion,
   collection,
   doc,
   getDoc,
@@ -631,7 +632,7 @@ export function useCarpoolData(user) {
     }
   }
 
-  async function updateMyProfile({ phone = '', address = '', defaultSeats }) {
+  async function updateMyProfile({ phone = '', address = '', defaultSeats, pushEnabled }) {
     if (!activeSeasonId || !currentParent?.id) return;
     const parentRef = doc(db, 'seasons', activeSeasonId, 'parents', currentParent.id);
     const updates = {
@@ -641,7 +642,29 @@ export function useCarpoolData(user) {
     if (defaultSeats !== undefined) {
       updates.defaultSeats = Number(defaultSeats) || 4;
     }
+    if (pushEnabled !== undefined) {
+      updates.pushEnabled = Boolean(pushEnabled);
+    }
     await updateDoc(parentRef, updates);
+  }
+
+  async function registerPushToken(token) {
+    if (!activeSeasonId || !currentParent?.id || !token) return;
+    const parentRef = doc(db, 'seasons', activeSeasonId, 'parents', currentParent.id);
+    await updateDoc(parentRef, {
+      pushEnabled: true,
+      fcmTokens: arrayUnion(token),
+    });
+  }
+
+  async function updateSeasonNotifications({ needsSubEnabled, nightBeforeEnabled }) {
+    if (!activeSeasonId) return;
+    await updateDoc(doc(db, 'seasons', activeSeasonId), {
+      notifications: {
+        needsSubEnabled: Boolean(needsSubEnabled),
+        nightBeforeEnabled: Boolean(nightBeforeEnabled),
+      },
+    });
   }
 
   async function updatePlayerName(playerId, name, jerseyNumber = '') {
@@ -878,6 +901,8 @@ export function useCarpoolData(user) {
     deletePractice,
     savePlayerAndParent,
     updateMyProfile,
+    registerPushToken,
+    updateSeasonNotifications,
     updatePlayerName,
     togglePlayerCarpool,
     upsertPlayerOnly,

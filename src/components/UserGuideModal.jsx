@@ -164,8 +164,11 @@ export default function UserGuideModal({ isAdmin = false, onClose }) {
                     <strong className="text-slate-100">Events</strong>.
                   </li>
                   <li>
-                    <strong className="text-slate-100">Team Tab:</strong> Tap any phone number to call/text, address for Maps, or{' '}
-                    <strong className="text-slate-100">Edit My Info</strong> to update your phone, address, or default seats.
+                    <strong className="text-slate-100">Team Tab &amp; Push Alerts:</strong> Tap any phone number to call/text, address for Maps, or{' '}
+                    <strong className="text-slate-100">Edit My Info</strong> to update your phone, address, default seats, or opt in/out of push alerts. Tap{' '}
+                    <strong className="text-slate-100">Enable Alerts</strong> (on iPhone, first add the app to your Home Screen via <em>Share → Add to Home Screen</em>) to receive urgent{' '}
+                    <strong className="text-slate-100">Needs Sub</strong> alerts and{' '}
+                    <strong className="text-slate-100">6:00 PM night-before</strong> driver reminders.
                   </li>
                 </ul>
               </section>
@@ -173,12 +176,17 @@ export default function UserGuideModal({ isAdmin = false, onClose }) {
           ) : (
             <>
               <section className="space-y-1.5">
-                <h3 className="text-[15px] font-bold text-slate-100">1. Roster &amp; Carpool Membership (Team Tab)</h3>
+                <h3 className="text-[15px] font-bold text-slate-100">1. Roster, Carpool Membership &amp; Alerts (Team Tab)</h3>
                 <ul className="list-disc pl-4 space-y-1.5">
                   <li>
                     Add or edit families with <strong className="text-slate-100">+ Add Family</strong>,{' '}
                     <strong className="text-slate-100">Bulk Import</strong>, or the pencil icon. Toggle{' '}
                     <strong className="text-slate-100">✓ Carpool</strong> / <strong className="text-slate-100">+ Carpool</strong> on any player to include or exclude them from carpool headcounts.
+                  </li>
+                  <li>
+                    Tap <strong className="text-slate-100">Alerts</strong> in <strong className="text-slate-100">Team → Roster</strong> to see how many carpool drivers have alerts active and globally enable or disable{' '}
+                    <strong className="text-slate-100">Instant &ldquo;Needs Sub&rdquo; Alerts</strong> and the{' '}
+                    <strong className="text-slate-100">6:00 PM Night-Before Sweep</strong>.
                   </li>
                   <li>
                     Use the <strong className="text-slate-100">Guest Pool</strong> tab inside{' '}

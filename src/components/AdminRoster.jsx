@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Car, KeyRound, MapPin, MessageCircle, Pencil, Phone, Plus, Shield, Trash2, Upload, UserPlus, Users, X } from 'lucide-react';
+import { Bell, Car, KeyRound, MapPin, MessageCircle, Pencil, Phone, Plus, Shield, Trash2, Upload, UserPlus, Users, X } from 'lucide-react';
 import { getAvatarColor, getCarpoolPlayerIdSet, getInitials } from '../utils/schedule';
 import { buildSmsUrl, getMapUrl } from '../utils/maps';
+import { getNotificationPermission, isPushConfigured } from '../utils/push';
 import DriverEngagementView from './DriverEngagementView';
 import GuestPoolView from './GuestPoolView';
 
@@ -19,6 +20,7 @@ const EMPTY_FORM = {
 };
 
 export default function AdminRoster({
+  activeSeason,
   players,
   parents,
   practices = [],
@@ -28,6 +30,8 @@ export default function AdminRoster({
   isAdmin,
   onSavePlayerAndParent,
   onUpdateMyProfile,
+  onUpdateSeasonNotifications,
+  onEnablePushOnDevice,
   onUpdatePlayerName,
   onTogglePlayerCarpool,
   onUpsertPlayerOnly,
@@ -66,12 +70,16 @@ export default function AdminRoster({
   const [selfPhone, setSelfPhone] = useState('');
   const [selfAddress, setSelfAddress] = useState('');
   const [selfSeats, setSelfSeats] = useState(4);
+  const [selfPushEnabled, setSelfPushEnabled] = useState(true);
   const [savingSelf, setSavingSelf] = useState(false);
+  const [enablingPush, setEnablingPush] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
 
   const openEditSelf = () => {
     setSelfPhone(currentParent?.phone || '');
     setSelfAddress(currentParent?.address || '');
     setSelfSeats(currentParent?.defaultSeats ?? 4);
+    setSelfPushEnabled(currentParent?.pushEnabled !== false);
     setEditingSelf(true);
   };
 
@@ -83,6 +91,7 @@ export default function AdminRoster({
         phone: selfPhone,
         address: selfAddress,
         defaultSeats: currentParent?.canDrive !== false ? selfSeats : undefined,
+        pushEnabled: selfPushEnabled,
       });
       setEditingSelf(false);
     } finally {
@@ -333,6 +342,20 @@ export default function AdminRoster({
               Edit My Info
             </button>
           )}
+          {isAdmin && onUpdateSeasonNotifications && (
+            <button
+              type="button"
+              onClick={() => setNotifOpen((v) => !v)}
+              className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold transition ${
+                notifOpen
+                  ? 'bg-blue-600/20 text-blue-300 border border-blue-500/40'
+                  : 'bg-slate-800 hover:bg-slate-700 text-slate-200'
+              }`}
+            >
+              <Bell className="w-3.5 h-3.5 text-blue-400" />
+              Alerts
+            </button>
+          )}
           {isAdmin && onOpenSeasonModal && (
             <button
               onClick={onOpenSeasonModal}
@@ -361,6 +384,92 @@ export default function AdminRoster({
           )}
         </div>
       </div>
+
+      {isAdmin && notifOpen && onUpdateSeasonNotifications && (() => {
+        const needsSubEnabled = activeSeason?.notifications?.needsSubEnabled !== false;
+        const nightBeforeEnabled = activeSeason?.notifications?.nightBeforeEnabled !== false;
+        const carpoolDrivers = regularParents.filter(
+          (p) => p.canDrive !== false && carpoolPlayerIds.has(p.playerId)
+        );
+        const subscribedDrivers = carpoolDrivers.filter(
+          (p) => p.pushEnabled !== false && Array.isArray(p.fcmTokens) && p.fcmTokens.length > 0
+        ).length;
+
+        return (
+          <div className="rounded-2xl bg-slate-900 border border-blue-500/35 p-4 space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <h3 className="text-sm font-bold text-slate-100 flex items-center gap-2">
+                  <Bell className="w-4 h-4 text-blue-400" />
+                  Team Push Alert Settings (Global)
+                </h3>
+                <p className="text-[13px] text-slate-400 mt-0.5">
+                  {subscribedDrivers}/{carpoolDrivers.length} carpool drivers have push alerts active on a device. Parents can opt out individually in Update My Info.
+                </p>
+              </div>
+              {currentParent && onEnablePushOnDevice && isPushConfigured() && (
+                <button
+                  type="button"
+                  disabled={enablingPush}
+                  onClick={async () => {
+                    setEnablingPush(true);
+                    try {
+                      await onEnablePushOnDevice();
+                    } finally {
+                      setEnablingPush(false);
+                    }
+                  }}
+                  className="px-3.5 py-1.5 min-h-[34px] rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white transition shrink-0"
+                >
+                  {enablingPush ? 'Enabling...' : 'Enable on This Device'}
+                </button>
+              )}
+            </div>
+
+            <div className="divide-y divide-slate-800/80 rounded-xl bg-slate-950/60 border border-slate-800/80">
+              <label className="flex items-center justify-between gap-3 px-3.5 py-3 cursor-pointer">
+                <div className="min-w-0">
+                  <div className="text-sm font-semibold text-slate-100">Instant &ldquo;Needs Sub&rdquo; Alerts</div>
+                  <div className="text-xs text-slate-400">
+                    Notifies other carpool drivers immediately when a confirmed driver taps Need Sub.
+                  </div>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={needsSubEnabled}
+                  onChange={(e) =>
+                    onUpdateSeasonNotifications({
+                      needsSubEnabled: e.target.checked,
+                      nightBeforeEnabled,
+                    })
+                  }
+                  className="w-4 h-4 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500 shrink-0"
+                />
+              </label>
+
+              <label className="flex items-center justify-between gap-3 px-3.5 py-3 cursor-pointer">
+                <div className="min-w-0">
+                  <div className="text-sm font-semibold text-slate-100">6:00 PM Night-Before Sweep</div>
+                  <div className="text-xs text-slate-400">
+                    Reminds confirmed drivers of tomorrow&apos;s riders and alerts carpool drivers if a leg still needs a driver. Silent on off-days.
+                  </div>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={nightBeforeEnabled}
+                  onChange={(e) =>
+                    onUpdateSeasonNotifications({
+                      needsSubEnabled,
+                      nightBeforeEnabled: e.target.checked,
+                    })
+                  }
+                  className="w-4 h-4 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500 shrink-0"
+                />
+              </label>
+            </div>
+          </div>
+        );
+      })()}
 
       <div className="rounded-2xl bg-slate-900 border border-slate-800 px-4 py-3 text-xs text-slate-300 flex flex-wrap items-center justify-between gap-2">
         <div>
@@ -1000,6 +1109,43 @@ export default function AdminRoster({
                   </select>
                 </div>
               )}
+              <div className="rounded-xl bg-slate-950/70 border border-slate-800 p-3.5 space-y-2.5">
+                <label className="flex items-start justify-between gap-3 cursor-pointer">
+                  <div>
+                    <div className="text-sm font-semibold text-slate-100">Push Alerts</div>
+                    <div className="text-xs text-slate-400 mt-0.5">
+                      Urgent Needs Sub alerts &amp; 6 PM night-before driver reminders.
+                    </div>
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={selfPushEnabled}
+                    onChange={(e) => setSelfPushEnabled(e.target.checked)}
+                    className="mt-1 w-4 h-4 rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-blue-500 shrink-0"
+                  />
+                </label>
+                {selfPushEnabled &&
+                  onEnablePushOnDevice &&
+                  isPushConfigured() &&
+                  getNotificationPermission() !== 'denied' && (
+                    <button
+                      type="button"
+                      disabled={enablingPush}
+                      onClick={async () => {
+                        setEnablingPush(true);
+                        try {
+                          await onEnablePushOnDevice();
+                        } finally {
+                          setEnablingPush(false);
+                        }
+                      }}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-blue-300 transition"
+                    >
+                      <Bell className="w-3.5 h-3.5" />
+                      {enablingPush ? 'Enabling...' : 'Enable Alerts on This Device'}
+                    </button>
+                  )}
+              </div>
               <div className="flex justify-end gap-2 pt-2">
                 <button
                   type="button"

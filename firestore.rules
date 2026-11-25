@@ -25,6 +25,7 @@ service cloud.firestore {
     //   - teamName: string (required, 1..100 chars)
     //   - label: string (required, 1..100 chars)
     //   - status: string (required, 'active' | 'archived')
+    //   - notifications: map (optional, keys: 'needsSubEnabled' (bool), 'nightBeforeEnabled' (bool))
     //   - createdAt: timestamp (required, immutable)
     //
     // Subcollection: seasons/{seasonId}/players
@@ -51,6 +52,8 @@ service cloud.firestore {
     //   - address: string (optional, 0..300 chars)
     //   - activatedAt: timestamp (optional, set once on first login)
     //   - lastLoginAt: timestamp (optional)
+    //   - pushEnabled: bool (optional)
+    //   - fcmTokens: list (optional, max 10 items, FCM registration token strings)
     //   - createdAt: timestamp (required, immutable)
     //
     // Subcollection: seasons/{seasonId}/practices
@@ -180,11 +183,17 @@ service cloud.firestore {
 
     function isValidSeason(data) {
       return hasRequiredFields(['clubName', 'teamName', 'label', 'status', 'createdAt']) &&
-             hasOnlyAllowedFields(['clubName', 'teamName', 'label', 'status', 'createdAt']) &&
+             hasOnlyAllowedFields(['clubName', 'teamName', 'label', 'status', 'notifications', 'createdAt']) &&
              validString(data.clubName, 1, 100) &&
              validString(data.teamName, 1, 100) &&
              validString(data.label, 1, 100) &&
              data.status in ['active', 'archived'] &&
+             (!('notifications' in data) || (
+               data.notifications is map &&
+               data.notifications.keys().hasOnly(['needsSubEnabled', 'nightBeforeEnabled']) &&
+               (!('needsSubEnabled' in data.notifications) || data.notifications.needsSubEnabled is bool) &&
+               (!('nightBeforeEnabled' in data.notifications) || data.notifications.nightBeforeEnabled is bool)
+             )) &&
              data.createdAt is timestamp;
     }
 
@@ -202,7 +211,7 @@ service cloud.firestore {
 
     function isValidParent(data, parentId) {
       return hasRequiredFields(['name', 'email', 'playerId', 'canDrive', 'defaultSeats', 'role', 'createdAt']) &&
-             hasOnlyAllowedFields(['name', 'email', 'playerId', 'canDrive', 'defaultSeats', 'role', 'phone', 'address', 'activatedAt', 'lastLoginAt', 'createdAt']) &&
+             hasOnlyAllowedFields(['name', 'email', 'playerId', 'canDrive', 'defaultSeats', 'role', 'phone', 'address', 'activatedAt', 'lastLoginAt', 'pushEnabled', 'fcmTokens', 'createdAt']) &&
              validString(data.name, 1, 100) &&
              isValidEmail(data.email) &&
              data.email == data.email.lower() &&
@@ -215,6 +224,8 @@ service cloud.firestore {
              (!('address' in data) || validString(data.address, 0, 300)) &&
              (!('activatedAt' in data) || data.activatedAt is timestamp) &&
              (!('lastLoginAt' in data) || data.lastLoginAt is timestamp) &&
+             (!('pushEnabled' in data) || data.pushEnabled is bool) &&
+             (!('fcmTokens' in data) || isValidList(data.fcmTokens, 10)) &&
              data.createdAt is timestamp;
     }
 
@@ -311,7 +322,7 @@ service cloud.firestore {
                            (
                              isParentInSeason(seasonId) &&
                              parentId == authEmail() &&
-                             request.resource.data.diff(resource.data).affectedKeys().hasOnly(['phone', 'address', 'name', 'defaultSeats', 'activatedAt', 'lastLoginAt']) &&
+                             request.resource.data.diff(resource.data).affectedKeys().hasOnly(['phone', 'address', 'name', 'defaultSeats', 'activatedAt', 'lastLoginAt', 'pushEnabled', 'fcmTokens']) &&
                              (!('activatedAt' in resource.data) || !request.resource.data.diff(resource.data).affectedKeys().hasAny(['activatedAt']))
                            )
                          );

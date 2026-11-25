@@ -19,6 +19,8 @@ import AdminSeasonModal from './components/AdminSeasonModal';
 import AddPracticeModal from './components/AddPracticeModal';
 import UserGuideModal from './components/UserGuideModal';
 import TournamentsView from './components/TournamentsView';
+import PushOptInBanner from './components/PushOptInBanner';
+import { requestPushToken } from './utils/push';
 import { exportMyDrivesIcs } from './utils/calendar';
 import {
   getCarpoolPlayerIdSet,
@@ -221,6 +223,8 @@ export default function App() {
     deletePractice,
     savePlayerAndParent,
     updateMyProfile,
+    registerPushToken,
+    updateSeasonNotifications,
     updatePlayerName,
     togglePlayerCarpool,
     upsertPlayerOnly,
@@ -232,6 +236,18 @@ export default function App() {
     deleteTournament,
     batchCreateTournaments,
   } = useCarpoolData(user);
+
+  const handleEnablePushOnDevice = async () => {
+    try {
+      const token = await requestPushToken();
+      await registerPushToken(token);
+      showToast('Push alerts enabled on this device');
+      return true;
+    } catch (err) {
+      showToast(err?.message || 'Could not enable push alerts');
+      return false;
+    }
+  };
 
   const now = new Date();
   const todayIso = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
@@ -637,6 +653,13 @@ export default function App() {
       </header>
 
       <main className="w-full max-w-4xl mx-auto px-3 sm:px-4 pt-3 pb-[max(2rem,env(safe-area-inset-bottom))] space-y-3">
+        {!loading && activeSeason && currentParent && (
+          <PushOptInBanner
+            currentParent={currentParent}
+            seasonNotifications={activeSeason.notifications}
+            onEnablePush={handleEnablePushOnDevice}
+          />
+        )}
         {loading ? (
           <div className="py-12 text-center text-sm text-slate-400">
             Loading carpool schedule...
@@ -677,6 +700,7 @@ export default function App() {
           />
         ) : tab === 'roster' ? (
           <AdminRoster
+            activeSeason={activeSeason}
             players={players}
             parents={parents}
             practices={practices}
@@ -688,8 +712,12 @@ export default function App() {
               runAction(() => savePlayerAndParent(payload), 'Roster updated')
             }
             onUpdateMyProfile={(payload) =>
-              runAction(() => updateMyProfile(payload), 'Your contact info updated')
+              runAction(() => updateMyProfile(payload), 'Your settings updated')
             }
+            onUpdateSeasonNotifications={(payload) =>
+              runAction(() => updateSeasonNotifications(payload), 'Notification settings saved')
+            }
+            onEnablePushOnDevice={handleEnablePushOnDevice}
             onUpdatePlayerName={(id, name, jerseyNumber) =>
               runAction(() => updatePlayerName(id, name, jerseyNumber), 'Player updated')
             }

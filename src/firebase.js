@@ -39,6 +39,7 @@ if (isFirebaseConfigured) {
 }
 
 export {
+  app,
   auth,
   db,
   signInWithEmailAndPassword,
