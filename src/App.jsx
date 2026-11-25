@@ -503,7 +503,7 @@ export default function App() {
             </div>
           </button>
 
-          <div className="relative flex items-center gap-2 shrink-0">
+          <div className="relative flex items-center gap-1 sm:gap-2 shrink-0">
             <div className="hidden sm:flex items-center gap-2">
               <div
                 className="inline-flex items-center rounded-full bg-slate-900 border border-slate-800 text-[11px] font-semibold text-slate-300"
