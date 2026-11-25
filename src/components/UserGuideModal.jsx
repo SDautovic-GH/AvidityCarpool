@@ -1,16 +1,35 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { BookOpen, Shield, X } from 'lucide-react';
 
 export default function UserGuideModal({ isAdmin = false, onClose }) {
   const [tab, setTab] = useState('parent'); // 'parent' | 'admin'
+  const dialogRef = useRef(null);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (dialog && !dialog.open) {
+      dialog.showModal();
+    }
+    return () => {
+      if (dialog?.open) dialog.close();
+    };
+  }, []);
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-950/75 backdrop-blur-xs p-0 sm:p-4"
-      onClick={(e) => e.target === e.currentTarget && onClose()}
+    <dialog
+      ref={dialogRef}
+      onCancel={(e) => {
+        e.preventDefault();
+        onClose();
+      }}
+      onClick={(e) => {
+        if (e.target === dialogRef.current) onClose();
+      }}
+      aria-label={tab === 'admin' ? 'Admin Guide' : 'Parent User Guide'}
+      className="fixed inset-x-0 bottom-0 top-auto sm:inset-0 m-0 sm:m-auto p-0 w-full max-w-full sm:max-w-lg max-h-[90dvh] bg-transparent border-0 overflow-hidden rounded-t-2xl sm:rounded-2xl shadow-2xl"
     >
-      <div className="w-full max-w-lg max-h-[90dvh] flex flex-col rounded-t-2xl sm:rounded-2xl bg-slate-900 border border-slate-800 shadow-2xl overflow-hidden pb-[env(safe-area-inset-bottom)]">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-800 shrink-0">
+      <div className="w-full max-h-[90dvh] flex flex-col rounded-t-2xl sm:rounded-2xl bg-slate-900 border border-slate-800 text-slate-100 overflow-hidden pb-[env(safe-area-inset-bottom)]">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-800 shrink-0 touch-none">
           <h2 className="text-lg font-bold text-slate-100 flex items-center gap-2">
             <BookOpen className="w-4 h-4 text-blue-400" />
             {tab === 'admin' ? 'Admin Guide' : 'Parent User Guide'}
@@ -26,7 +45,7 @@ export default function UserGuideModal({ isAdmin = false, onClose }) {
         </div>
 
         {isAdmin && (
-          <div className="px-5 pt-3 shrink-0">
+          <div className="px-5 pt-3 shrink-0 touch-none">
             <div className="inline-flex p-1 rounded-full bg-slate-950 border border-slate-800 text-[13px] font-semibold">
               <button
                 type="button"
@@ -55,7 +74,7 @@ export default function UserGuideModal({ isAdmin = false, onClose }) {
           </div>
         )}
 
-        <div className="p-5 overflow-y-auto space-y-5 text-sm text-slate-300 leading-relaxed">
+        <div className="p-5 overflow-y-auto overscroll-y-contain space-y-5 text-sm text-slate-300 leading-relaxed">
           {tab === 'parent' ? (
             <>
               <section className="space-y-1.5">
@@ -211,7 +230,7 @@ export default function UserGuideModal({ isAdmin = false, onClose }) {
           )}
         </div>
 
-        <div className="px-5 py-3 border-t border-slate-800 flex justify-end shrink-0">
+        <div className="px-5 py-3 border-t border-slate-800 flex justify-end shrink-0 touch-none">
           <button
             type="button"
             onClick={onClose}
@@ -221,6 +240,6 @@ export default function UserGuideModal({ isAdmin = false, onClose }) {
           </button>
         </div>
       </div>
-    </div>
+    </dialog>
   );
 }
