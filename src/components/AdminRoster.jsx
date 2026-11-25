@@ -510,14 +510,15 @@ export default function AdminRoster({
                                 parent.activatedAt || parent.lastLoginAt ? (
                                   <span className="inline-flex flex-wrap items-center gap-1.5 text-[11px]">
                                     <span
-                                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-medium bg-emerald-500/15 text-emerald-300 border border-emerald-500/30"
+                                      className="inline-flex items-center justify-center w-4 h-4 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+                                      aria-label="Account setup complete"
                                       title={
                                         parent.activatedAt
                                           ? `Account setup completed ${formatTimestamp(parent.activatedAt)}`
                                           : 'Account setup completed'
                                       }
                                     >
-                                      ✓ Setup Complete
+                                      ✓
                                     </span>
                                     {parent.lastLoginAt && (
                                       <span className="text-slate-400">
