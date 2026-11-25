@@ -4,6 +4,7 @@ import {
   collection,
   doc,
   getDoc,
+  limit,
   onSnapshot,
   orderBy,
   query,
@@ -11,6 +12,7 @@ import {
   setDoc,
   updateDoc,
   deleteDoc,
+  where,
   writeBatch,
   serverTimestamp,
 } from 'firebase/firestore';
@@ -30,6 +32,7 @@ export function useCarpoolData(user) {
   const [parents, setParents] = useState([]);
   const [practices, setPractices] = useState([]);
   const [tournaments, setTournaments] = useState([]);
+  const [notifications, setNotifications] = useState([]);
   const [isGlobalAdmin, setIsGlobalAdmin] = useState(false);
   const [adminCheckDone, setAdminCheckDone] = useState(false);
   const [parentsLoaded, setParentsLoaded] = useState(false);
@@ -165,11 +168,23 @@ export function useCarpoolData(user) {
       () => setTournaments([])
     );
 
+    const unsubNotifications = onSnapshot(
+      query(
+        collection(db, 'seasons', activeSeasonId, 'notifications'),
+        where('recipientIds', 'array-contains', userEmail),
+        orderBy('createdAt', 'desc'),
+        limit(20)
+      ),
+      (snap) => setNotifications(snap.docs.map((d) => ({ id: d.id, ...d.data() }))),
+      () => setNotifications([])
+    );
+
     return () => {
       unsubPlayers();
       unsubParents();
       unsubPractices();
       unsubTournaments();
+      unsubNotifications();
     };
   }, [activeSeasonId, userEmail]);
 
@@ -876,6 +891,7 @@ export function useCarpoolData(user) {
     parents,
     practices,
     tournaments,
+    notifications,
     currentParent,
     isAdmin,
     loading:

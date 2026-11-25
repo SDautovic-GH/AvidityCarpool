@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { BookOpen, CalendarPlus, ChevronDown, CircleHelp, LayoutGrid, List, LogOut, MoreHorizontal, Plus } from 'lucide-react';
+import { Bell, BookOpen, CalendarPlus, ChevronDown, CircleHelp, LayoutGrid, List, LogOut, MoreHorizontal, Plus } from 'lucide-react';
 import {
   auth,
   isFirebaseConfigured,
@@ -20,6 +20,7 @@ import AddPracticeModal from './components/AddPracticeModal';
 import UserGuideModal from './components/UserGuideModal';
 import TournamentsView from './components/TournamentsView';
 import PushOptInBanner from './components/PushOptInBanner';
+import NotificationsModal from './components/NotificationsModal';
 import { requestPushToken } from './utils/push';
 import { exportMyDrivesIcs } from './utils/calendar';
 import {
@@ -93,6 +94,8 @@ export default function App() {
   const [seasonModalOpen, setSeasonModalOpen] = useState(false);
   const [addPracticeModalOpen, setAddPracticeModalOpen] = useState(false);
   const [guideModalOpen, setGuideModalOpen] = useState(false);
+  const [notifModalOpen, setNotifModalOpen] = useState(false);
+  const [notifLastReadMs, setNotifLastReadMs] = useState(0);
   const [toast, setToast] = useState('');
 
   const hasModalOpen = Boolean(
@@ -101,7 +104,8 @@ export default function App() {
       stopsModal ||
       seasonModalOpen ||
       addPracticeModalOpen ||
-      guideModalOpen
+      guideModalOpen ||
+      notifModalOpen
   );
   const hasModalOpenRef = React.useRef(hasModalOpen);
   hasModalOpenRef.current = hasModalOpen;
@@ -200,6 +204,7 @@ export default function App() {
     parents,
     practices,
     tournaments,
+    notifications,
     currentParent,
     isAdmin,
     loading,
@@ -246,6 +251,49 @@ export default function App() {
     } catch (err) {
       showToast(err?.message || 'Could not enable push alerts');
       return false;
+    }
+  };
+
+  const notifStorageKey =
+    activeSeasonId && user?.email
+      ? `avidity_notif_read_${activeSeasonId}_${user.email.toLowerCase()}`
+      : '';
+
+  useEffect(() => {
+    if (!notifStorageKey) {
+      setNotifLastReadMs(0);
+      return;
+    }
+    try {
+      setNotifLastReadMs(Number(localStorage.getItem(notifStorageKey) || 0));
+    } catch {
+      setNotifLastReadMs(0);
+    }
+  }, [notifStorageKey]);
+
+  const unreadNotifCount = useMemo(
+    () =>
+      notifications.filter((n) => (n.createdAt?.toMillis?.() || 0) > notifLastReadMs).length,
+    [notifications, notifLastReadMs]
+  );
+
+  const openNotificationsInbox = () => {
+    setNotifModalOpen(true);
+  };
+
+  const closeNotificationsInbox = () => {
+    setNotifModalOpen(false);
+    const latestMs = Math.max(
+      Date.now(),
+      ...notifications.map((n) => n.createdAt?.toMillis?.() || 0)
+    );
+    setNotifLastReadMs(latestMs);
+    if (notifStorageKey) {
+      try {
+        localStorage.setItem(notifStorageKey, String(latestMs));
+      } catch {
+        // ignore storage errors
+      }
     }
   };
 
@@ -484,6 +532,21 @@ export default function App() {
               )}
               <button
                 type="button"
+                onClick={openNotificationsInbox}
+                className="relative inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 transition"
+                title="Recent Alerts"
+                aria-label="Recent Alerts"
+              >
+                <Bell className="w-3.5 h-3.5 text-blue-400" />
+                <span>Alerts</span>
+                {unreadNotifCount > 0 && (
+                  <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-blue-600 text-white tabular-nums">
+                    {unreadNotifCount}
+                  </span>
+                )}
+              </button>
+              <button
+                type="button"
                 onClick={() => setGuideModalOpen(true)}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 transition"
                 title="User Guide"
@@ -500,6 +563,19 @@ export default function App() {
                 <span>Sign Out</span>
               </button>
             </div>
+
+            <button
+              type="button"
+              onClick={openNotificationsInbox}
+              className="relative sm:hidden w-8 h-8 rounded-full bg-slate-900 hover:bg-slate-800 border border-slate-800 flex items-center justify-center text-slate-300 transition"
+              aria-label="Recent Alerts"
+              title="Recent Alerts"
+            >
+              <Bell className="w-4 h-4 text-blue-400" />
+              {unreadNotifCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-blue-500 ring-2 ring-slate-950" />
+              )}
+            </button>
 
             <button
               type="button"
@@ -1176,6 +1252,14 @@ export default function App() {
 
       {guideModalOpen && (
         <UserGuideModal isAdmin={isAdmin} onClose={() => setGuideModalOpen(false)} />
+      )}
+
+      {notifModalOpen && (
+        <NotificationsModal
+          notifications={notifications}
+          lastReadMs={notifLastReadMs}
+          onClose={closeNotificationsInbox}
+        />
       )}
 
       {addPracticeModalOpen && isAdmin && (

@@ -168,7 +168,8 @@ export default function UserGuideModal({ isAdmin = false, onClose }) {
                     <strong className="text-slate-100">Edit My Info</strong> to update your phone, address, default seats, or opt in/out of push alerts. Tap{' '}
                     <strong className="text-slate-100">Enable Alerts</strong> (on iPhone, first add the app to your Home Screen via <em>Share → Add to Home Screen</em>) to receive urgent{' '}
                     <strong className="text-slate-100">Needs Sub</strong> alerts and{' '}
-                    <strong className="text-slate-100">6:00 PM night-before</strong> driver reminders.
+                    <strong className="text-slate-100">6:00 PM night-before</strong> driver reminders. Tap the{' '}
+                    <strong className="text-slate-100">Bell</strong> icon in the top bar anytime to review recent alerts you may have missed.
                   </li>
                 </ul>
               </section>

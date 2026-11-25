@@ -86,6 +86,17 @@ service cloud.firestore {
     //   - notes: string (optional, 0..500 chars)
     //   - createdAt: timestamp (required, immutable)
     //
+    // Subcollection: seasons/{seasonId}/notifications
+    // Document ID: {notificationId}
+    // Access: read-only for season admins and listed recipients; written ONLY by Cloud Functions via Admin SDK.
+    // Fields:
+    //   - title: string (required)
+    //   - body: string (required)
+    //   - type: string (required, 'needs_sub' | 'night_before_driver' | 'night_before_uncovered')
+    //   - practiceId: string (optional)
+    //   - recipientIds: list (required, lowercase parent emails)
+    //   - createdAt: timestamp (required, immutable)
+    //
     // ===============================================================
 
     // ===============================================================
@@ -357,6 +368,13 @@ service cloud.firestore {
                          isValidTournament(request.resource.data) &&
                          areImmutableFieldsUnchanged(['createdAt']);
         allow delete: if isSeasonAdmin(seasonId);
+      }
+
+      // Notifications subcollection (in-app Alerts inbox; written only by Cloud Functions via Admin SDK)
+      match /notifications/{notificationId} {
+        allow read: if isSeasonMember(seasonId) &&
+                       (isSeasonAdmin(seasonId) || authEmail() in resource.data.recipientIds);
+        allow write: if false;
       }
     }
   }

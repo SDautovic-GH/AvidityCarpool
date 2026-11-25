@@ -87,9 +87,27 @@ function getPracticeCarpoolLegs(practice) {
 }
 
 async function sendToParentDocs(seasonId, parentDocs, notification, data = {}) {
+  const eligibleParents = parentDocs.filter((p) => p && p.pushEnabled !== false);
+  const recipientIds = [...new Set(eligibleParents.map((p) => p.id).filter(Boolean))];
+
+  // Log to in-app Alerts inbox for all eligible recipients (even those without a push token yet)
+  if (recipientIds.length > 0) {
+    try {
+      await db.collection(`seasons/${seasonId}/notifications`).add({
+        title: notification.title,
+        body: notification.body,
+        type: data.type || 'general',
+        practiceId: data.practiceId || '',
+        recipientIds,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+    } catch (err) {
+      logger.warn('Failed to write in-app notification log', { seasonId, err: err.message });
+    }
+  }
+
   const tokenOwners = new Map(); // token -> parentDocId
-  parentDocs.forEach((p) => {
-    if (p.pushEnabled === false) return;
+  eligibleParents.forEach((p) => {
     const tokens = Array.isArray(p.fcmTokens) ? p.fcmTokens : [];
     tokens.forEach((t) => {
       if (typeof t === 'string' && t.trim()) {
