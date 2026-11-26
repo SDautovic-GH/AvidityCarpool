@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ArrowUp, Bell, BookOpen, Calendar, CalendarPlus, Car, ChevronDown, LayoutGrid, List, LogOut, MoreHorizontal, Plus, Trophy, Users } from 'lucide-react';
+import { ArrowUp, Bell, Eye, BookOpen, Calendar, CalendarPlus, Car, ChevronDown, LayoutGrid, List, LogOut, MoreHorizontal, Plus, Trophy, Users } from 'lucide-react';
 import {
   auth,
   isFirebaseConfigured,
@@ -71,6 +71,21 @@ export default function App() {
   }, [viewMode]);
   const [showAllUpcoming, setShowAllUpcoming] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [parentPreview, setParentPreview] = useState(() => {
+    try {
+      return sessionStorage.getItem('avidity_parent_preview') === '1';
+    } catch {
+      return false;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem('avidity_parent_preview', parentPreview ? '1' : '0');
+    } catch {
+      // ignore storage errors
+    }
+  }, [parentPreview]);
 
   useEffect(() => {
     const onScroll = () => setShowScrollTop(window.scrollY > 400);
@@ -270,6 +285,7 @@ export default function App() {
     deleteTournament,
     batchCreateTournaments,
   } = useCarpoolData(user);
+  const effectiveIsAdmin = isAdmin && !parentPreview;
 
   const handleEnablePushOnDevice = async () => {
     try {
@@ -579,6 +595,21 @@ export default function App() {
                   </span>
                 )}
               </button>
+              {isAdmin && (
+                <button
+                  type="button"
+                  onClick={() => setParentPreview((v) => !v)}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold border transition ${
+                    parentPreview
+                      ? 'bg-amber-500/15 border-amber-500/40 text-amber-300 hover:bg-amber-500/25'
+                      : 'bg-slate-900 hover:bg-slate-800 border-slate-800 text-slate-300'
+                  }`}
+                  title={parentPreview ? 'Exit Parent View back to Admin Mode' : 'Preview app as a regular parent'}
+                >
+                  <Eye className="w-3.5 h-3.5" />
+                  <span>{parentPreview ? 'Admin Mode' : 'Parent View'}</span>
+                </button>
+              )}
               <button
                 type="button"
                 onClick={() => setGuideModalOpen(true)}
@@ -697,6 +728,23 @@ export default function App() {
                       </div>
                     )
                   )}
+                  {isAdmin && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setParentPreview((v) => !v);
+                        setMenuOpen(false);
+                      }}
+                      className={`w-full inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold transition ${
+                        parentPreview
+                          ? 'bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40'
+                          : 'bg-slate-800 hover:bg-slate-700 text-slate-200'
+                      }`}
+                    >
+                      <Eye className="w-3.5 h-3.5" />
+                      {parentPreview ? 'Back to Admin Mode' : 'Parent View'}
+                    </button>
+                  )}
                   <button
                     type="button"
                     onClick={() => {
@@ -778,6 +826,21 @@ export default function App() {
       </header>
 
       <main className="w-full max-w-4xl mx-auto px-3 sm:px-4 pt-3 pb-[calc(5.25rem+env(safe-area-inset-bottom))] sm:pb-10 space-y-3">
+        {isAdmin && parentPreview && (
+          <div className="rounded-2xl bg-amber-500/10 border border-amber-500/35 px-3.5 py-2.5 flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 text-[13px] font-semibold text-amber-200 min-w-0">
+              <Eye className="w-4 h-4 text-amber-300 shrink-0" />
+              <span className="truncate">Viewing as regular parent</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setParentPreview(false)}
+              className="px-3 py-1 min-h-[30px] rounded-full text-xs font-semibold bg-amber-400 hover:bg-amber-300 text-slate-950 transition shrink-0"
+            >
+              Back to Admin
+            </button>
+          </div>
+        )}
         {!loading && activeSeason && currentParent && (
           <PushOptInBanner
             currentParent={currentParent}
@@ -789,7 +852,7 @@ export default function App() {
           <div className="py-12 text-center text-sm text-slate-400">
             Loading carpool schedule...
           </div>
-        ) : !activeSeason && isAdmin ? (
+        ) : !activeSeason && effectiveIsAdmin ? (
           <div className="rounded-2xl bg-slate-900 border border-slate-800 p-8 text-center space-y-3">
             <h2 className="text-base font-bold text-slate-100">
               Welcome! Let&apos;s set up your first season.
@@ -809,7 +872,7 @@ export default function App() {
         ) : tab === 'tournaments' ? (
           <TournamentsView
             tournaments={tournaments}
-            isAdmin={isAdmin}
+            isAdmin={effectiveIsAdmin}
             onSaveTournament={(payload) =>
               runAction(() => saveTournament(payload), 'Tournament saved')
             }
@@ -832,7 +895,7 @@ export default function App() {
             todayIso={todayIso}
             currentParent={currentParent}
             currentParentEmail={user.email}
-            isAdmin={isAdmin}
+            isAdmin={effectiveIsAdmin}
             onSavePlayerAndParent={(payload) =>
               runAction(() => savePlayerAndParent(payload), 'Roster updated')
             }
@@ -939,7 +1002,7 @@ export default function App() {
                 </div>
                 <div
                   className={`w-full sm:w-auto flex items-center gap-2 ${
-                    isAdmin ? 'justify-between sm:justify-center' : 'justify-center'
+                    effectiveIsAdmin ? 'justify-between sm:justify-center' : 'justify-center'
                   }`}
                 >
                   <div className="inline-flex p-0.5 rounded-full bg-slate-900 border border-slate-800 text-sm font-semibold">
@@ -970,7 +1033,7 @@ export default function App() {
                       Scan
                     </button>
                   </div>
-                  {isAdmin && (
+                  {effectiveIsAdmin && (
                     <button
                       type="button"
                       onClick={() => setAddPracticeModalOpen(true)}
@@ -1043,7 +1106,7 @@ export default function App() {
                         : 'All upcoming practices have drivers covered!'
                       : 'No upcoming practices scheduled.'}
                 </p>
-                {isAdmin && tab === 'all' && !onlyNeedsDriver && (
+                {effectiveIsAdmin && tab === 'all' && !onlyNeedsDriver && (
                   <button
                     onClick={() => setSeasonModalOpen(true)}
                     className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-semibold bg-blue-600 hover:bg-blue-500 text-white transition"
@@ -1065,7 +1128,7 @@ export default function App() {
                   carpoolParents={parents}
                   shortPlayerNames={shortPlayerNames}
                   currentParent={currentParent}
-                  isAdmin={isAdmin}
+                  isAdmin={effectiveIsAdmin}
                   onToggleAttendance={(practiceId, playerId) =>
                     runAction(() => toggleAttendance(practiceId, playerId))
                   }
@@ -1177,7 +1240,7 @@ export default function App() {
                     players={carpoolPlayers}
                     allPlayers={players}
                     currentParent={currentParent}
-                    isAdmin={isAdmin}
+                    isAdmin={effectiveIsAdmin}
                     todayIso={todayIso}
                     firstUpcomingId={firstUpcomingId}
                     onOpenDriveModal={(practiceId, leg) =>
@@ -1299,7 +1362,7 @@ export default function App() {
         );
       })()}
 
-      {activeDrivePractice && (currentParent || isAdmin) && (() => {
+      {activeDrivePractice && (currentParent || effectiveIsAdmin) && (() => {
         const targetWeekday = new Date(`${activeDrivePractice.isoDate}T12:00:00`).getDay();
         const upcomingSameWeekday = practices.filter(
           (p) =>
@@ -1315,7 +1378,7 @@ export default function App() {
             playerName={myPlayerShortName}
             defaultDirection={driveModal.defaultDirection}
             upcomingSameWeekdayCount={upcomingSameWeekday.length}
-            isAdmin={isAdmin}
+            isAdmin={effectiveIsAdmin}
             parents={parents}
             shortPlayerNames={shortPlayerNames}
             onClose={() => setDriveModal(null)}
@@ -1395,7 +1458,7 @@ export default function App() {
       })()}
 
       {guideModalOpen && (
-        <UserGuideModal isAdmin={isAdmin} onClose={() => setGuideModalOpen(false)} />
+        <UserGuideModal isAdmin={effectiveIsAdmin} onClose={() => setGuideModalOpen(false)} />
       )}
 
       {notifModalOpen && (
@@ -1406,7 +1469,7 @@ export default function App() {
         />
       )}
 
-      {addPracticeModalOpen && isAdmin && (
+      {addPracticeModalOpen && effectiveIsAdmin && (
         <AddPracticeModal
           defaultDate={todayIso}
           onClose={() => setAddPracticeModalOpen(false)}
@@ -1416,7 +1479,7 @@ export default function App() {
         />
       )}
 
-      {seasonModalOpen && isAdmin && (
+      {seasonModalOpen && effectiveIsAdmin && (
         <AdminSeasonModal
           activeSeason={activeSeason}
           players={players}
