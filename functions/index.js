@@ -99,6 +99,7 @@ async function sendToParentDocs(seasonId, parentDocs, notification, data = {}) {
         body: notification.body,
         type: data.type || 'general',
         practiceId: data.practiceId || '',
+        leg: data.leg || '',
         recipientIds,
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
       });
@@ -187,6 +188,57 @@ exports.onPracticeUpdatedNeedsSub = onDocumentUpdated(
     if (!before || !after) return;
 
     const { seasonId, practiceId } = event.params;
+
+    // Auto-clear in-app Needs Sub alerts when a sub is withdrawn, taken over, dropped, or practice cancelled
+    const resolvedLegs = new Set();
+    for (const leg of ['to', 'from']) {
+      const prevHasSub = (Array.isArray(before.legs?.[leg]) ? before.legs[leg] : []).some(
+        (c) => c.status === 'needs_sub'
+      );
+      const nextHasSub =
+        after.status !== 'cancelled' &&
+        (Array.isArray(after.legs?.[leg]) ? after.legs[leg] : []).some(
+          (c) => c.status === 'needs_sub'
+        );
+      if (prevHasSub && !nextHasSub) {
+        resolvedLegs.add(leg);
+      }
+    }
+
+    if (resolvedLegs.size > 0) {
+      try {
+        const snap = await db
+          .collection(`seasons/${seasonId}/notifications`)
+          .where('practiceId', '==', practiceId)
+          .get();
+        const batch = db.batch();
+        let deleteCount = 0;
+        snap.docs.forEach((docSnap) => {
+          const d = docSnap.data();
+          if (d.type !== 'needs_sub') return;
+          if (!d.leg || resolvedLegs.has(d.leg)) {
+            batch.delete(docSnap.ref);
+            deleteCount += 1;
+          }
+        });
+        if (deleteCount > 0) {
+          await batch.commit();
+          logger.info('Cleared resolved Needs Sub alerts', {
+            seasonId,
+            practiceId,
+            legs: [...resolvedLegs],
+            deleteCount,
+          });
+        }
+      } catch (err) {
+        logger.warn('Failed to clear resolved Needs Sub alerts', {
+          seasonId,
+          practiceId,
+          err: err.message,
+        });
+      }
+    }
+
     if (after.status === 'cancelled') return;
 
     const { todayIso } = getTodayAndTomorrowIso();
