@@ -1210,12 +1210,12 @@ export default function App() {
           >
             <div
               style={{
-                background: 'rgba(34, 34, 40, 0.36)',
-                border: '0.5px solid rgba(255, 255, 255, 0.14)',
+                background: 'rgba(20, 26, 42, 0.72)',
+                border: '0.5px solid rgba(255, 255, 255, 0.22)',
                 boxShadow:
-                  '0 8px 32px rgba(0, 0, 0, 0.45), inset 0 0.5px 0 0 rgba(255, 255, 255, 0.10)',
-                WebkitBackdropFilter: 'blur(24px) saturate(200%) brightness(1.08)',
-                backdropFilter: 'blur(24px) saturate(200%) brightness(1.08)',
+                  '0 10px 32px rgba(0, 0, 0, 0.55), inset 0 0.5px 0 0 rgba(255, 255, 255, 0.16)',
+                WebkitBackdropFilter: 'blur(24px) saturate(180%) brightness(1.06)',
+                backdropFilter: 'blur(24px) saturate(180%) brightness(1.06)',
               }}
               className="pointer-events-auto flex items-center justify-between gap-1 h-[46px] w-full max-w-[320px] px-1 py-[3px] rounded-full"
             >
@@ -1232,9 +1232,9 @@ export default function App() {
                     style={
                       active
                         ? {
-                            background: 'rgba(0, 0, 0, 0.32)',
-                            boxShadow:
-                              'inset 0 0.5px 1.5px rgba(0, 0, 0, 0.45), 0 0.5px 0 rgba(255, 255, 255, 0.12)',
+                            background: 'rgba(59, 130, 246, 0.20)',
+                            border: '0.5px solid rgba(96, 165, 250, 0.35)',
+                            boxShadow: 'inset 0 0.5px 0 rgba(255, 255, 255, 0.12)',
                           }
                         : undefined
                     }
