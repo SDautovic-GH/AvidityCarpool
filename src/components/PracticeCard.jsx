@@ -117,15 +117,16 @@ export default function PracticeCard({
     if (!toEnabled || !fromEnabled || !isSatisfied) return false;
     const toCars = practice.legs?.to || [];
     const fromCars = practice.legs?.from || [];
-    if (toCars.length !== 1 || fromCars.length !== 1) return false;
-    const tc = toCars[0];
-    const fc = fromCars[0];
-    if (tc.driverParentId !== fc.driverParentId) return false;
-    if (tc.seatsTotal !== fc.seatsTotal) return false;
-    if ((tc.status || 'confirmed') !== (fc.status || 'confirmed')) return false;
-    const tRiders = [...(tc.riderIds || [])].sort().join(',');
-    const fRiders = [...(fc.riderIds || [])].sort().join(',');
-    return tRiders === fRiders;
+    if (toCars.length === 0 || toCars.length !== fromCars.length) return false;
+    const serialize = (cars) =>
+      cars
+        .map((c) => {
+          const riders = [...(c.riderIds || [])].sort().join(',');
+          return `${c.driverParentId || c.driverName}|${c.seatsTotal}|${c.status || 'confirmed'}|${riders}`;
+        })
+        .sort()
+        .join(';;');
+    return serialize(toCars) === serialize(fromCars);
   })();
   const showConsolidated = canConsolidate && !splitLegs;
 
