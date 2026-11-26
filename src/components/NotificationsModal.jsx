@@ -136,7 +136,7 @@ export default function NotificationsModal({
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-100 transition"
+            className="px-4 py-2 rounded-full text-[13px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-100 transition"
           >
             Done
           </button>

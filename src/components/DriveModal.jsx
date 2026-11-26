@@ -80,7 +80,7 @@ export default function DriveModal({
       type="button"
       disabled={disabled}
       onClick={() => setDirection(val)}
-      className={`flex-1 py-2 px-3 rounded-full text-xs font-semibold border transition ${
+      className={`flex-1 py-2 px-3 rounded-full text-[13px] font-semibold border transition ${
         disabled
           ? 'opacity-40 cursor-not-allowed border-slate-800'
           : direction === val

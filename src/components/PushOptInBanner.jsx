@@ -105,7 +105,7 @@ export default function PushOptInBanner({
             type="button"
             disabled={busy}
             onClick={handleEnable}
-            className="px-4 py-2 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white transition whitespace-nowrap"
+            className="px-4 py-2 rounded-full text-[13px] font-semibold bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white transition whitespace-nowrap"
           >
             {busy ? 'Enabling...' : 'Enable Alerts'}
           </button>
@@ -113,7 +113,7 @@ export default function PushOptInBanner({
         <button
           type="button"
           onClick={handleDismiss}
-          className="px-4 py-2 rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 transition whitespace-nowrap"
+          className="px-4 py-2 rounded-full text-[13px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 transition whitespace-nowrap"
           aria-label="Dismiss alert banner"
         >
           {iosBrowserNeedsInstall ? <X className="w-3.5 h-3.5" /> : 'Not Now'}
