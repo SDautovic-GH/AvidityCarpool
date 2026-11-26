@@ -422,7 +422,7 @@ export default function PracticeCard({
 
   return (
     <div
-      className={`rounded-2xl bg-slate-900 border shadow-lg shadow-black/45 ${
+      className={`rounded-2xl bg-slate-900 border ${
         isFirstUpcoming && !isCancelled ? 'border-blue-500/55' : 'border-slate-700/80'
       } p-3.5 sm:p-4 space-y-3 min-w-0 overflow-hidden`}
     >

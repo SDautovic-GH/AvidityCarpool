@@ -96,10 +96,13 @@ export default function UserGuideModal({ isAdmin = false, onClose }) {
                     <strong className="text-slate-100">↑</strong> button anytime to jump back to the top.
                   </li>
                   <li>
-                    <strong className="text-slate-100">Status &amp; Directions:</strong> Green{' '}
-                    <strong className="text-emerald-400">All Set</strong> means every going player has a ride. One-way events show{' '}
-                    <strong className="text-slate-100">Carpool To Only</strong> or{' '}
-                    <strong className="text-slate-100">Carpool From Only</strong>. Tap the gym name for Apple/Google Maps directions.
+                    <strong className="text-slate-100">To / From &amp; Round-Trip View:</strong> Practices show{' '}
+                    <strong className="text-slate-100">→ TO PRACTICE</strong> and{' '}
+                    <strong className="text-slate-100">← FROM PRACTICE</strong> separately whenever rides are open or differ, and automatically consolidate into{' '}
+                    <strong className="text-slate-100">⇄ TO &amp; FROM</strong> once both ways are{' '}
+                    <strong className="text-emerald-400">All Set</strong> with identical cars (tap{' '}
+                    <strong className="text-slate-100">To / From ▾</strong> anytime to expand individual legs). Drivers covering both ways show a{' '}
+                    <strong className="text-blue-300">⇄ Both Ways</strong> badge. Tap the gym name for Apple/Google Maps directions.
                   </li>
                 </ul>
               </section>
@@ -231,11 +234,17 @@ export default function UserGuideModal({ isAdmin = false, onClose }) {
                     <strong className="text-slate-100">Drop</strong> to remove that driver from that leg only.
                   </li>
                   <li>
-                    Under <em>Still need a ride</em>, tap <strong className="text-slate-100">[Name] +</strong> to place a rider into a confirmed car, or{' '}
+                    Under <em>Needs ride / Need ride</em>, tap <strong className="text-slate-100">[Name] +</strong> to assign a rider to a confirmed car (with a{' '}
+                    <strong className="text-slate-100">Both Ways</strong> option when that driver has open seats on both legs and the player isn&apos;t yet riding the other way), or{' '}
                     <strong className="text-slate-100">×</strong> to remove a rider.
                   </li>
                   <li>
                     Tap <strong className="text-slate-100">+ Guest</strong> on any practice card to add a guest from the Guest Pool (or a one-off guest, max 10 per practice) and assign them to a car.
+                  </li>
+                  <li>
+                    Use <strong className="text-slate-100">Parent View</strong> (top bar on desktop, or inside the{' '}
+                    <strong className="text-slate-100">•••</strong> menu on mobile) anytime to preview the exact non-admin parent experience, then tap{' '}
+                    <strong className="text-slate-100">Back to Admin</strong> to return.
                   </li>
                 </ul>
               </section>
