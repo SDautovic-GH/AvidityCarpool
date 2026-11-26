@@ -46,7 +46,7 @@ export default function UserGuideModal({ isAdmin = false, onClose }) {
 
         {isAdmin && (
           <div className="px-5 pt-3 shrink-0 touch-none">
-            <div className="inline-flex p-1 rounded-full bg-slate-950 border border-slate-800 text-[13px] font-semibold">
+            <div className="inline-flex p-1 rounded-full bg-slate-950 border border-slate-800 text-sm font-semibold">
               <button
                 type="button"
                 onClick={() => setTab('parent')}
@@ -74,11 +74,11 @@ export default function UserGuideModal({ isAdmin = false, onClose }) {
           </div>
         )}
 
-        <div className="p-5 overflow-y-auto overscroll-y-contain space-y-5 text-sm text-slate-300 leading-relaxed">
+        <div className="p-5 overflow-y-auto overscroll-y-contain space-y-5 text-[15px] text-slate-300 leading-relaxed">
           {tab === 'parent' ? (
             <>
               <section className="space-y-1.5">
-                <h3 className="text-[15px] font-bold text-slate-100">1. Reading Practices &amp; Quick Scan</h3>
+                <h3 className="text-base font-bold text-slate-100">1. Reading Practices &amp; Quick Scan</h3>
                 <ul className="list-disc pl-4 space-y-1.5">
                   <li>
                     <strong className="text-slate-100">Cards vs. Scan:</strong> Switch between{' '}
@@ -108,7 +108,7 @@ export default function UserGuideModal({ isAdmin = false, onClose }) {
               </section>
 
               <section className="space-y-1.5">
-                <h3 className="text-[15px] font-bold text-slate-100">2. Going / Out &amp; Claiming a Ride</h3>
+                <h3 className="text-base font-bold text-slate-100">2. Going / Out &amp; Claiming a Ride</h3>
                 <ul className="list-disc pl-4 space-y-1.5">
                   <li>
                     <strong className="text-slate-100">Missing a practice:</strong> Tap{' '}
@@ -131,7 +131,7 @@ export default function UserGuideModal({ isAdmin = false, onClose }) {
               </section>
 
               <section className="space-y-1.5">
-                <h3 className="text-[15px] font-bold text-slate-100">3. Offering to Drive</h3>
+                <h3 className="text-base font-bold text-slate-100">3. Offering to Drive</h3>
                 <ul className="list-disc pl-4 space-y-1.5">
                   <li>
                     Tap <strong className="text-slate-100">+ I can drive</strong> (or{' '}
@@ -154,7 +154,7 @@ export default function UserGuideModal({ isAdmin = false, onClose }) {
               </section>
 
               <section className="space-y-1.5">
-                <h3 className="text-[15px] font-bold text-slate-100">4. Notes, Texting, Calendar &amp; Team</h3>
+                <h3 className="text-base font-bold text-slate-100">4. Notes, Texting, Calendar &amp; Team</h3>
                 <ul className="list-disc pl-4 space-y-1.5">
                   <li>
                     <strong className="text-slate-100">Notes &amp; Car Texting:</strong> Use{' '}
@@ -182,7 +182,7 @@ export default function UserGuideModal({ isAdmin = false, onClose }) {
           ) : (
             <>
               <section className="space-y-1.5">
-                <h3 className="text-[15px] font-bold text-slate-100">1. Roster, Carpool Membership &amp; Alerts (Team Tab)</h3>
+                <h3 className="text-base font-bold text-slate-100">1. Roster, Carpool Membership &amp; Alerts (Team Tab)</h3>
                 <ul className="list-disc pl-4 space-y-1.5">
                   <li>
                     Add or edit families with <strong className="text-slate-100">+ Family / Parent</strong>,{' '}
@@ -208,7 +208,7 @@ export default function UserGuideModal({ isAdmin = false, onClose }) {
               </section>
 
               <section className="space-y-1.5">
-                <h3 className="text-[15px] font-bold text-slate-100">2. Practices &amp; Carpool Mode</h3>
+                <h3 className="text-base font-bold text-slate-100">2. Practices &amp; Carpool Mode</h3>
                 <ul className="list-disc pl-4 space-y-1.5">
                   <li>
                     Use <strong className="text-slate-100">+ Practice</strong> on the Practices tab to add a single practice, or{' '}
@@ -223,7 +223,7 @@ export default function UserGuideModal({ isAdmin = false, onClose }) {
               </section>
 
               <section className="space-y-1.5">
-                <h3 className="text-[15px] font-bold text-slate-100">3. Ride Overrides</h3>
+                <h3 className="text-base font-bold text-slate-100">3. Ride Overrides</h3>
                 <ul className="list-disc pl-4 space-y-1.5">
                   <li>
                     Assign any drivable parent via the <strong className="text-slate-100">Driver (Admin)</strong> dropdown in the Drive modal.
