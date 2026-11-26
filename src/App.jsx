@@ -843,12 +843,12 @@ export default function App() {
           <>
             {tab === 'all' && (upcomingMonthOptions.length > 0 || pastCount > 0 || needsDriverCount > 0 || onlyNeedsDriver) && (
               <div className="flex flex-wrap items-center justify-center gap-2">
-                <div className="inline-flex flex-wrap items-center justify-center gap-1 p-1 rounded-2xl sm:rounded-full bg-slate-900 border border-slate-800">
+                <div className="inline-flex items-center gap-1 p-1 rounded-full bg-slate-900 border border-slate-800 max-w-full">
                   {onlyNeedsDriver ? (
                     <button
                       type="button"
                       onClick={() => setOnlyNeedsDriver(false)}
-                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 min-h-[36px] rounded-full text-sm font-semibold bg-transparent text-slate-300 hover:bg-slate-800 hover:text-slate-100 transition"
+                      className="inline-flex items-center gap-1 px-3 py-1.5 min-h-[34px] rounded-full text-[13px] font-semibold whitespace-nowrap bg-transparent text-slate-300 hover:bg-slate-800 hover:text-slate-100 transition"
                     >
                       {(() => {
                         if (monthFilter === 'all') return 'All Upcoming';
@@ -866,7 +866,7 @@ export default function App() {
                           setMonthFilter(next);
                           if (next === 'past') setOnlyNeedsDriver(false);
                         }}
-                        className="appearance-none cursor-pointer pl-3.5 pr-7 py-1.5 min-h-[36px] rounded-full text-[13px] font-semibold transition focus:outline-none bg-slate-800 text-slate-100"
+                        className="appearance-none cursor-pointer pl-3 pr-6 py-1.5 min-h-[34px] rounded-full text-[13px] font-semibold transition focus:outline-none bg-slate-800 text-slate-100"
                       >
                         <option value="all" className="bg-slate-900 text-slate-100">
                           All Upcoming
@@ -882,14 +882,14 @@ export default function App() {
                           </option>
                         )}
                       </select>
-                      <ChevronDown className="w-3.5 h-3.5 text-slate-400 pointer-events-none absolute right-2.5" />
+                      <ChevronDown className="w-3.5 h-3.5 text-slate-400 pointer-events-none absolute right-2" />
                     </div>
                   )}
                   {monthFilter !== 'past' && (needsDriverCount > 0 || onlyNeedsDriver) && (
                     <button
                       type="button"
                       onClick={() => setOnlyNeedsDriver((v) => !v)}
-                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 min-h-[36px] rounded-full text-sm font-semibold transition ${
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 min-h-[34px] rounded-full text-[13px] font-semibold whitespace-nowrap transition ${
                         onlyNeedsDriver
                           ? 'bg-amber-500/20 text-amber-300'
                           : 'text-slate-400 hover:text-slate-200'
