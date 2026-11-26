@@ -728,62 +728,55 @@ export default function PracticeCard({
         )
       )}
 
-      {(guestRiders.length > 0 || manualGuestIds.length > 0) && !isCancelled && (
-        <div className="flex flex-wrap items-center gap-1.5 text-xs">
-          <span className="text-slate-400 font-medium">Guests:</span>
-          {manualGuestIds.map((gid) => {
-            const gPlayer = poolGuests.find((pl) => pl.id === gid);
-            if (!gPlayer) return null;
-            return (
-              <span
-                key={gid}
-                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-800 text-slate-200 font-medium"
-              >
-                {gPlayer.name}
-                <span className="px-1 rounded text-[10px] font-bold bg-violet-500/20 text-violet-300">
-                  G
-                </span>
-                {isAdmin && !isReadOnly && onTogglePracticeGuest && (
-                  <button
-                    type="button"
-                    onClick={() => onTogglePracticeGuest(practice.id, gid, false)}
-                    title="Remove guest from this practice"
-                    aria-label={`Remove guest ${gPlayer.name}`}
-                    className="px-1 rounded-full text-slate-400 hover:text-rose-400 font-bold"
-                  >
-                    ×
-                  </button>
-                )}
-              </span>
-            );
-          })}
-          {guestRiders.map((g) => (
-            <span
-              key={g.id}
-              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-800 text-slate-200 font-medium"
-            >
-              {g.name}
-              <span className="px-1 rounded text-[10px] font-bold bg-violet-500/20 text-violet-300">
-                G
-              </span>
-              {isAdmin && !isReadOnly && onRemoveGuest && (
-                <button
-                  type="button"
-                  onClick={() => onRemoveGuest(practice.id, g.id)}
-                  title="Remove guest rider"
-                  aria-label={`Remove guest ${g.name}`}
-                  className="px-1 rounded-full text-slate-400 hover:text-rose-400 font-bold"
-                >
-                  ×
-                </button>
-              )}
-            </span>
-          ))}
-        </div>
-      )}
-
       {addingGuest && (onAddGuest || onTogglePracticeGuest) ? (
         <div className={`space-y-2 ${!isCancelled ? 'pt-2.5 border-t border-slate-800/60' : ''}`}>
+          {(guestRiders.length > 0 || manualGuestIds.length > 0) && (
+            <div className="flex flex-wrap items-center gap-1.5 text-xs">
+              <span className="text-[11px] font-semibold text-slate-400">On this practice:</span>
+              {manualGuestIds.map((gid) => {
+                const gPlayer = poolGuests.find((pl) => pl.id === gid);
+                if (!gPlayer) return null;
+                return (
+                  <span
+                    key={gid}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-800 text-slate-200 font-medium"
+                  >
+                    {gPlayer.name}
+                    {isAdmin && !isReadOnly && onTogglePracticeGuest && (
+                      <button
+                        type="button"
+                        onClick={() => onTogglePracticeGuest(practice.id, gid, false)}
+                        title="Remove guest from this practice"
+                        aria-label={`Remove guest ${gPlayer.name}`}
+                        className="px-1 rounded-full text-slate-400 hover:text-rose-400 font-bold"
+                      >
+                        ×
+                      </button>
+                    )}
+                  </span>
+                );
+              })}
+              {guestRiders.map((g) => (
+                <span
+                  key={g.id}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-800 text-slate-200 font-medium"
+                >
+                  {g.name}
+                  {isAdmin && !isReadOnly && onRemoveGuest && (
+                    <button
+                      type="button"
+                      onClick={() => onRemoveGuest(practice.id, g.id)}
+                      title="Remove guest rider"
+                      aria-label={`Remove guest ${g.name}`}
+                      className="px-1 rounded-full text-slate-400 hover:text-rose-400 font-bold"
+                    >
+                      ×
+                    </button>
+                  )}
+                </span>
+              ))}
+            </div>
+          )}
           {availablePoolGuests.length > 0 && onTogglePracticeGuest && (
             <div className="flex flex-wrap items-center gap-1.5">
               <span className="text-[11px] font-semibold text-slate-400">From Guest Pool:</span>
