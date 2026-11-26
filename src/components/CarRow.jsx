@@ -81,8 +81,8 @@ export default function CarRow({
     <div
       className={
         isNeedsSub
-          ? 'my-1.5 rounded-xl bg-amber-500/10 border border-amber-500/35 border-l-4 border-l-amber-400 px-3 py-3'
-          : 'py-3 first:pt-2 last:pb-1'
+          ? 'my-1.5 rounded-xl bg-amber-500/10 border border-amber-500/35 border-l-4 border-l-amber-400 px-3 py-2'
+          : 'py-2 first:pt-1 last:pb-0.5'
       }
     >
       <div className="flex items-center justify-between gap-3">
@@ -186,7 +186,7 @@ export default function CarRow({
         </div>
       </div>
 
-      <div className="mt-2 sm:pl-10 flex flex-wrap items-center justify-between gap-2 text-sm min-w-0">
+      <div className="mt-1.5 sm:pl-10 flex flex-wrap items-center justify-between gap-2 text-sm min-w-0">
         <div className="flex flex-wrap items-center gap-1.5 min-w-0">
           {isAdmin ? (
             riderIds.length === 0 ? (
