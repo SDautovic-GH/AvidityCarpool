@@ -246,7 +246,7 @@ export default function PracticeCard({
 
     return (
       <div>
-        <div className={`flex flex-wrap items-center justify-between gap-2 px-3 py-1.5 border-b ${headerBg}`}>
+        <div className={`flex flex-wrap items-center justify-between gap-2 px-3.5 py-2 border-b ${headerBg}`}>
           <div className="flex items-center gap-2 min-w-0">
             <span className="text-[13px] font-extrabold uppercase tracking-wide text-slate-50 whitespace-nowrap">
               {consolidated
@@ -292,9 +292,9 @@ export default function PracticeCard({
           </div>
         </div>
 
-        <div className="px-3 sm:px-3.5 py-2 space-y-1.5">
+        <div className="px-3.5 py-2.5 space-y-2">
         {(unassigned.length > 0 || cars.length > 0) && (
-          <div className="flex flex-wrap items-center justify-between gap-2 pb-1.5 border-b border-slate-800/80">
+          <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-800/80">
             <div className="text-sm flex flex-wrap items-center gap-1.5">
               {unassigned.length > 0 ? (
                 <>
@@ -347,7 +347,7 @@ export default function PracticeCard({
 
         <div className="divide-y divide-slate-800/80">
           {cars.length === 0 ? (
-            <div className="py-2.5 text-center text-[13px] text-slate-400">
+            <div className="py-3 text-center text-[13px] text-slate-400">
               No drivers signed up yet
             </div>
           ) : (
@@ -423,7 +423,7 @@ export default function PracticeCard({
     <div
       className={`rounded-2xl bg-slate-900 border shadow-lg shadow-black/45 ${
         isFirstUpcoming && !isCancelled ? 'border-blue-500/55' : 'border-slate-700/80'
-      } p-3 sm:p-4 space-y-2.5 min-w-0 overflow-hidden`}
+      } p-3.5 sm:p-4 space-y-3 min-w-0 overflow-hidden`}
     >
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5">
         <div className="flex items-start justify-between gap-2 min-w-0">
@@ -723,13 +723,13 @@ export default function PracticeCard({
           </div>
         ) : toEnabled && fromEnabled ? (
           showConsolidated ? (
-            <div className="-mx-3 sm:mx-0">
+            <div className="-mx-3.5 sm:mx-0">
               <div className="rounded-none sm:rounded-xl bg-slate-950/55 border-y sm:border border-emerald-500/25 overflow-hidden">
                 {renderLegBody('to', { consolidated: true })}
               </div>
             </div>
           ) : (
-            <div className="-mx-3 sm:mx-0 grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4">
+            <div className="-mx-3.5 sm:mx-0 grid grid-cols-1 md:grid-cols-2 gap-2.5 md:gap-4">
               <div
                 className={`rounded-none sm:rounded-xl bg-slate-950/55 border-y sm:border overflow-hidden ${
                   subTo
@@ -755,7 +755,7 @@ export default function PracticeCard({
             </div>
           )
         ) : (
-          <div className="-mx-3 sm:mx-0">
+          <div className="-mx-3.5 sm:mx-0">
             <div className="rounded-none sm:rounded-xl bg-slate-950/55 border-y sm:border border-slate-800/80 overflow-hidden">
               {renderLegBody(toEnabled ? 'to' : 'from')}
             </div>
@@ -764,7 +764,7 @@ export default function PracticeCard({
       )}
 
       {addingGuest && (onAddGuest || onTogglePracticeGuest) ? (
-        <div className={`space-y-2 ${!isCancelled ? 'pt-2 border-t border-slate-800/60' : ''}`}>
+        <div className={`space-y-2 ${!isCancelled ? 'pt-2.5 border-t border-slate-800/60' : ''}`}>
           {(guestRiders.length > 0 || manualGuestIds.length > 0) && (
             <div className="flex flex-wrap items-center gap-1.5 text-xs">
               <span className="text-[11px] font-semibold text-slate-400">On this practice:</span>
@@ -880,7 +880,7 @@ export default function PracticeCard({
             setNoteDraft('');
             setEditingNote(false);
           }}
-          className={`flex flex-wrap items-center gap-2 ${!isCancelled ? 'pt-2 border-t border-slate-800/60' : ''}`}
+          className={`flex flex-wrap items-center gap-2 ${!isCancelled ? 'pt-2.5 border-t border-slate-800/60' : ''}`}
         >
           <input
             type="text"
@@ -906,7 +906,7 @@ export default function PracticeCard({
           </button>
         </form>
       ) : (
-        <div className={`flex flex-wrap items-center gap-2 ${!isCancelled ? 'pt-2 border-t border-slate-800/60' : ''}`}>
+        <div className={`flex flex-wrap items-center gap-2 ${!isCancelled ? 'pt-2.5 border-t border-slate-800/60' : ''}`}>
           {!isReadOnly && onAddNote && (
             <button
               onClick={() => {
