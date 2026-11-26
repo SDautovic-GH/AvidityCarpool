@@ -89,9 +89,11 @@ export default function UserGuideModal({ isAdmin = false, onClose }) {
                     <strong className="text-emerald-400">✓ All Set</strong> pill.
                   </li>
                   <li>
-                    <strong className="text-slate-100">Filters:</strong> Use{' '}
+                    <strong className="text-slate-100">Filters &amp; Navigation:</strong> Use{' '}
                     <strong className="text-slate-100">All Upcoming</strong> to filter by month or past practices, and toggle{' '}
-                    <strong className="text-slate-100">Needs Driver</strong> to see uncovered practices in that view.
+                    <strong className="text-slate-100">Needs Driver</strong> to see uncovered practices in that view. Tap{' '}
+                    <strong className="text-slate-100">All Upcoming</strong>, the active tab, or the floating{' '}
+                    <strong className="text-slate-100">↑</strong> button anytime to jump back to the top.
                   </li>
                   <li>
                     <strong className="text-slate-100">Status &amp; Directions:</strong> Green{' '}
@@ -188,7 +190,7 @@ export default function UserGuideModal({ isAdmin = false, onClose }) {
                     Tap <strong className="text-slate-100">Alerts</strong> in <strong className="text-slate-100">Team → Roster</strong> to see how many carpool drivers have alerts active, globally enable or disable{' '}
                     <strong className="text-slate-100">Instant &ldquo;Needs Sub&rdquo; Alerts</strong> and the{' '}
                     <strong className="text-slate-100">6:00 PM Night-Before Sweep</strong>, or tap{' '}
-                    <strong className="text-slate-100">Send Test Alert (Me Only)</strong> to verify push delivery and the top-bar{' '}
+                    <strong className="text-slate-100">Test Alert (Me)</strong> to verify push delivery and the top-bar{' '}
                     <strong className="text-slate-100">Bell</strong> Alerts inbox without notifying other parents.
                   </li>
                   <li>
