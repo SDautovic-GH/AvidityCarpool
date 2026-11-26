@@ -459,7 +459,7 @@ export default function PracticeCard({
             myPlayer &&
             (isReadOnly ? (
               <span
-                className={`inline-flex items-center gap-1.5 whitespace-nowrap px-4 py-2 rounded-full text-xs font-semibold border ${
+                className={`inline-flex items-center gap-1.5 max-w-full flex-wrap text-left px-4 py-1.5 rounded-full text-sm font-semibold border ${
                   isOut
                     ? 'bg-rose-500/15 border-rose-500/30 text-rose-300'
                     : 'bg-slate-800/80 border-slate-700/80 text-slate-300'
@@ -481,7 +481,7 @@ export default function PracticeCard({
               <button
                 onClick={() => onToggleAttendance(practice.id, myPlayer.id)}
                 title="Tap to toggle Going / Out"
-                className={`inline-flex items-center gap-1.5 whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-semibold border transition ${
+                className={`inline-flex items-center gap-1.5 max-w-full flex-wrap text-left px-4 py-1.5 rounded-full text-sm font-semibold border transition ${
                   isOut
                     ? 'bg-rose-500/15 border-rose-500/30 hover:bg-rose-500/25 text-rose-300'
                     : 'bg-slate-800/90 border-slate-700/80 hover:bg-slate-700 text-slate-100'
