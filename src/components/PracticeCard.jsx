@@ -106,6 +106,16 @@ export default function PracticeCard({
 
   const toSum = getLegSummary(practice, 'to', effectivePlayers);
   const fromSum = getLegSummary(practice, 'from', effectivePlayers);
+  const subTo =
+    !isCancelled &&
+    toEnabled &&
+    (practice.legs?.to || []).some((c) => c.status === 'needs_sub');
+  const subFrom =
+    !isCancelled &&
+    fromEnabled &&
+    (practice.legs?.from || []).some((c) => c.status === 'needs_sub');
+  const hasAnySub = subTo || subFrom;
+
   const isSatisfied =
     !isCancelled &&
     (!hasAnyCarpool ||
@@ -433,6 +443,16 @@ export default function PracticeCard({
                 )}
                 {isSatisfied && (
                   <span className="text-[13px] font-semibold text-emerald-400">All Set</span>
+                )}
+                {hasAnySub && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                    {subTo && subFrom
+                      ? 'Needs Sub (Both)'
+                      : subTo
+                        ? 'Needs Sub (To)'
+                        : 'Needs Sub (From)'}
+                  </span>
                 )}
                 {!isCancelled && carpoolMode !== 'both' && (
                   <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700">
