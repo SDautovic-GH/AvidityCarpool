@@ -244,7 +244,7 @@ export default function AdminRoster({
     <div className="space-y-4">
       {isAdmin && (
         <div className="flex justify-center">
-          <div className="inline-flex max-w-full overflow-x-auto no-scrollbar p-1 rounded-full bg-slate-900 border border-slate-800 text-xs font-semibold">
+          <div className="inline-flex max-w-full overflow-x-auto no-scrollbar p-1 rounded-full bg-slate-900 border border-slate-800 text-sm font-semibold">
             <button
               type="button"
               onClick={() => setSubView('roster')}
