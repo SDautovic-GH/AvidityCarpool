@@ -1361,6 +1361,15 @@ export default function App() {
               `${assignedName} assigned`
             );
           }}
+          onAssignBoth={(practiceId, driverParentId, playerId) => {
+            setAssignModal(null);
+            const assignedName =
+              shortPlayerNames[activeAssignPlayer.id] || activeAssignPlayer.name;
+            runAction(
+              () => joinBothWays(practiceId, driverParentId, playerId),
+              `${assignedName} assigned both ways`
+            );
+          }}
         />
       )}
 
