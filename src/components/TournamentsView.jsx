@@ -224,7 +224,7 @@ export default function TournamentsView({
 
                     <button
                       onClick={() => exportTournamentIcs(t)}
-                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-slate-800/70 hover:bg-slate-800 text-slate-300 hover:text-slate-100 transition shrink-0"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold bg-slate-800/70 hover:bg-slate-800 text-slate-300 hover:text-slate-100 transition shrink-0"
                       title="Add to calendar (.ics)"
                     >
                       <CalendarPlus className="w-3.5 h-3.5 text-blue-400" />

@@ -159,14 +159,14 @@ export default function CarRow({
             <>
               <button
                 onClick={() => onJoin(practice.id, leg, car.id)}
-                className="px-3.5 py-2 min-h-[36px] rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition"
+                className="px-4 py-2 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition"
               >
                 Join
               </button>
               {canRideBoth && (
                 <button
                   onClick={() => onJoinBoth(practice.id, car.driverParentId)}
-                  className="px-3.5 py-2 min-h-[36px] rounded-full text-xs font-medium bg-slate-700/75 hover:bg-slate-700 text-slate-100 transition"
+                  className="px-4 py-2 rounded-full text-xs font-medium bg-slate-700/75 hover:bg-slate-700 text-slate-100 transition"
                 >
                   Both Ways
                 </button>
@@ -177,7 +177,7 @@ export default function CarRow({
           {!isReadOnly && !isMyDrive && isNeedsSub && canDrive && currentParent && (
             <button
               onClick={() => onTakeOver(practice.id, leg, car.id)}
-              className="px-3.5 py-2 min-h-[36px] rounded-full text-xs font-semibold bg-amber-400 hover:bg-amber-300 text-slate-950 transition"
+              className="px-4 py-2 rounded-full text-xs font-semibold bg-amber-400 hover:bg-amber-300 text-slate-950 transition"
             >
               Take Over
             </button>
@@ -261,7 +261,7 @@ export default function CarRow({
             {isMyDrive && otherRiders.length > 0 && onOpenStopsModal && (
               <button
                 onClick={() => onOpenStopsModal(practice.id, leg, car.id)}
-                className="inline-flex items-center gap-1 px-3 py-1.5 min-h-[36px] rounded-full text-xs font-medium bg-slate-700/75 hover:bg-slate-700 text-blue-300 transition"
+                className="inline-flex items-center gap-1 px-3.5 py-2 rounded-full text-xs font-medium bg-slate-700/75 hover:bg-slate-700 text-blue-300 transition"
                 title="View rider addresses and parent contacts"
               >
                 <MapPin className="w-3.5 h-3.5" />
@@ -270,7 +270,7 @@ export default function CarRow({
             )}
             <button
               onClick={() => onToggleNeedSub(practice.id, leg, car.id)}
-              className={`px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-medium border transition ${
+              className={`px-4 py-2 rounded-full text-xs font-medium border transition ${
                 isNeedsSub
                   ? 'bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border-amber-500/40'
                   : 'bg-slate-700/75 hover:bg-slate-700 text-slate-100 border-transparent'
@@ -289,7 +289,7 @@ export default function CarRow({
                   }
                   onDropDrive(practice.id, leg, car.id);
                 }}
-                className="px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-medium text-rose-400 border border-rose-500/25 bg-rose-500/5 hover:bg-rose-500/10 transition"
+                className="px-4 py-2 rounded-full text-xs font-medium text-rose-400 border border-rose-500/25 bg-rose-500/5 hover:bg-rose-500/10 transition"
               >
                 Drop
               </button>

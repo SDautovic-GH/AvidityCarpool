@@ -565,13 +565,13 @@ export default function AdminRoster({
                         />
                         <button
                           onClick={() => handleSavePlayerName(player.id)}
-                          className="px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-blue-600 text-white"
+                          className="px-4 py-2 rounded-full text-xs font-semibold bg-blue-600 text-white"
                         >
                           Save
                         </button>
                         <button
                           onClick={() => setEditingPlayerId(null)}
-                          className="px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-slate-800 text-slate-300"
+                          className="px-4 py-2 rounded-full text-xs font-semibold bg-slate-800 text-slate-300"
                         >
                           Cancel
                         </button>
@@ -785,7 +785,7 @@ export default function AdminRoster({
                             {!isAdmin && isSelf && (
                               <button
                                 onClick={openEditSelf}
-                                className="px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
+                                className="px-4 py-2 rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
                               >
                                 Update
                               </button>
@@ -794,13 +794,13 @@ export default function AdminRoster({
                               <>
                                 <button
                                   onClick={() => openEditParent(parent)}
-                                  className="px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
+                                  className="px-4 py-2 rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
                                 >
                                   Edit
                                 </button>
                                 <button
                                   onClick={() => onSendResetEmail(parent.email || parent.id)}
-                                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
+                                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
                                   title="Send password reset email"
                                 >
                                   <KeyRound className="w-3.5 h-3.5" />
@@ -851,7 +851,7 @@ export default function AdminRoster({
                 </span>
                 <button
                   onClick={() => openEditParent(parent)}
-                  className="px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700"
+                  className="px-4 py-2 rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700"
                 >
                   Link Player
                 </button>
