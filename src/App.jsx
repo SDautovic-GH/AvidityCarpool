@@ -1206,9 +1206,19 @@ export default function App() {
         return (
           <nav
             aria-label="Primary navigation"
-            className="sm:hidden fixed inset-x-0 bottom-0 z-40 px-4 pb-[max(12px,env(safe-area-inset-bottom))] pointer-events-none flex justify-center"
+            className="sm:hidden fixed inset-x-0 bottom-0 z-40 px-4 pb-[max(20px,calc(env(safe-area-inset-bottom)+6px))] pointer-events-none flex justify-center"
           >
-            <div className="pointer-events-auto flex items-center justify-between gap-1 h-[46px] w-full max-w-[320px] p-1 rounded-full bg-[#222228]/55 border border-white/15 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.45),inset_0_0.5px_0_rgba(255,255,255,0.12)]">
+            <div
+              style={{
+                background: 'rgba(34, 34, 40, 0.36)',
+                border: '0.5px solid rgba(255, 255, 255, 0.14)',
+                boxShadow:
+                  '0 8px 32px rgba(0, 0, 0, 0.45), inset 0 0.5px 0 0 rgba(255, 255, 255, 0.10)',
+                WebkitBackdropFilter: 'blur(24px) saturate(200%) brightness(1.08)',
+                backdropFilter: 'blur(24px) saturate(200%) brightness(1.08)',
+              }}
+              className="pointer-events-auto flex items-center justify-between gap-1 h-[46px] w-full max-w-[320px] px-1 py-[3px] rounded-full"
+            >
               {mobileTabs.map(({ id, label, Icon, badge, badgeBg }) => {
                 const active = tab === id;
                 return (
@@ -1219,17 +1229,24 @@ export default function App() {
                     title={label}
                     aria-label={label}
                     aria-current={active ? 'page' : undefined}
-                    className={`flex-1 min-w-0 h-full rounded-full flex items-center justify-center transition border ${
+                    style={
                       active
-                        ? 'bg-white/15 border-white/15 text-white'
-                        : 'bg-transparent border-transparent text-white/70 hover:text-white'
+                        ? {
+                            background: 'rgba(0, 0, 0, 0.32)',
+                            boxShadow:
+                              'inset 0 0.5px 1.5px rgba(0, 0, 0, 0.45), 0 0.5px 0 rgba(255, 255, 255, 0.12)',
+                          }
+                        : undefined
+                    }
+                    className={`flex-1 min-w-0 h-full rounded-full flex items-center justify-center transition active:scale-95 ${
+                      active ? 'text-blue-400' : 'text-white/90 hover:text-white'
                     }`}
                   >
                     <span className="relative inline-flex items-center justify-center">
                       <Icon className="w-5 h-5" />
                       {badge > 0 && (
                         <span
-                          className={`absolute -top-1.5 -right-2.5 px-1 min-w-[15px] h-[15px] rounded-full text-[10px] font-bold leading-[15px] text-center tabular-nums ${badgeBg}`}
+                          className={`absolute -top-[5px] -right-[8px] px-1 min-w-[15px] h-[15px] rounded-full text-[9px] font-bold leading-[15px] text-center tabular-nums ring-[1.5px] ring-[#121214]/95 ${badgeBg}`}
                         >
                           {badge}
                         </span>
