@@ -848,7 +848,7 @@ export default function App() {
                     <button
                       type="button"
                       onClick={() => setOnlyNeedsDriver(false)}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 min-h-[34px] rounded-full text-[13px] font-semibold whitespace-nowrap bg-transparent text-slate-300 hover:bg-slate-800 hover:text-slate-100 transition"
+                      className="inline-flex items-center gap-1 px-2.5 py-1.5 min-h-[34px] rounded-full text-sm font-semibold whitespace-nowrap bg-transparent text-slate-300 hover:bg-slate-800 hover:text-slate-100 transition"
                     >
                       {(() => {
                         if (monthFilter === 'all') return 'All Upcoming';
@@ -866,7 +866,7 @@ export default function App() {
                           setMonthFilter(next);
                           if (next === 'past') setOnlyNeedsDriver(false);
                         }}
-                        className="appearance-none cursor-pointer pl-3 pr-6 py-1.5 min-h-[34px] rounded-full text-[13px] font-semibold transition focus:outline-none bg-slate-800 text-slate-100"
+                        className="appearance-none cursor-pointer pl-2.5 pr-6 py-1.5 min-h-[34px] rounded-full text-sm font-semibold transition focus:outline-none bg-slate-800 text-slate-100"
                       >
                         <option value="all" className="bg-slate-900 text-slate-100">
                           All Upcoming
@@ -889,7 +889,7 @@ export default function App() {
                     <button
                       type="button"
                       onClick={() => setOnlyNeedsDriver((v) => !v)}
-                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 min-h-[34px] rounded-full text-[13px] font-semibold whitespace-nowrap transition ${
+                      className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 min-h-[34px] rounded-full text-sm font-semibold whitespace-nowrap transition ${
                         onlyNeedsDriver
                           ? 'bg-amber-500/20 text-amber-300'
                           : 'text-slate-400 hover:text-slate-200'
@@ -905,7 +905,7 @@ export default function App() {
                     isAdmin ? 'justify-between sm:justify-center' : 'justify-center'
                   }`}
                 >
-                  <div className="inline-flex p-0.5 rounded-full bg-slate-900 border border-slate-800 text-xs font-semibold">
+                  <div className="inline-flex p-0.5 rounded-full bg-slate-900 border border-slate-800 text-sm font-semibold">
                     <button
                       type="button"
                       onClick={() => setViewMode('cards')}
@@ -950,7 +950,7 @@ export default function App() {
 
             {tab === 'my-drives' && visiblePractices.length > 0 && currentParent && (
               <div className="flex flex-wrap items-center justify-center gap-2">
-                <div className="inline-flex p-0.5 rounded-full bg-slate-900 border border-slate-800 text-xs font-semibold">
+                <div className="inline-flex p-0.5 rounded-full bg-slate-900 border border-slate-800 text-sm font-semibold">
                   <button
                     type="button"
                     onClick={() => setViewMode('cards')}
