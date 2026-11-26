@@ -1206,7 +1206,7 @@ export default function App() {
         return (
           <nav
             aria-label="Primary navigation"
-            className="sm:hidden fixed inset-x-0 bottom-0 z-40 px-4 pb-[max(20px,calc(env(safe-area-inset-bottom)+6px))] pointer-events-none flex justify-center"
+            className="sm:hidden fixed inset-x-0 bottom-0 z-40 px-4 pb-[max(8px,calc(env(safe-area-inset-bottom)-10px))] pointer-events-none flex justify-center"
           >
             <div
               style={{
