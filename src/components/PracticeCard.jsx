@@ -177,12 +177,16 @@ export default function PracticeCard({
           ? null
           : { text: `Riding with ${firstNameOf(toCar.driverName)}`, warning: false };
       }
-      return null;
+      return {
+        text: `To: ${driverLabel(toCar)} · From: ${driverLabel(fromCar)}`,
+        warning: false,
+      };
     }
     if (toCar?.status === 'needs_sub' || fromCar?.status === 'needs_sub') {
       return { text: 'Driver needs sub', warning: true };
     }
-    if (toCar || fromCar) return null;
+    if (toCar && !fromCar) return { text: 'Needs ride From', warning: true };
+    if (!toCar && fromCar) return { text: 'Needs ride To', warning: true };
     return { text: 'Needs a ride', warning: true };
   })();
 
@@ -212,7 +216,7 @@ export default function PracticeCard({
     .map((p) => p.phone);
   const myCarSmsUrl = buildSmsUrl(myCarPhones);
 
-  const renderLegBody = (leg, isDesktop) => {
+  const renderLegBody = (leg) => {
     const cars = practice.legs?.[leg] || [];
     const unassigned = getUnassignedPlayers(practice, leg, effectivePlayers);
     const isDrivingThisLeg = (practice.legs?.[leg] || []).some(
@@ -226,29 +230,29 @@ export default function PracticeCard({
 
     return (
       <div className="space-y-2">
-        {isDesktop && (
-          <div className="flex items-center justify-between pb-1.5 border-b border-slate-800">
-            <div className="flex items-center gap-2.5">
-              <span className="text-sm font-bold tracking-tight">
-                {leg === 'to' ? '→ To Practice' : '← From Practice'}
-              </span>
-              <span className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-300">
-                <span className={`w-2 h-2 rounded-full ${TONE_DOT[summary.tone]}`} />
-                {summary.text}
-              </span>
-            </div>
-            {!isReadOnly && canDrive && !isDrivingThisLeg && needsMoreDrivers && (
-              <button
-                onClick={() => onOpenDriveModal(practice.id, leg)}
-                className="px-4 py-1.5 rounded-full text-sm font-semibold bg-blue-600 hover:bg-blue-500 text-white transition"
-              >
-                + I can drive
-              </button>
-            )}
+        <div className="flex flex-wrap items-center justify-between gap-2 pb-1.5 border-b border-slate-800">
+          <div className="flex flex-wrap items-center gap-x-2.5 gap-y-0.5">
+            <span className="text-sm font-bold tracking-tight text-slate-100 whitespace-nowrap">
+              {leg === 'to' ? '→ To Practice' : '← From Practice'}
+            </span>
+            <span className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-300 whitespace-nowrap">
+              <span className={`w-2 h-2 rounded-full ${TONE_DOT[summary.tone]}`} />
+              {summary.text}
+            </span>
           </div>
-        )}
+          {!isReadOnly && canDrive && !isDrivingThisLeg && needsMoreDrivers && (
+            <button
+              onClick={() =>
+                onOpenDriveModal(practice.id, !drivesTo && !drivesFrom && toEnabled && fromEnabled ? 'both' : leg)
+              }
+              className="px-3.5 py-1 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition whitespace-nowrap"
+            >
+              + I can drive
+            </button>
+          )}
+        </div>
 
-        {(unassigned.length > 0 || !isDesktop || cars.length > 0) && (
+        {(unassigned.length > 0 || cars.length > 0) && (
           <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-800/80">
             <div className="text-sm flex flex-wrap items-center gap-1.5">
               {unassigned.length > 0 ? (
@@ -297,24 +301,6 @@ export default function PracticeCard({
               )}
             </div>
 
-            <div className="flex items-center gap-2 shrink-0">
-              {!isDesktop && needsMoreDrivers && (
-                <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-400">
-                  <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
-                  Need a driver
-                </span>
-              )}
-              {!isReadOnly && !isDesktop && !isAdmin && canDrive && !isDrivingThisLeg && needsMoreDrivers && (
-                <button
-                  onClick={() =>
-                    onOpenDriveModal(practice.id, !drivesTo && !drivesFrom ? 'both' : leg)
-                  }
-                  className="px-4 py-1.5 rounded-full text-sm font-semibold bg-blue-600 hover:bg-blue-500 text-white transition shrink-0"
-                >
-                  + I can drive
-                </button>
-              )}
-            </div>
           </div>
         )}
 
@@ -694,57 +680,36 @@ export default function PracticeCard({
             No carpool needed for this practice.
           </div>
         ) : toEnabled && fromEnabled ? (
-          <>
-            {/* Mobile: Segmented To/From tabs */}
-            <div className="md:hidden space-y-2">
-              <div className="flex items-center gap-1 p-1 rounded-full bg-slate-950 border border-slate-800">
-                <button
-                  onClick={() => setActiveLeg('to')}
-                  className={`flex-auto flex items-center justify-center gap-1.5 px-3 py-1.5 min-h-[34px] rounded-full text-sm font-semibold whitespace-nowrap transition ${
-                    activeLeg === 'to'
-                      ? 'bg-slate-700/85 text-slate-50 shadow-sm'
-                      : 'text-slate-300 hover:text-slate-100'
-                  }`}
-                >
-                  <span className={`w-2 h-2 rounded-full shrink-0 ${TONE_DOT[toSum.tone]}`} />
-                  <span>To Practice</span>
-                </button>
-                <button
-                  onClick={() => setActiveLeg('from')}
-                  className={`flex-auto flex items-center justify-center gap-1.5 px-3 py-1.5 min-h-[34px] rounded-full text-sm font-semibold whitespace-nowrap transition ${
-                    activeLeg === 'from'
-                      ? 'bg-slate-700/85 text-slate-50 shadow-sm'
-                      : 'text-slate-300 hover:text-slate-100'
-                  }`}
-                >
-                  <span className={`w-2 h-2 rounded-full shrink-0 ${TONE_DOT[fromSum.tone]}`} />
-                  <span>From Practice</span>
-                </button>
-              </div>
-              {renderLegBody(activeLeg, false)}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 pt-1">
+            <div
+              className={`rounded-xl bg-slate-950/55 border p-3.5 ${
+                subTo
+                  ? 'border-amber-500/45'
+                  : toSum.tone === 'error'
+                    ? 'border-rose-500/30'
+                    : 'border-slate-800/80'
+              }`}
+            >
+              {renderLegBody('to')}
             </div>
-
-            {/* Desktop: Side-by-side To/From */}
-            <div className="hidden md:grid md:grid-cols-2 gap-4 pt-1">
-              <div className="rounded-xl bg-slate-950/55 border border-slate-800/80 p-3.5">
-                {renderLegBody('to', true)}
-              </div>
-              <div className="rounded-xl bg-slate-950/55 border border-slate-800/80 p-3.5">
-                {renderLegBody('from', true)}
-              </div>
+            <div
+              className={`rounded-xl bg-slate-950/55 border p-3.5 ${
+                subFrom
+                  ? 'border-amber-500/45'
+                  : fromSum.tone === 'error'
+                    ? 'border-rose-500/30'
+                    : 'border-slate-800/80'
+              }`}
+            >
+              {renderLegBody('from')}
             </div>
-          </>
+          </div>
         ) : (
-          <>
-            <div className="md:hidden">
-              {renderLegBody(toEnabled ? 'to' : 'from', false)}
+          <div className="pt-1">
+            <div className="rounded-xl bg-slate-950/55 border border-slate-800/80 p-3.5">
+              {renderLegBody(toEnabled ? 'to' : 'from')}
             </div>
-            <div className="hidden md:block pt-1">
-              <div className="rounded-xl bg-slate-950/55 border border-slate-800/80 p-3.5">
-                {renderLegBody(toEnabled ? 'to' : 'from', true)}
-              </div>
-            </div>
-          </>
+          </div>
         )
       )}
 
