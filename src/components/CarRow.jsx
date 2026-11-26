@@ -63,9 +63,10 @@ export default function CarRow({
     (otherCar.riderIds || []).length < (otherCar.seatsTotal || 0);
 
   const shortNames = shortPlayerNames || getShortPlayerNames(players);
+  const isGuestId = (pid) => Boolean(players.find((p) => p.id === pid)?.isGuest);
   const getPlayerName = (pid) => {
     const pl = players.find((p) => p.id === pid);
-    if (pl?.isGuest) return /guest/i.test(pl.name || '') ? pl.name : `${pl.name} (Guest)`;
+    if (pl?.isGuest) return pl.name || 'Guest';
     return shortNames[pid] || pl?.name || 'Player';
   };
   const myGuestIds = riderIds.filter((id) => {
@@ -74,7 +75,7 @@ export default function CarRow({
   });
   const otherRiders = riderIds
     .filter((id) => id !== myPlayerId && !myGuestIds.includes(id))
-    .map(getPlayerName);
+    .map((id) => (isGuestId(id) ? `${getPlayerName(id)} (Guest)` : getPlayerName(id)));
 
   return (
     <div
@@ -201,6 +202,11 @@ export default function CarRow({
                     }`}
                   >
                     {getPlayerName(pid)}
+                    {isGuestId(pid) && (
+                      <span className="px-1 rounded text-[10px] font-bold bg-violet-500/25 text-violet-300">
+                        G
+                      </span>
+                    )}
                     <button
                       onClick={() => onAdminRemoveRider(practice.id, leg, car.id, pid)}
                       title="Remove rider"
@@ -241,6 +247,9 @@ export default function CarRow({
                   className="inline-flex items-center gap-1 pl-3 pr-1.5 py-1 rounded-full text-sm font-semibold bg-slate-800 text-slate-200"
                 >
                   {getPlayerName(gid)}
+                  <span className="px-1 rounded text-[10px] font-bold bg-violet-500/25 text-violet-300">
+                    G
+                  </span>
                   {!isReadOnly && (
                     <button
                       onClick={() => onLeave(practice.id, leg, car.id, gid)}
