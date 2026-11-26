@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Bell, BookOpen, CalendarPlus, ChevronDown, CircleHelp, LayoutGrid, List, LogOut, MoreHorizontal, Plus } from 'lucide-react';
+import { Bell, BookOpen, Calendar, CalendarPlus, Car, ChevronDown, CircleHelp, LayoutGrid, List, LogOut, MoreHorizontal, Plus, Trophy, Users } from 'lucide-react';
 import {
   auth,
   isFirebaseConfigured,
@@ -694,7 +694,7 @@ export default function App() {
           </div>
         </div>
 
-        <div className="max-w-4xl mx-auto px-3 sm:px-4 flex items-center justify-center">
+        <div className="hidden sm:flex max-w-4xl mx-auto px-4 items-center justify-center">
           {(() => {
             const myParentId = currentParent?.id || '';
             const upcomingCount = practices.filter(
@@ -714,20 +714,20 @@ export default function App() {
               { id: 'roster', label: 'Team', count: 0 },
             ];
             return (
-              <div className="w-full sm:w-auto flex items-center justify-between gap-1.5 sm:justify-center sm:gap-7">
+              <div className="flex items-center justify-center gap-7">
                 {tabs.map(({ id, label, count }) => (
                   <button
                     key={id}
                     onClick={() => setTab(id)}
-                    className={`inline-flex items-baseline gap-1 sm:gap-1.5 py-2.5 text-sm sm:text-[15px] whitespace-nowrap shrink-0 transition-colors ${
+                    className={`inline-flex items-baseline gap-1.5 py-2.5 text-[15px] whitespace-nowrap shrink-0 transition-colors ${
                       tab === id
                         ? 'text-slate-100 font-bold'
                         : 'text-slate-400 hover:text-slate-200 font-semibold'
                     }`}
                   >
                     <span
-                      className={`pb-0.5 border-b ${
-                        tab === id ? 'border-current' : 'border-transparent'
+                      className={`pb-0.5 border-b-2 ${
+                        tab === id ? 'border-blue-500' : 'border-transparent'
                       }`}
                     >
                       {label}
@@ -751,7 +751,7 @@ export default function App() {
         </div>
       </header>
 
-      <main className="w-full max-w-4xl mx-auto px-3 sm:px-4 pt-3 pb-[max(2rem,env(safe-area-inset-bottom))] space-y-3">
+      <main className="w-full max-w-4xl mx-auto px-3 sm:px-4 pt-3 pb-[calc(5.25rem+env(safe-area-inset-bottom))] sm:pb-10 space-y-3">
         {!loading && activeSeason && currentParent && (
           <PushOptInBanner
             currentParent={currentParent}
@@ -1186,6 +1186,62 @@ export default function App() {
           </>
         )}
       </main>
+
+      {/* Mobile: RSSReader-style floating Liquid Glass capsule bottom bar */}
+      {(() => {
+        const myParentId = currentParent?.id || '';
+        const myDrivesCount = practices.filter(
+          (p) =>
+            p.isoDate >= todayIso &&
+            p.status !== 'cancelled' &&
+            ((p.legs?.to || []).some((c) => c.driverParentId === myParentId) ||
+              (p.legs?.from || []).some((c) => c.driverParentId === myParentId))
+        ).length;
+        const mobileTabs = [
+          { id: 'all', label: 'Practices', Icon: Calendar, badge: 0, badgeBg: '' },
+          { id: 'my-drives', label: 'My Drives', Icon: Car, badge: myDrivesCount, badgeBg: 'bg-blue-600 text-white' },
+          { id: 'tournaments', label: 'Events', Icon: Trophy, badge: tournaments.length, badgeBg: 'bg-slate-700 text-slate-100' },
+          { id: 'roster', label: 'Team', Icon: Users, badge: 0, badgeBg: '' },
+        ];
+        return (
+          <nav
+            aria-label="Primary navigation"
+            className="sm:hidden fixed inset-x-0 bottom-0 z-40 px-4 pb-[max(12px,env(safe-area-inset-bottom))] pointer-events-none flex justify-center"
+          >
+            <div className="pointer-events-auto flex items-center justify-between gap-1 h-[46px] w-full max-w-[320px] p-1 rounded-full bg-[#222228]/55 border border-white/15 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.45),inset_0_0.5px_0_rgba(255,255,255,0.12)]">
+              {mobileTabs.map(({ id, label, Icon, badge, badgeBg }) => {
+                const active = tab === id;
+                return (
+                  <button
+                    key={id}
+                    type="button"
+                    onClick={() => setTab(id)}
+                    title={label}
+                    aria-label={label}
+                    aria-current={active ? 'page' : undefined}
+                    className={`flex-1 min-w-0 h-full rounded-full flex items-center justify-center transition border ${
+                      active
+                        ? 'bg-white/15 border-white/15 text-white'
+                        : 'bg-transparent border-transparent text-white/70 hover:text-white'
+                    }`}
+                  >
+                    <span className="relative inline-flex items-center justify-center">
+                      <Icon className="w-5 h-5" />
+                      {badge > 0 && (
+                        <span
+                          className={`absolute -top-1.5 -right-2.5 px-1 min-w-[15px] h-[15px] rounded-full text-[10px] font-bold leading-[15px] text-center tabular-nums ${badgeBg}`}
+                        >
+                          {badge}
+                        </span>
+                      )}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </nav>
+        );
+      })()}
 
       {activeDrivePractice && (currentParent || isAdmin) && (() => {
         const targetWeekday = new Date(`${activeDrivePractice.isoDate}T12:00:00`).getDay();
