@@ -167,13 +167,12 @@ export default function PracticeCard({
           ? null
           : { text: `Riding with ${firstNameOf(toCar.driverName)}`, warning: false };
       }
-      return { text: `To ${driverLabel(toCar)} · From ${driverLabel(fromCar)}`, warning: false };
+      return null;
     }
     if (toCar?.status === 'needs_sub' || fromCar?.status === 'needs_sub') {
       return { text: 'Driver needs sub', warning: true };
     }
-    if (toCar) return { text: `To: ${driverLabel(toCar)} · From: Needed`, warning: true };
-    if (fromCar) return { text: `To: Needed · From: ${driverLabel(fromCar)}`, warning: true };
+    if (toCar || fromCar) return null;
     return { text: 'Needs a ride', warning: true };
   })();
 
