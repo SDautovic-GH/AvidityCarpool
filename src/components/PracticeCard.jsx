@@ -681,25 +681,25 @@ export default function PracticeCard({
               <div className="flex items-center gap-1 p-1 rounded-full bg-slate-950 border border-slate-800">
                 <button
                   onClick={() => setActiveLeg('to')}
-                  className={`flex-auto flex items-center justify-center gap-1 px-2.5 py-1.5 min-h-[32px] rounded-full text-xs font-semibold whitespace-nowrap transition ${
+                  className={`flex-auto flex items-center justify-center gap-1.5 px-3 py-1.5 min-h-[34px] rounded-full text-sm font-semibold whitespace-nowrap transition ${
                     activeLeg === 'to'
                       ? 'bg-slate-700/85 text-slate-50 shadow-sm'
                       : 'text-slate-300 hover:text-slate-100'
                   }`}
                 >
                   <span className={`w-2 h-2 rounded-full shrink-0 ${TONE_DOT[toSum.tone]}`} />
-                  <span>→ To Practice</span>
+                  <span>To Practice</span>
                 </button>
                 <button
                   onClick={() => setActiveLeg('from')}
-                  className={`flex-auto flex items-center justify-center gap-1 px-2.5 py-1.5 min-h-[32px] rounded-full text-xs font-semibold whitespace-nowrap transition ${
+                  className={`flex-auto flex items-center justify-center gap-1.5 px-3 py-1.5 min-h-[34px] rounded-full text-sm font-semibold whitespace-nowrap transition ${
                     activeLeg === 'from'
                       ? 'bg-slate-700/85 text-slate-50 shadow-sm'
                       : 'text-slate-300 hover:text-slate-100'
                   }`}
                 >
                   <span className={`w-2 h-2 rounded-full shrink-0 ${TONE_DOT[fromSum.tone]}`} />
-                  <span>← From Practice</span>
+                  <span>From Practice</span>
                 </button>
               </div>
               {renderLegBody(activeLeg, false)}
