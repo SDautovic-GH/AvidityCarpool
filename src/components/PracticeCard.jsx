@@ -425,7 +425,7 @@ export default function PracticeCard({
         isFirstUpcoming && !isCancelled ? 'border-blue-500/55' : 'border-slate-700/80'
       } p-3.5 sm:p-4 space-y-3 min-w-0 overflow-hidden`}
     >
-      <div className="-mx-3.5 -mt-3.5 sm:-mx-4 sm:-mt-4 px-3.5 sm:px-4 py-3 bg-slate-950/60 border-b border-slate-800/80 flex items-start justify-between gap-2 min-w-0">
+      <div className="-mx-3.5 -mt-3.5 sm:-mx-4 sm:-mt-4 px-3.5 sm:px-4 py-3 bg-slate-800/65 border-b border-slate-700/70 flex items-start justify-between gap-2 min-w-0">
           <div className="flex items-start gap-3 min-w-0 flex-1">
             <div
               className={`relative w-11 h-11 rounded-xl ${
