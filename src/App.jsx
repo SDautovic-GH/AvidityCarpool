@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Bell, BookOpen, Calendar, CalendarPlus, Car, ChevronDown, CircleHelp, LayoutGrid, List, LogOut, MoreHorizontal, Plus, Trophy, Users } from 'lucide-react';
+import { Bell, BookOpen, Calendar, CalendarPlus, Car, ChevronDown, LayoutGrid, List, LogOut, MoreHorizontal, Plus, Trophy, Users } from 'lucide-react';
 import {
   auth,
   isFirebaseConfigured,
@@ -610,7 +610,19 @@ export default function App() {
               aria-label="User Guide"
               title="User Guide"
             >
-              <CircleHelp className="w-4 h-4 text-blue-400" />
+              <svg
+                className="w-4 h-4 text-blue-400"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.25"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                <path d="M12 17h.01" />
+              </svg>
             </button>
 
             <div ref={menuContainerRef} className="relative sm:hidden">
