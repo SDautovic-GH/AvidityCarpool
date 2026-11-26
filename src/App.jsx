@@ -128,6 +128,8 @@ export default function App() {
   );
   const hasModalOpenRef = React.useRef(hasModalOpen);
   hasModalOpenRef.current = hasModalOpen;
+  const [activeWrites, setActiveWrites] = useState(0);
+  const activeWritesRef = React.useRef(0);
   const pendingBuildIdRef = React.useRef(null);
 
   useEffect(() => {
@@ -158,7 +160,7 @@ export default function App() {
         const data = await res.json();
         const remoteId = data?.buildId;
         if (!remoteId || remoteId === __APP_BUILD_ID__) return;
-        if (hasModalOpenRef.current) {
+        if (hasModalOpenRef.current || activeWritesRef.current > 0) {
           pendingBuildIdRef.current = remoteId;
           return;
         }
@@ -186,14 +188,14 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (!hasModalOpen && pendingBuildIdRef.current) {
+    if (!hasModalOpen && activeWrites === 0 && pendingBuildIdRef.current) {
       const remoteId = pendingBuildIdRef.current;
       pendingBuildIdRef.current = null;
       const nextUrl = new URL(window.location.href);
       nextUrl.searchParams.set('_v', remoteId);
       window.location.replace(nextUrl.toString());
     }
-  }, [hasModalOpen]);
+  }, [hasModalOpen, activeWrites]);
 
   useEffect(() => {
     if (!isFirebaseConfigured || !auth) return;
@@ -410,11 +412,16 @@ export default function App() {
   const shortPlayerNames = useMemo(() => getShortPlayerNames(players), [players]);
 
   const runAction = async (fn, successMsg) => {
+    activeWritesRef.current += 1;
+    setActiveWrites((c) => c + 1);
     try {
       await fn();
       if (successMsg) showToast(successMsg);
     } catch (err) {
       showToast(err?.message || 'Something went wrong');
+    } finally {
+      activeWritesRef.current = Math.max(0, activeWritesRef.current - 1);
+      setActiveWrites((c) => Math.max(0, c - 1));
     }
   };
 
