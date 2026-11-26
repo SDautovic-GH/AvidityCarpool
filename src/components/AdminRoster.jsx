@@ -427,7 +427,7 @@ export default function AdminRoster({
                           setEnablingPush(false);
                         }
                       }}
-                      className={`px-3.5 py-1.5 min-h-[34px] rounded-full text-xs font-semibold transition whitespace-nowrap disabled:opacity-50 ${
+                      className={`px-4 py-1.5 rounded-full text-sm font-semibold transition whitespace-nowrap disabled:opacity-50 ${
                         isDeviceEnabled
                           ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 hover:bg-emerald-500/25'
                           : 'bg-blue-600 hover:bg-blue-500 text-white'
@@ -458,7 +458,7 @@ export default function AdminRoster({
                             setEnablingPush(false);
                           }
                         }}
-                        className="px-3.5 py-1.5 min-h-[34px] rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-slate-200 transition whitespace-nowrap"
+                        className="px-4 py-1.5 rounded-full text-sm font-semibold bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-slate-200 transition whitespace-nowrap"
                       >
                         Test Alert (Me)
                       </button>
@@ -513,7 +513,7 @@ export default function AdminRoster({
         );
       })()}
 
-      <div className="rounded-2xl bg-slate-900 border border-slate-800 px-4 py-3 text-xs text-slate-300 flex flex-wrap items-center justify-between gap-2">
+      <div className="rounded-2xl bg-slate-900 border border-slate-800 px-4 py-3 text-[13px] text-slate-300 flex flex-wrap items-center justify-between gap-2">
         <div>
           <span className="text-slate-400 font-semibold">Coaches:</span> Ashley Krugh, Hannah Mullarkey
         </div>
