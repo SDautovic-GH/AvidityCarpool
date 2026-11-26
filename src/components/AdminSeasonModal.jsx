@@ -99,7 +99,7 @@ export default function AdminSeasonModal({
               <button
                 type="button"
                 onClick={() => setTab('practices')}
-                className={`px-4 py-1.5 rounded-full text-[13px] font-semibold transition ${
+                className={`px-4 py-1.5 rounded-full text-sm font-semibold transition ${
                   tab === 'practices'
                     ? 'bg-blue-600 text-white'
                     : 'text-slate-400 hover:text-slate-200'
@@ -111,7 +111,7 @@ export default function AdminSeasonModal({
             <button
               type="button"
               onClick={() => setTab('season')}
-              className={`px-4 py-1.5 rounded-full text-[13px] font-semibold transition ${
+              className={`px-4 py-1.5 rounded-full text-sm font-semibold transition ${
                 tab === 'season'
                   ? 'bg-blue-600 text-white'
                   : 'text-slate-400 hover:text-slate-200'
@@ -174,7 +174,7 @@ export default function AdminSeasonModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 rounded-full text-[13px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
+                className="px-4 py-1.5 rounded-full text-sm font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
               >
                 Cancel
               </button>
@@ -182,7 +182,7 @@ export default function AdminSeasonModal({
                 type="button"
                 disabled={generating || previewPractices.length === 0}
                 onClick={handleGeneratePractices}
-                className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full text-[13px] font-semibold bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white transition"
+                className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-semibold bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white transition"
               >
                 <CalendarPlus className="w-3.5 h-3.5" />
                 {generating
@@ -281,14 +281,14 @@ export default function AdminSeasonModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 rounded-full text-[13px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
+                className="px-4 py-1.5 rounded-full text-sm font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={creatingSeason}
-                className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full text-[13px] font-semibold bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white transition"
+                className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-semibold bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white transition"
               >
                 <Sparkles className="w-3.5 h-3.5" />
                 {creatingSeason ? 'Creating...' : 'Create Season'}

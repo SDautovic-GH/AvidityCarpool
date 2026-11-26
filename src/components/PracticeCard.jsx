@@ -231,7 +231,7 @@ export default function PracticeCard({
             {!isReadOnly && canDrive && !isDrivingThisLeg && needsMoreDrivers && (
               <button
                 onClick={() => onOpenDriveModal(practice.id, leg)}
-                className="px-4 py-2 rounded-full text-[13px] font-semibold bg-blue-600 hover:bg-blue-500 text-white transition"
+                className="px-4 py-1.5 rounded-full text-sm font-semibold bg-blue-600 hover:bg-blue-500 text-white transition"
               >
                 + I can drive
               </button>
@@ -254,7 +254,7 @@ export default function PracticeCard({
                         <button
                           key={pl.id}
                           onClick={() => onOpenAssignModal(practice.id, leg, pl.id)}
-                          className="inline-flex items-center gap-1 px-3.5 py-2 rounded-full text-[13px] font-semibold bg-slate-700/75 hover:bg-blue-600 text-slate-100 transition"
+                          className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full text-sm font-semibold bg-slate-700/75 hover:bg-blue-600 text-slate-100 transition"
                         >
                           <span>{shortNameOf(pl)}</span>
                           {pl.isGuest && (
@@ -300,7 +300,7 @@ export default function PracticeCard({
                   onClick={() =>
                     onOpenDriveModal(practice.id, !drivesTo && !drivesFrom ? 'both' : leg)
                   }
-                  className="px-4 py-2 rounded-full text-[13px] font-semibold bg-blue-600 hover:bg-blue-500 text-white transition shrink-0"
+                  className="px-4 py-1.5 rounded-full text-sm font-semibold bg-blue-600 hover:bg-blue-500 text-white transition shrink-0"
                 >
                   + I can drive
                 </button>
@@ -481,7 +481,7 @@ export default function PracticeCard({
               <button
                 onClick={() => onToggleAttendance(practice.id, myPlayer.id)}
                 title="Tap to toggle Going / Out"
-                className={`inline-flex items-center gap-1.5 whitespace-nowrap px-4 py-2 rounded-full text-[13px] font-semibold border transition ${
+                className={`inline-flex items-center gap-1.5 whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-semibold border transition ${
                   isOut
                     ? 'bg-rose-500/15 border-rose-500/30 hover:bg-rose-500/25 text-rose-300'
                     : 'bg-slate-800/90 border-slate-700/80 hover:bg-slate-700 text-slate-100'
@@ -503,7 +503,7 @@ export default function PracticeCard({
           {!isCancelled && !isReadOnly && hasAnyCarpool && canDrive && !drivesAllActive && (
             <button
               onClick={() => onOpenDriveModal(practice.id, defaultDriveDir)}
-              className={`${isAdmin ? 'inline-flex' : 'hidden md:inline-flex'} items-center whitespace-nowrap px-4 py-2 rounded-full text-[13px] font-semibold bg-blue-600 hover:bg-blue-500 text-white transition`}
+              className={`${isAdmin ? 'inline-flex' : 'hidden md:inline-flex'} items-center whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-semibold bg-blue-600 hover:bg-blue-500 text-white transition`}
             >
               + I can drive
             </button>
@@ -511,7 +511,7 @@ export default function PracticeCard({
           {!isCancelled && !isReadOnly && hasAnyCarpool && isAdmin && (!canDrive || drivesAllActive) && (
             <button
               onClick={() => onOpenDriveModal(practice.id, defaultDriveDir)}
-              className="inline-flex items-center whitespace-nowrap px-4 py-2 rounded-full text-[13px] font-semibold bg-slate-700/75 hover:bg-slate-700 text-slate-100 transition"
+              className="inline-flex items-center whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-semibold bg-slate-700/75 hover:bg-slate-700 text-slate-100 transition"
             >
               + Assign driver
             </button>
@@ -604,13 +604,13 @@ export default function PracticeCard({
             <button
               type="button"
               onClick={() => setEditingPractice(false)}
-              className="px-4 py-2 rounded-full text-[13px] font-semibold bg-slate-800 text-slate-300"
+              className="px-4 py-1.5 rounded-full text-sm font-semibold bg-slate-800 text-slate-300"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 rounded-full text-[13px] font-semibold bg-blue-600 text-white"
+              className="px-4 py-1.5 rounded-full text-sm font-semibold bg-blue-600 text-white"
             >
               Save Changes
             </button>
@@ -655,7 +655,7 @@ export default function PracticeCard({
                 {canDelete && onDeleteNote && (
                   <button
                     onClick={() => onDeleteNote(practice.id, note.id)}
-                    className="px-2.5 py-1 min-w-[32px] min-h-[32px] flex items-center justify-center rounded-full text-[13px] font-bold text-slate-400 hover:text-rose-400 hover:bg-slate-800/60 transition shrink-0"
+                    className="px-2.5 py-1 min-w-[32px] min-h-[32px] flex items-center justify-center rounded-full text-sm font-bold text-slate-400 hover:text-rose-400 hover:bg-slate-800/60 transition shrink-0"
                     title="Delete note"
                   >
                     ×
@@ -679,7 +679,7 @@ export default function PracticeCard({
               <div className="grid grid-cols-2 gap-1 p-1 rounded-full bg-slate-950 border border-slate-800">
                 <button
                   onClick={() => setActiveLeg('to')}
-                  className={`flex items-center justify-center gap-1.5 px-3 py-2 min-h-[38px] rounded-full text-[13px] font-semibold whitespace-nowrap transition ${
+                  className={`flex items-center justify-center gap-1.5 px-3 py-2 min-h-[38px] rounded-full text-sm font-semibold whitespace-nowrap transition ${
                     activeLeg === 'to'
                       ? 'bg-slate-700/85 text-slate-50 shadow-sm'
                       : 'text-slate-300 hover:text-slate-100'
@@ -690,7 +690,7 @@ export default function PracticeCard({
                 </button>
                 <button
                   onClick={() => setActiveLeg('from')}
-                  className={`flex items-center justify-center gap-1.5 px-3 py-2 min-h-[38px] rounded-full text-[13px] font-semibold whitespace-nowrap transition ${
+                  className={`flex items-center justify-center gap-1.5 px-3 py-2 min-h-[38px] rounded-full text-sm font-semibold whitespace-nowrap transition ${
                     activeLeg === 'from'
                       ? 'bg-slate-700/85 text-slate-50 shadow-sm'
                       : 'text-slate-300 hover:text-slate-100'
@@ -794,7 +794,7 @@ export default function PracticeCard({
                     onTogglePracticeGuest(practice.id, gp.id, true);
                     setAddingGuest(false);
                   }}
-                  className="inline-flex items-center gap-1 px-2.5 py-1 min-h-[32px] rounded-full text-[13px] font-semibold bg-slate-700/75 hover:bg-blue-600 text-slate-100 transition"
+                  className="inline-flex items-center gap-1 px-2.5 py-1 min-h-[32px] rounded-full text-sm font-semibold bg-slate-700/75 hover:bg-blue-600 text-slate-100 transition"
                 >
                   <span>+ {gp.name}</span>
                   <span className="px-1 rounded text-[10px] font-bold bg-violet-500/25 text-violet-300">
@@ -826,14 +826,14 @@ export default function PracticeCard({
               />
               <button
                 type="submit"
-                className="px-4 py-2 rounded-full text-[13px] font-semibold bg-blue-600 hover:bg-blue-500 text-white transition"
+                className="px-4 py-1.5 rounded-full text-sm font-semibold bg-blue-600 hover:bg-blue-500 text-white transition"
               >
                 Add
               </button>
               <button
                 type="button"
                 onClick={() => setAddingGuest(false)}
-                className="px-4 py-2 rounded-full text-[13px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 transition"
+                className="px-4 py-1.5 rounded-full text-sm font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 transition"
               >
                 Cancel
               </button>
@@ -864,14 +864,14 @@ export default function PracticeCard({
           />
           <button
             type="submit"
-            className="px-4 py-2 rounded-full text-[13px] font-semibold bg-blue-600 hover:bg-blue-500 text-white transition"
+            className="px-4 py-1.5 rounded-full text-sm font-semibold bg-blue-600 hover:bg-blue-500 text-white transition"
           >
             Add
           </button>
           <button
             type="button"
             onClick={() => setEditingNote(false)}
-            className="px-4 py-2 rounded-full text-[13px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 transition"
+            className="px-4 py-1.5 rounded-full text-sm font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 transition"
           >
             Cancel
           </button>
@@ -885,7 +885,7 @@ export default function PracticeCard({
                 setEditingNote(true);
                 setAddingGuest(false);
               }}
-              className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-full text-[13px] font-semibold bg-slate-700/75 hover:bg-slate-700 text-slate-100 transition"
+              className="inline-flex items-center justify-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-semibold bg-slate-700/75 hover:bg-slate-700 text-slate-100 transition"
             >
               <MessageSquare className="w-3.5 h-3.5" />
               + Note
@@ -899,7 +899,7 @@ export default function PracticeCard({
                 setAddingGuest(true);
                 setEditingNote(false);
               }}
-              className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-full text-[13px] font-semibold bg-slate-700/75 hover:bg-slate-700 text-slate-100 transition"
+              className="inline-flex items-center justify-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-semibold bg-slate-700/75 hover:bg-slate-700 text-slate-100 transition"
               title="Add a guest or sibling rider for this practice"
             >
               <UserPlus className="w-3.5 h-3.5" />
@@ -909,7 +909,7 @@ export default function PracticeCard({
           {myCarSmsUrl && (
             <a
               href={myCarSmsUrl}
-              className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-full text-[13px] font-semibold bg-slate-700/75 hover:bg-slate-700 text-slate-100 transition"
+              className="inline-flex items-center justify-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-semibold bg-slate-700/75 hover:bg-slate-700 text-slate-100 transition"
               title="Text parents in your car for this practice"
             >
               <MessageCircle className="w-3.5 h-3.5" />

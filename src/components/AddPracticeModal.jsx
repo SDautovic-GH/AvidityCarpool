@@ -100,7 +100,7 @@ export default function AddPracticeModal({ defaultDate, onClose, onCreate }) {
                   key={f.key}
                   type="button"
                   onClick={() => selectFacility(f.key)}
-                  className={`px-3 py-1.5 rounded-full text-[13px] font-semibold transition ${
+                  className={`px-3 py-1.5 rounded-full text-sm font-semibold transition ${
                     facilityKey === f.key
                       ? 'bg-blue-600 text-white'
                       : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
@@ -112,7 +112,7 @@ export default function AddPracticeModal({ defaultDate, onClose, onCreate }) {
               <button
                 type="button"
                 onClick={() => selectFacility('custom')}
-                className={`px-3 py-1.5 rounded-full text-[13px] font-semibold transition ${
+                className={`px-3 py-1.5 rounded-full text-sm font-semibold transition ${
                   facilityKey === 'custom'
                     ? 'bg-blue-600 text-white'
                     : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
@@ -171,14 +171,14 @@ export default function AddPracticeModal({ defaultDate, onClose, onCreate }) {
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-full text-[13px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
+              className="px-4 py-1.5 rounded-full text-sm font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="px-5 py-2 rounded-full text-[13px] font-semibold bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white transition"
+              className="px-4 py-1.5 rounded-full text-sm font-semibold bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white transition"
             >
               {saving ? 'Adding...' : 'Add Practice'}
             </button>

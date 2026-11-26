@@ -325,7 +325,7 @@ export default function DriverEngagementView({ players, parents, practices, toda
         <button
           type="button"
           onClick={() => setSelectedDriverId(null)}
-          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-[13px] font-semibold bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-200 transition"
+          className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-semibold bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-200 transition"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           Back to Driver Engagement
@@ -368,7 +368,7 @@ export default function DriverEngagementView({ players, parents, practices, toda
             {smsUrl && (
               <a
                 href={smsUrl}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[13px] font-semibold bg-slate-800 hover:bg-slate-700 text-blue-300 transition shrink-0"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold bg-slate-800 hover:bg-slate-700 text-blue-300 transition shrink-0"
               >
                 <MessageCircle className="w-3.5 h-3.5" />
                 Text

@@ -245,7 +245,7 @@ export default function PracticeQuickScan({
                             type="button"
                             onClick={() => setExpandedId(isExpanded ? null : p.id)}
                             aria-label={isExpanded ? 'Collapse practice' : 'Expand practice'}
-                            className={`sm:hidden inline-flex items-center gap-1 px-2.5 py-1 min-h-[30px] rounded-full text-[13px] font-semibold shrink-0 transition ${
+                            className={`sm:hidden inline-flex items-center gap-1 px-2.5 py-1 min-h-[30px] rounded-full text-sm font-semibold shrink-0 transition ${
                               isExpanded
                                 ? 'bg-blue-600/20 hover:bg-blue-600/30 text-blue-300'
                                 : 'bg-slate-700/75 hover:bg-slate-700 text-slate-100'
@@ -299,7 +299,7 @@ export default function PracticeQuickScan({
                               <button
                                 type="button"
                                 onClick={() => onOpenDriveModal(p.id, drivePref)}
-                                className="px-3 py-1 min-h-[32px] rounded-full text-[13px] font-semibold bg-blue-600 hover:bg-blue-500 text-white transition"
+                                className="px-3 py-1 min-h-[32px] rounded-full text-sm font-semibold bg-blue-600 hover:bg-blue-500 text-white transition"
                               >
                                 {drivesAll && isAdmin ? '+ Assign' : '+ Drive'}
                               </button>
@@ -308,7 +308,7 @@ export default function PracticeQuickScan({
                               type="button"
                               onClick={() => setExpandedId(isExpanded ? null : p.id)}
                               aria-label={isExpanded ? 'Collapse practice' : 'Expand practice'}
-                              className={`hidden sm:inline-flex items-center gap-1 px-2.5 py-1 min-h-[32px] rounded-full text-[13px] font-semibold transition ${
+                              className={`hidden sm:inline-flex items-center gap-1 px-2.5 py-1 min-h-[32px] rounded-full text-sm font-semibold transition ${
                                 isExpanded
                                   ? 'bg-blue-600/20 hover:bg-blue-600/30 text-blue-300'
                                   : 'bg-slate-700/75 hover:bg-slate-700 text-slate-100'

@@ -85,7 +85,7 @@ export default function TournamentsView({
               <button
                 onClick={handleSeed}
                 disabled={seeding}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-[13px] font-semibold bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-slate-100 transition"
+                className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-semibold bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-slate-100 transition"
               >
                 <Sparkles className="w-3.5 h-3.5 text-blue-400" />
                 {seeding ? 'Loading...' : 'Load 26/27 Tournaments'}
@@ -93,7 +93,7 @@ export default function TournamentsView({
             )}
             <button
               onClick={openAdd}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-[13px] font-semibold bg-blue-600 hover:bg-blue-500 text-white transition"
+              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-semibold bg-blue-600 hover:bg-blue-500 text-white transition"
             >
               <Plus className="w-3.5 h-3.5" />
               Tournament
@@ -224,7 +224,7 @@ export default function TournamentsView({
 
                     <button
                       onClick={() => exportTournamentIcs(t)}
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-[13px] font-semibold bg-slate-800/70 hover:bg-slate-800 text-slate-300 hover:text-slate-100 transition shrink-0"
+                      className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-semibold bg-slate-800/70 hover:bg-slate-800 text-slate-300 hover:text-slate-100 transition shrink-0"
                       title="Add to calendar (.ics)"
                     >
                       <CalendarPlus className="w-3.5 h-3.5 text-blue-400" />
@@ -349,14 +349,14 @@ export default function TournamentsView({
                 <button
                   type="button"
                   onClick={() => setFormOpen(false)}
-                  className="px-4 py-2 rounded-full text-[13px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
+                  className="px-4 py-1.5 rounded-full text-sm font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-5 py-2 rounded-full text-[13px] font-semibold bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white transition"
+                  className="px-4 py-1.5 rounded-full text-sm font-semibold bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white transition"
                 >
                   {saving ? 'Saving...' : 'Save'}
                 </button>

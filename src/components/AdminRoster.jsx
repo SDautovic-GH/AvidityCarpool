@@ -316,7 +316,7 @@ export default function AdminRoster({
           {carpoolSmsUrl && (
             <a
               href={carpoolSmsUrl}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-[13px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
               title="Text all Melrose carpool parents"
             >
               <MessageCircle className="w-3.5 h-3.5 text-blue-400" />
@@ -326,7 +326,7 @@ export default function AdminRoster({
           {teamSmsUrl && (
             <a
               href={teamSmsUrl}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-[13px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
               title="Text all parents on the team roster"
             >
               <MessageCircle className="w-3.5 h-3.5 text-blue-400" />
@@ -336,7 +336,7 @@ export default function AdminRoster({
           {currentParent && !isAdmin && (
             <button
               onClick={openEditSelf}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-[13px] font-semibold bg-blue-600 hover:bg-blue-500 text-white transition"
+              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-semibold bg-blue-600 hover:bg-blue-500 text-white transition"
             >
               <Pencil className="w-3.5 h-3.5" />
               Edit My Info
@@ -346,7 +346,7 @@ export default function AdminRoster({
             <button
               type="button"
               onClick={() => setNotifOpen((v) => !v)}
-              className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-[13px] font-semibold transition ${
+              className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-semibold transition ${
                 notifOpen
                   ? 'bg-blue-600/20 text-blue-300 border border-blue-500/40'
                   : 'bg-slate-800 hover:bg-slate-700 text-slate-200'
@@ -359,7 +359,7 @@ export default function AdminRoster({
           {isAdmin && onOpenSeasonModal && (
             <button
               onClick={onOpenSeasonModal}
-              className="px-3.5 py-2 rounded-full text-[13px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
+              className="px-3.5 py-1.5 rounded-full text-sm font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
             >
               Season &amp; Schedule
             </button>
@@ -368,14 +368,14 @@ export default function AdminRoster({
             <>
               <button
                 onClick={() => setImportOpen(true)}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-[13px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
               >
                 <Upload className="w-3.5 h-3.5" />
                 Bulk Import
               </button>
               <button
                 onClick={openAddNewFamily}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-[13px] font-semibold bg-blue-600 hover:bg-blue-500 text-white transition"
+                className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-semibold bg-blue-600 hover:bg-blue-500 text-white transition"
               >
                 <UserPlus className="w-3.5 h-3.5" />
                 + Family / Parent
@@ -565,13 +565,13 @@ export default function AdminRoster({
                         />
                         <button
                           onClick={() => handleSavePlayerName(player.id)}
-                          className="px-4 py-2 rounded-full text-[13px] font-semibold bg-blue-600 text-white"
+                          className="px-4 py-1.5 rounded-full text-sm font-semibold bg-blue-600 text-white"
                         >
                           Save
                         </button>
                         <button
                           onClick={() => setEditingPlayerId(null)}
-                          className="px-4 py-2 rounded-full text-[13px] font-semibold bg-slate-800 text-slate-300"
+                          className="px-4 py-1.5 rounded-full text-sm font-semibold bg-slate-800 text-slate-300"
                         >
                           Cancel
                         </button>
@@ -635,7 +635,7 @@ export default function AdminRoster({
                                       ? 'In carpool — tap to remove'
                                       : 'Not in carpool — tap to add'
                                   }
-                                  className={`min-h-[32px] px-3 py-1 rounded-full text-[13px] font-semibold border shrink-0 transition cursor-pointer ${
+                                  className={`min-h-[32px] px-3 py-1 rounded-full text-sm font-semibold border shrink-0 transition cursor-pointer ${
                                     inCarpool
                                       ? 'bg-blue-500/15 text-blue-300 border-blue-500/30 hover:bg-blue-500/25'
                                       : 'bg-slate-800/70 text-slate-400 border-slate-700 hover:text-slate-200 hover:border-slate-500'
@@ -661,7 +661,7 @@ export default function AdminRoster({
                             </button>
                             <button
                               onClick={() => openAddParentToPlayer(player.id)}
-                              className="inline-flex items-center gap-1 px-3 py-1 min-h-[32px] rounded-full text-[13px] font-semibold bg-slate-700/75 hover:bg-slate-700 text-slate-100 transition shrink-0"
+                              className="inline-flex items-center gap-1 px-3 py-1 min-h-[32px] rounded-full text-sm font-semibold bg-slate-700/75 hover:bg-slate-700 text-slate-100 transition shrink-0"
                             >
                               <Plus className="w-3 h-3" />
                               <span>Parent</span>
@@ -758,7 +758,7 @@ export default function AdminRoster({
                                     </a>
                                     <a
                                       href={buildSmsUrl(parent.phone)}
-                                      className="inline-flex items-center gap-1.5 px-3 py-1 min-h-[32px] rounded-full text-[13px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
+                                      className="inline-flex items-center gap-1.5 px-3 py-1 min-h-[32px] rounded-full text-sm font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
                                       title="Send text message"
                                     >
                                       <MessageCircle className="w-2.5 h-2.5 text-blue-400" />
@@ -785,7 +785,7 @@ export default function AdminRoster({
                             {!isAdmin && isSelf && (
                               <button
                                 onClick={openEditSelf}
-                                className="px-4 py-2 rounded-full text-[13px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
+                                className="px-4 py-1.5 rounded-full text-sm font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
                               >
                                 Update
                               </button>
@@ -794,13 +794,13 @@ export default function AdminRoster({
                               <>
                                 <button
                                   onClick={() => openEditParent(parent)}
-                                  className="px-4 py-2 rounded-full text-[13px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
+                                  className="px-4 py-1.5 rounded-full text-sm font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
                                 >
                                   Edit
                                 </button>
                                 <button
                                   onClick={() => onSendResetEmail(parent.email || parent.id)}
-                                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-[13px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
+                                  className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
                                   title="Send password reset email"
                                 >
                                   <KeyRound className="w-3.5 h-3.5" />
@@ -851,7 +851,7 @@ export default function AdminRoster({
                 </span>
                 <button
                   onClick={() => openEditParent(parent)}
-                  className="px-4 py-2 rounded-full text-[13px] font-semibold bg-slate-800 hover:bg-slate-700"
+                  className="px-4 py-1.5 rounded-full text-sm font-semibold bg-slate-800 hover:bg-slate-700"
                 >
                   Link Player
                 </button>
@@ -1023,14 +1023,14 @@ export default function AdminRoster({
                 <button
                   type="button"
                   onClick={() => setFormOpen(false)}
-                  className="px-4 py-2 rounded-full text-[13px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
+                  className="px-4 py-1.5 rounded-full text-sm font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-5 py-2 rounded-full text-[13px] font-semibold bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white transition"
+                  className="px-4 py-1.5 rounded-full text-sm font-semibold bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white transition"
                 >
                   {saving ? 'Saving...' : form.existingParentId ? 'Save Changes' : 'Add'}
                 </button>
@@ -1075,14 +1075,14 @@ export default function AdminRoster({
                 <button
                   type="button"
                   onClick={() => setImportOpen(false)}
-                  className="px-4 py-2 rounded-full text-[13px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
+                  className="px-4 py-1.5 rounded-full text-sm font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={importing}
-                  className="px-5 py-2 rounded-full text-[13px] font-semibold bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white transition"
+                  className="px-4 py-1.5 rounded-full text-sm font-semibold bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white transition"
                 >
                   {importing ? 'Importing...' : 'Import Families'}
                 </button>
@@ -1206,14 +1206,14 @@ export default function AdminRoster({
                 <button
                   type="button"
                   onClick={() => setEditingSelf(false)}
-                  className="px-4 py-2 rounded-full text-[13px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
+                  className="px-4 py-1.5 rounded-full text-sm font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={savingSelf}
-                  className="px-5 py-2 rounded-full text-[13px] font-semibold bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white transition"
+                  className="px-4 py-1.5 rounded-full text-sm font-semibold bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white transition"
                 >
                   {savingSelf ? 'Saving...' : 'Save'}
                 </button>
