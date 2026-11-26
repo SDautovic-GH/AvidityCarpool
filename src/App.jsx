@@ -825,7 +825,7 @@ export default function App() {
         </div>
       </header>
 
-      <main className="w-full max-w-4xl mx-auto px-3 sm:px-4 pt-3 pb-[calc(5.25rem+env(safe-area-inset-bottom))] sm:pb-10 space-y-3">
+      <main className="w-full max-w-4xl mx-auto px-2 sm:px-4 pt-3 pb-[calc(5.25rem+env(safe-area-inset-bottom))] sm:pb-10 space-y-3">
         {isAdmin && parentPreview && (
           <div className="rounded-2xl bg-amber-500/10 border border-amber-500/35 px-3.5 py-2.5 flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 text-[13px] font-semibold text-amber-200 min-w-0">

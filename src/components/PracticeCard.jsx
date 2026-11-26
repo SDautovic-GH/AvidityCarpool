@@ -228,15 +228,24 @@ export default function PracticeCard({
       .reduce((s, c) => s + (c.seatsTotal || 0), 0);
     const needsMoreDrivers = confirmedSeats < goingCount;
 
+    const headerBg =
+      summary.text === 'Needs Sub'
+        ? 'bg-amber-500/15 border-amber-500/30'
+        : summary.tone === 'error'
+          ? 'bg-rose-500/12 border-rose-500/25'
+          : summary.tone === 'success'
+            ? 'bg-emerald-500/10 border-emerald-500/20'
+            : 'bg-slate-800/75 border-slate-700/70';
+
     return (
-      <div className="space-y-2">
-        <div className="flex flex-wrap items-center justify-between gap-2 pb-1.5 border-b border-slate-800">
-          <div className="flex flex-wrap items-center gap-x-2.5 gap-y-0.5">
-            <span className="text-sm font-bold tracking-tight text-slate-100 whitespace-nowrap">
+      <div>
+        <div className={`flex flex-wrap items-center justify-between gap-2 px-3 py-2 border-b ${headerBg}`}>
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="text-[13px] font-extrabold uppercase tracking-wide text-slate-50 whitespace-nowrap">
               {leg === 'to' ? '→ To Practice' : '← From Practice'}
             </span>
-            <span className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-300 whitespace-nowrap">
-              <span className={`w-2 h-2 rounded-full ${TONE_DOT[summary.tone]}`} />
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-200 whitespace-nowrap">
+              <span className={`w-2 h-2 rounded-full shrink-0 ${TONE_DOT[summary.tone]}`} />
               {summary.text}
             </span>
           </div>
@@ -245,13 +254,14 @@ export default function PracticeCard({
               onClick={() =>
                 onOpenDriveModal(practice.id, !drivesTo && !drivesFrom && toEnabled && fromEnabled ? 'both' : leg)
               }
-              className="px-3.5 py-1 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition whitespace-nowrap"
+              className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition whitespace-nowrap"
             >
               + I can drive
             </button>
           )}
         </div>
 
+        <div className="px-2.5 sm:px-3.5 py-2.5 space-y-2">
         {(unassigned.length > 0 || cars.length > 0) && (
           <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-800/80">
             <div className="text-sm flex flex-wrap items-center gap-1.5">
@@ -334,6 +344,7 @@ export default function PracticeCard({
             ))
           )}
         </div>
+        </div>
       </div>
     );
   };
@@ -381,7 +392,7 @@ export default function PracticeCard({
     <div
       className={`rounded-2xl bg-slate-900 border ${
         isFirstUpcoming && !isCancelled ? 'border-blue-500/45' : 'border-slate-800'
-      } p-4 space-y-3.5 min-w-0 overflow-hidden`}
+      } p-3 sm:p-4 space-y-3 min-w-0 overflow-hidden`}
     >
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5">
         <div className="flex items-start justify-between gap-2 min-w-0">
@@ -682,7 +693,7 @@ export default function PracticeCard({
         ) : toEnabled && fromEnabled ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 pt-1">
             <div
-              className={`rounded-xl bg-slate-950/55 border p-3.5 ${
+              className={`rounded-xl bg-slate-950/55 border overflow-hidden ${
                 subTo
                   ? 'border-amber-500/45'
                   : toSum.tone === 'error'
@@ -693,7 +704,7 @@ export default function PracticeCard({
               {renderLegBody('to')}
             </div>
             <div
-              className={`rounded-xl bg-slate-950/55 border p-3.5 ${
+              className={`rounded-xl bg-slate-950/55 border overflow-hidden ${
                 subFrom
                   ? 'border-amber-500/45'
                   : fromSum.tone === 'error'
@@ -706,7 +717,7 @@ export default function PracticeCard({
           </div>
         ) : (
           <div className="pt-1">
-            <div className="rounded-xl bg-slate-950/55 border border-slate-800/80 p-3.5">
+            <div className="rounded-xl bg-slate-950/55 border border-slate-800/80 overflow-hidden">
               {renderLegBody(toEnabled ? 'to' : 'from')}
             </div>
           </div>
