@@ -1202,6 +1202,9 @@ export default function App() {
       {/* Mobile: RSSReader-style floating Liquid Glass capsule bottom bar */}
       {(() => {
         const myParentId = currentParent?.id || '';
+        const upcomingCount = practices.filter(
+          (p) => p.isoDate >= todayIso && p.status !== 'cancelled'
+        ).length;
         const myDrivesCount = practices.filter(
           (p) =>
             p.isoDate >= todayIso &&
@@ -1210,7 +1213,7 @@ export default function App() {
               (p.legs?.from || []).some((c) => c.driverParentId === myParentId))
         ).length;
         const mobileTabs = [
-          { id: 'all', label: 'Practices', Icon: Calendar, badge: 0, badgeBg: '' },
+          { id: 'all', label: 'Practices', Icon: Calendar, badge: upcomingCount, badgeBg: 'bg-slate-700 text-slate-100' },
           { id: 'my-drives', label: 'My Drives', Icon: Car, badge: myDrivesCount, badgeBg: 'bg-blue-600 text-white' },
           { id: 'tournaments', label: 'Events', Icon: Trophy, badge: tournaments.length, badgeBg: 'bg-slate-700 text-slate-100' },
           { id: 'roster', label: 'Team', Icon: Users, badge: 0, badgeBg: '' },
