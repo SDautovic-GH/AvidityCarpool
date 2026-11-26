@@ -937,7 +937,7 @@ export default function App() {
                     <button
                       type="button"
                       onClick={() => setAddPracticeModalOpen(true)}
-                      className="inline-flex items-center gap-1 px-3 py-1 min-h-[34px] rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition shrink-0"
+                      className="inline-flex items-center gap-1 px-4 py-2 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition shrink-0"
                       title="Add a single practice event"
                     >
                       <Plus className="w-3.5 h-3.5" />
@@ -987,7 +987,7 @@ export default function App() {
                     );
                     if (count) showToast(`Exported ${count} drive${count === 1 ? '' : 's'} (.ics)`);
                   }}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 min-h-[34px] rounded-full text-xs font-semibold bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-200 transition"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-200 transition"
                 >
                   <CalendarPlus className="w-3.5 h-3.5 text-blue-400" />
                   Add to Calendar
@@ -1167,7 +1167,7 @@ export default function App() {
                     <div className="flex justify-center pt-1">
                       <button
                         onClick={() => setShowAllUpcoming(true)}
-                        className="px-5 py-2.5 min-h-[36px] rounded-full text-xs font-semibold bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-200 transition"
+                        className="px-4 py-2 rounded-full text-xs font-semibold bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-200 transition"
                       >
                         Show all {visiblePractices.length} upcoming practices
                       </button>
