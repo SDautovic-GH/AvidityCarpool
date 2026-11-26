@@ -678,10 +678,10 @@ export default function PracticeCard({
           <>
             {/* Mobile: Segmented To/From tabs */}
             <div className="md:hidden space-y-2">
-              <div className="grid grid-cols-2 gap-1 p-1 rounded-full bg-slate-950 border border-slate-800">
+              <div className="flex items-center gap-1 p-1 rounded-full bg-slate-950 border border-slate-800">
                 <button
                   onClick={() => setActiveLeg('to')}
-                  className={`flex items-center justify-center gap-1 px-2.5 py-1.5 min-h-[34px] rounded-full text-[13px] font-semibold whitespace-nowrap transition ${
+                  className={`flex-auto flex items-center justify-center gap-1.5 px-3 py-1.5 min-h-[34px] rounded-full text-[13px] font-semibold whitespace-nowrap transition ${
                     activeLeg === 'to'
                       ? 'bg-slate-700/85 text-slate-50 shadow-sm'
                       : 'text-slate-300 hover:text-slate-100'
@@ -692,7 +692,7 @@ export default function PracticeCard({
                 </button>
                 <button
                   onClick={() => setActiveLeg('from')}
-                  className={`flex items-center justify-center gap-1 px-2.5 py-1.5 min-h-[34px] rounded-full text-[13px] font-semibold whitespace-nowrap transition ${
+                  className={`flex-auto flex items-center justify-center gap-1.5 px-3 py-1.5 min-h-[34px] rounded-full text-[13px] font-semibold whitespace-nowrap transition ${
                     activeLeg === 'from'
                       ? 'bg-slate-700/85 text-slate-50 shadow-sm'
                       : 'text-slate-300 hover:text-slate-100'
