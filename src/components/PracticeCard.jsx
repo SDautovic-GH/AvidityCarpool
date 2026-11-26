@@ -521,7 +521,7 @@ export default function PracticeCard({
                 )}
               </>
             )}
-          {!isCancelled && !isReadOnly && hasAnyCarpool && canDrive && !drivesAllActive && (
+          {!isCancelled && !isReadOnly && hasAnyCarpool && canDrive && !drivesAllActive && (!isSatisfied || isAdmin) && (
             <button
               onClick={() => onOpenDriveModal(practice.id, defaultDriveDir)}
               className={`${isAdmin ? 'inline-flex' : 'hidden md:inline-flex'} items-center whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-semibold bg-blue-600 hover:bg-blue-500 text-white transition`}
