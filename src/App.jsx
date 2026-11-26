@@ -1261,7 +1261,7 @@ export default function App() {
                 ? visiblePractices.slice(0, 10)
                 : visiblePractices;
               return (
-                <>
+                <div className="space-y-5">
                   {displayedPractices.map(renderPracticeCard)}
                   {shouldCapUpcoming && (
                     <div className="flex justify-center pt-1">
@@ -1273,7 +1273,7 @@ export default function App() {
                       </button>
                     </div>
                   )}
-                </>
+                </div>
               );
             })()}
           </>
