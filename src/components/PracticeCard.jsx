@@ -456,50 +456,52 @@ export default function PracticeCard({
 
         <div className="flex flex-wrap items-center justify-start sm:justify-end gap-2 min-w-0">
           {!isCancelled &&
-            myPlayer &&
-            (isReadOnly ? (
-              <span
-                className={`inline-flex items-center gap-1.5 max-w-full flex-wrap text-left px-4 py-1.5 rounded-full text-sm font-semibold border ${
-                  isOut
-                    ? 'bg-rose-500/15 border-rose-500/30 text-rose-300'
-                    : 'bg-slate-800/80 border-slate-700/80 text-slate-300'
-                }`}
-              >
-                <span
-                  className={`w-1.5 h-1.5 rounded-full ${
-                    isOut ? 'bg-rose-400' : 'bg-emerald-400'
-                  }`}
-                />
-                {shortNameOf(myPlayer)}: {isOut ? 'Out' : 'Going'}
+            myPlayer && (
+              <>
+                {isReadOnly ? (
+                  <span
+                    className={`inline-flex items-center gap-1.5 whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-semibold border ${
+                      isOut
+                        ? 'bg-rose-500/15 border-rose-500/30 text-rose-300'
+                        : 'bg-slate-800/80 border-slate-700/80 text-slate-300'
+                    }`}
+                  >
+                    <span
+                      className={`w-1.5 h-1.5 rounded-full ${
+                        isOut ? 'bg-rose-400' : 'bg-emerald-400'
+                      }`}
+                    />
+                    {shortNameOf(myPlayer)}: {isOut ? 'Out' : 'Going'}
+                  </span>
+                ) : (
+                  <button
+                    onClick={() => onToggleAttendance(practice.id, myPlayer.id)}
+                    title="Tap to toggle Going / Out"
+                    className={`inline-flex items-center gap-1.5 whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-semibold border transition ${
+                      isOut
+                        ? 'bg-rose-500/15 border-rose-500/30 hover:bg-rose-500/25 text-rose-300'
+                        : 'bg-slate-800/90 border-slate-700/80 hover:bg-slate-700 text-slate-100'
+                    }`}
+                  >
+                    <span
+                      className={`w-1.5 h-1.5 rounded-full ${
+                        isOut ? 'bg-rose-400' : 'bg-emerald-400'
+                      }`}
+                    />
+                    {shortNameOf(myPlayer)}: {isOut ? 'Out' : 'Going'}
+                  </button>
+                )}
                 {myRideStatus && (
-                  <span className={myRideStatus.warning ? 'text-amber-300' : 'text-slate-300'}>
-                    · {myRideStatus.text}
+                  <span
+                    className={`text-[13px] font-medium ${
+                      myRideStatus.warning ? 'text-amber-300' : 'text-slate-300'
+                    }`}
+                  >
+                    {myRideStatus.text}
                   </span>
                 )}
-              </span>
-            ) : (
-              <button
-                onClick={() => onToggleAttendance(practice.id, myPlayer.id)}
-                title="Tap to toggle Going / Out"
-                className={`inline-flex items-center gap-1.5 max-w-full flex-wrap text-left px-4 py-1.5 rounded-full text-sm font-semibold border transition ${
-                  isOut
-                    ? 'bg-rose-500/15 border-rose-500/30 hover:bg-rose-500/25 text-rose-300'
-                    : 'bg-slate-800/90 border-slate-700/80 hover:bg-slate-700 text-slate-100'
-                }`}
-              >
-                <span
-                  className={`w-1.5 h-1.5 rounded-full ${
-                    isOut ? 'bg-rose-400' : 'bg-emerald-400'
-                  }`}
-                />
-                {shortNameOf(myPlayer)}: {isOut ? 'Out' : 'Going'}
-                {myRideStatus && (
-                  <span className={myRideStatus.warning ? 'text-amber-300' : 'text-slate-300'}>
-                    · {myRideStatus.text}
-                  </span>
-                )}
-              </button>
-            ))}
+              </>
+            )}
           {!isCancelled && !isReadOnly && hasAnyCarpool && canDrive && !drivesAllActive && (
             <button
               onClick={() => onOpenDriveModal(practice.id, defaultDriveDir)}
