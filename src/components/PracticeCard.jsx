@@ -51,16 +51,7 @@ export default function PracticeCard({
   onDeletePractice,
   onToast,
 }) {
-  const [activeLeg, setActiveLeg] = useState(() => {
-    const eff = getEffectivePlayers(practice, players, allPlayers);
-    const { toEnabled: tOn, fromEnabled: fOn } = getPracticeCarpoolLegs(practice);
-    if (!tOn && fOn) return 'from';
-    if (tOn && !fOn) return 'to';
-    const tSum = getLegSummary(practice, 'to', eff);
-    const fSum = getLegSummary(practice, 'from', eff);
-    if (tSum.tone === 'success' && fSum.tone !== 'success') return 'from';
-    return 'to';
-  });
+  const [splitLegs, setSplitLegs] = useState(false);
   const [editingNote, setEditingNote] = useState(false);
   const [noteDraft, setNoteDraft] = useState('');
   const [addingGuest, setAddingGuest] = useState(false);
@@ -121,6 +112,22 @@ export default function PracticeCard({
     (!hasAnyCarpool ||
       ((!toEnabled || toSum.tone === 'success') &&
         (!fromEnabled || fromSum.tone === 'success')));
+
+  const canConsolidate = (() => {
+    if (!toEnabled || !fromEnabled || !isSatisfied) return false;
+    const toCars = practice.legs?.to || [];
+    const fromCars = practice.legs?.from || [];
+    if (toCars.length !== 1 || fromCars.length !== 1) return false;
+    const tc = toCars[0];
+    const fc = fromCars[0];
+    if (tc.driverParentId !== fc.driverParentId) return false;
+    if (tc.seatsTotal !== fc.seatsTotal) return false;
+    if ((tc.status || 'confirmed') !== (fc.status || 'confirmed')) return false;
+    const tRiders = [...(tc.riderIds || [])].sort().join(',');
+    const fRiders = [...(fc.riderIds || [])].sort().join(',');
+    return tRiders === fRiders;
+  })();
+  const showConsolidated = canConsolidate && !splitLegs;
 
   const drivesTo =
     toEnabled && (practice.legs?.to || []).some((c) => c.driverParentId === myParentId);
@@ -216,7 +223,7 @@ export default function PracticeCard({
     .map((p) => p.phone);
   const myCarSmsUrl = buildSmsUrl(myCarPhones);
 
-  const renderLegBody = (leg) => {
+  const renderLegBody = (leg, { consolidated = false, showCombineBtn = false } = {}) => {
     const cars = practice.legs?.[leg] || [];
     const unassigned = getUnassignedPlayers(practice, leg, effectivePlayers);
     const isDrivingThisLeg = (practice.legs?.[leg] || []).some(
@@ -242,23 +249,47 @@ export default function PracticeCard({
         <div className={`flex flex-wrap items-center justify-between gap-2 px-3 py-1.5 border-b ${headerBg}`}>
           <div className="flex items-center gap-2 min-w-0">
             <span className="text-[13px] font-extrabold uppercase tracking-wide text-slate-50 whitespace-nowrap">
-              {leg === 'to' ? '→ To Practice' : '← From Practice'}
+              {consolidated
+                ? '⇄ To & From Practice'
+                : leg === 'to'
+                  ? '→ To Practice'
+                  : '← From Practice'}
             </span>
             <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-200 whitespace-nowrap">
               <span className={`w-2 h-2 rounded-full shrink-0 ${TONE_DOT[summary.tone]}`} />
               {summary.text}
             </span>
           </div>
-          {!isReadOnly && canDrive && !isDrivingThisLeg && needsMoreDrivers && (
-            <button
-              onClick={() =>
-                onOpenDriveModal(practice.id, !drivesTo && !drivesFrom && toEnabled && fromEnabled ? 'both' : leg)
-              }
-              className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition whitespace-nowrap"
-            >
-              + I can drive
-            </button>
-          )}
+          <div className="flex items-center gap-1.5 shrink-0">
+            {consolidated && (
+              <button
+                type="button"
+                onClick={() => setSplitLegs(true)}
+                className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-slate-100 border border-slate-700/80 transition whitespace-nowrap"
+              >
+                To / From ▾
+              </button>
+            )}
+            {showCombineBtn && (
+              <button
+                type="button"
+                onClick={() => setSplitLegs(false)}
+                className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-slate-100 border border-slate-700/80 transition whitespace-nowrap"
+              >
+                Combine ▴
+              </button>
+            )}
+            {!isReadOnly && canDrive && !isDrivingThisLeg && needsMoreDrivers && (
+              <button
+                onClick={() =>
+                  onOpenDriveModal(practice.id, !drivesTo && !drivesFrom && toEnabled && fromEnabled ? 'both' : leg)
+                }
+                className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition whitespace-nowrap"
+              >
+                + I can drive
+              </button>
+            )}
+          </div>
         </div>
 
         <div className="px-3 sm:px-3.5 py-2 space-y-1.5">
@@ -691,30 +722,38 @@ export default function PracticeCard({
             No carpool needed for this practice.
           </div>
         ) : toEnabled && fromEnabled ? (
-          <div className="-mx-3 sm:mx-0 grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4">
-            <div
-              className={`rounded-none sm:rounded-xl bg-slate-950/55 border-y sm:border overflow-hidden ${
-                subTo
-                  ? 'border-amber-500/45'
-                  : toSum.tone === 'error'
-                    ? 'border-rose-500/30'
-                    : 'border-slate-800/80'
-              }`}
-            >
-              {renderLegBody('to')}
+          showConsolidated ? (
+            <div className="-mx-3 sm:mx-0">
+              <div className="rounded-none sm:rounded-xl bg-slate-950/55 border-y sm:border border-emerald-500/25 overflow-hidden">
+                {renderLegBody('to', { consolidated: true })}
+              </div>
             </div>
-            <div
-              className={`rounded-none sm:rounded-xl bg-slate-950/55 border-y sm:border overflow-hidden ${
-                subFrom
-                  ? 'border-amber-500/45'
-                  : fromSum.tone === 'error'
-                    ? 'border-rose-500/30'
-                    : 'border-slate-800/80'
-              }`}
-            >
-              {renderLegBody('from')}
+          ) : (
+            <div className="-mx-3 sm:mx-0 grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4">
+              <div
+                className={`rounded-none sm:rounded-xl bg-slate-950/55 border-y sm:border overflow-hidden ${
+                  subTo
+                    ? 'border-amber-500/45'
+                    : toSum.tone === 'error'
+                      ? 'border-rose-500/30'
+                      : 'border-slate-800/80'
+                }`}
+              >
+                {renderLegBody('to', { showCombineBtn: canConsolidate })}
+              </div>
+              <div
+                className={`rounded-none sm:rounded-xl bg-slate-950/55 border-y sm:border overflow-hidden ${
+                  subFrom
+                    ? 'border-amber-500/45'
+                    : fromSum.tone === 'error'
+                      ? 'border-rose-500/30'
+                      : 'border-slate-800/80'
+                }`}
+              >
+                {renderLegBody('from')}
+              </div>
             </div>
-          </div>
+          )
         ) : (
           <div className="-mx-3 sm:mx-0">
             <div className="rounded-none sm:rounded-xl bg-slate-950/55 border-y sm:border border-slate-800/80 overflow-hidden">

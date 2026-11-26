@@ -45,6 +45,7 @@ export default function CarRow({
   const otherCar = (practice.legs?.[otherLeg] || []).find(
     (c) => c.driverParentId === car.driverParentId
   );
+  const drivesBothWays = Boolean(otherCar && !isNeedsSub && otherCar.status !== 'needs_sub');
   const isDrivingOtherLeg = (practice.legs?.[otherLeg] || []).some(
     (c) => c.driverParentId === myParentId
   );
@@ -97,6 +98,11 @@ export default function CarRow({
               <span className="font-semibold text-[15px] whitespace-nowrap">{car.driverName}</span>
               {isMyDrive && (
                 <span className="text-[13px] text-blue-400 font-medium whitespace-nowrap">• You</span>
+              )}
+              {drivesBothWays && (
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue-500/15 text-blue-300 border border-blue-500/30 whitespace-nowrap">
+                  ⇄ Both Ways
+                </span>
               )}
               {isNeedsSub && (
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide bg-amber-500/20 text-amber-300 border border-amber-500/40 whitespace-nowrap">
