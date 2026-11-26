@@ -256,10 +256,12 @@ export default function PracticeCard({
                   ? '→ To Practice'
                   : '← From Practice'}
             </span>
-            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-200 whitespace-nowrap">
-              <span className={`w-2 h-2 rounded-full shrink-0 ${TONE_DOT[summary.tone]}`} />
-              {summary.text}
-            </span>
+            {!summary.text.endsWith('Need Ride') && (
+              <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-200 whitespace-nowrap">
+                <span className={`w-2 h-2 rounded-full shrink-0 ${TONE_DOT[summary.tone]}`} />
+                {summary.text}
+              </span>
+            )}
           </div>
           <div className="flex items-center gap-1.5 shrink-0">
             {consolidated && (
@@ -294,55 +296,49 @@ export default function PracticeCard({
         </div>
 
         <div className="px-3.5 py-2.5 space-y-2">
-        {(unassigned.length > 0 || cars.length > 0) && (
-          <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-800/80">
-            <div className="text-sm flex flex-wrap items-center gap-1.5">
-              {unassigned.length > 0 ? (
-                <>
-                  <span className="text-amber-400 font-medium">Still need a ride:</span>
-                  {unassigned.map((pl) => {
-                    const canAssignThis =
-                      !isReadOnly &&
-                      (isAdmin || (pl.isGuest && pl.addedByParentId === myParentId));
-                    if (canAssignThis) {
-                      return (
-                        <button
-                          key={pl.id}
-                          onClick={() => onOpenAssignModal(practice.id, leg, pl.id)}
-                          className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full text-sm font-semibold bg-slate-700/75 hover:bg-blue-600 text-slate-100 transition"
-                        >
-                          <span>{shortNameOf(pl)}</span>
-                          {pl.isGuest && (
-                            <span className="px-1 rounded text-[10px] font-bold bg-violet-500/25 text-violet-300">
-                              G
-                            </span>
-                          )}
-                          <span>+</span>
-                        </button>
-                      );
-                    }
-                    return (
-                      <span
-                        key={pl.id}
-                        className={`inline-flex items-center gap-1 text-sm ${
-                          pl.id === myPlayerId ? 'font-bold text-slate-100' : 'font-medium text-slate-200'
-                        }`}
-                      >
-                        <span>{shortNameOf(pl)}</span>
-                        {pl.isGuest && (
-                          <span className="px-1 rounded text-[10px] font-bold bg-violet-500/20 text-violet-300">
-                            G
-                          </span>
-                        )}
+        {unassigned.length > 0 && (
+          <div className="flex flex-wrap items-center gap-1.5 pb-2 border-b border-slate-800/80 text-sm">
+            <span className="inline-flex items-center gap-1.5 text-amber-400 font-medium">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />
+              Needs ride:
+            </span>
+            {unassigned.map((pl) => {
+              const canAssignThis =
+                !isReadOnly &&
+                (isAdmin || (pl.isGuest && pl.addedByParentId === myParentId));
+              if (canAssignThis) {
+                return (
+                  <button
+                    key={pl.id}
+                    onClick={() => onOpenAssignModal(practice.id, leg, pl.id)}
+                    className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full text-sm font-semibold bg-slate-700/75 hover:bg-blue-600 text-slate-100 transition"
+                  >
+                    <span>{shortNameOf(pl)}</span>
+                    {pl.isGuest && (
+                      <span className="px-1 rounded text-[10px] font-bold bg-violet-500/25 text-violet-300">
+                        G
                       </span>
-                    );
-                  })}
-                </>
-              ) : (
-                <span className="text-emerald-400 font-medium">Everyone going has a ride</span>
-              )}
-            </div>
-
+                    )}
+                    <span>+</span>
+                  </button>
+                );
+              }
+              return (
+                <span
+                  key={pl.id}
+                  className={`inline-flex items-center gap-1 text-sm ${
+                    pl.id === myPlayerId ? 'font-bold text-slate-100' : 'font-medium text-slate-200'
+                  }`}
+                >
+                  <span>{shortNameOf(pl)}</span>
+                  {pl.isGuest && (
+                    <span className="px-1 rounded text-[10px] font-bold bg-violet-500/20 text-violet-300">
+                      G
+                    </span>
+                  )}
+                </span>
+              );
+            })}
           </div>
         )}
 
