@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Bell, BookOpen, Calendar, CalendarPlus, Car, ChevronDown, LayoutGrid, List, LogOut, MoreHorizontal, Plus, Trophy, Users } from 'lucide-react';
+import { ArrowUp, Bell, BookOpen, Calendar, CalendarPlus, Car, ChevronDown, LayoutGrid, List, LogOut, MoreHorizontal, Plus, Trophy, Users } from 'lucide-react';
 import {
   auth,
   isFirebaseConfigured,
@@ -70,6 +70,14 @@ export default function App() {
     }
   }, [viewMode]);
   const [showAllUpcoming, setShowAllUpcoming] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setShowScrollTop(window.scrollY > 400);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuContainerRef = React.useRef(null);
 
@@ -730,7 +738,13 @@ export default function App() {
                 {tabs.map(({ id, label, count }) => (
                   <button
                     key={id}
-                    onClick={() => setTab(id)}
+                    onClick={() => {
+                      if (tab === id) {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      } else {
+                        setTab(id);
+                      }
+                    }}
                     className={`inline-flex items-baseline gap-1.5 py-2.5 text-[15px] whitespace-nowrap shrink-0 transition-colors ${
                       tab === id
                         ? 'text-slate-100 font-bold'
@@ -1244,7 +1258,13 @@ export default function App() {
                   <button
                     key={id}
                     type="button"
-                    onClick={() => setTab(id)}
+                    onClick={() => {
+                      if (tab === id) {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      } else {
+                        setTab(id);
+                      }
+                    }}
                     title={label}
                     aria-label={label}
                     aria-current={active ? 'page' : undefined}
@@ -1403,6 +1423,18 @@ export default function App() {
             )
           }
         />
+      )}
+
+      {showScrollTop && !hasModalOpen && (
+        <button
+          type="button"
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          aria-label="Scroll to top"
+          title="Back to top"
+          className="fixed right-4 bottom-[calc(5.25rem+env(safe-area-inset-bottom))] sm:bottom-6 z-40 w-10 h-10 rounded-full bg-slate-800/85 hover:bg-slate-700 backdrop-blur-md border border-slate-700/80 text-slate-100 shadow-lg flex items-center justify-center transition cursor-pointer"
+        >
+          <ArrowUp className="w-4 h-4" />
+        </button>
       )}
 
       {toast && (
