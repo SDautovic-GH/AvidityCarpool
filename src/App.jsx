@@ -866,7 +866,10 @@ export default function App() {
                   {onlyNeedsDriver ? (
                     <button
                       type="button"
-                      onClick={() => setOnlyNeedsDriver(false)}
+                      onClick={() => {
+                        setOnlyNeedsDriver(false);
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }}
                       className="inline-flex items-center gap-1 px-2.5 py-1.5 min-h-[34px] rounded-full text-sm font-semibold whitespace-nowrap bg-transparent text-slate-300 hover:bg-slate-800 hover:text-slate-100 transition"
                     >
                       {(() => {
@@ -884,6 +887,7 @@ export default function App() {
                           const next = e.target.value;
                           setMonthFilter(next);
                           if (next === 'past') setOnlyNeedsDriver(false);
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
                         }}
                         className="appearance-none cursor-pointer pl-2.5 pr-6 py-1.5 min-h-[34px] rounded-full text-sm font-semibold transition focus:outline-none bg-slate-800 text-slate-100"
                       >
