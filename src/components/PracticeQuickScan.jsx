@@ -107,7 +107,7 @@ export default function PracticeQuickScan({
   return (
     <div className="space-y-3">
       {availableDays.length > 1 && (
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5 text-xs">
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5 text-sm">
           <button
             type="button"
             onClick={() => setDayFilter('all')}

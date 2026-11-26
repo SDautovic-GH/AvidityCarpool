@@ -319,7 +319,7 @@ export default function GuestPoolView({
                 <label className="block text-xs font-semibold text-slate-300 mb-1.5">
                   Parent / Contact
                 </label>
-                <div className="inline-flex p-0.5 rounded-full bg-slate-950 border border-slate-800 text-xs font-semibold mb-2.5">
+                <div className="inline-flex p-0.5 rounded-full bg-slate-950 border border-slate-800 text-sm font-semibold mb-2.5">
                   {sortedParents.length > 0 && (
                     <button
                       type="button"
