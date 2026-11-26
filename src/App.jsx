@@ -612,10 +612,10 @@ export default function App() {
             >
               <svg
                 className="w-4 h-4 text-blue-400"
-                viewBox="0 0 24 24"
+                viewBox="5 5 14 14"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="2.25"
+                strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 aria-hidden="true"
