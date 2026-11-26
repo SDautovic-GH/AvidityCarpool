@@ -300,9 +300,9 @@ export default function PracticeCard({
           <div className="flex flex-wrap items-center gap-1.5 pb-2 border-b border-slate-800/80 text-sm">
             <span className="inline-flex items-center gap-1.5 text-amber-400 font-medium">
               <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />
-              Needs ride:
+              {unassigned.length === 1 ? 'Needs ride:' : 'Need ride:'}
             </span>
-            {unassigned.map((pl) => {
+            {unassigned.map((pl, idx) => {
               const canAssignThis =
                 !isReadOnly &&
                 (isAdmin || (pl.isGuest && pl.addedByParentId === myParentId));
@@ -330,12 +330,16 @@ export default function PracticeCard({
                     pl.id === myPlayerId ? 'font-bold text-slate-100' : 'font-medium text-slate-200'
                   }`}
                 >
-                  <span>{shortNameOf(pl)}</span>
+                  <span>
+                    {shortNameOf(pl)}
+                    {!pl.isGuest && idx < unassigned.length - 1 ? ',' : ''}
+                  </span>
                   {pl.isGuest && (
                     <span className="px-1 rounded text-[10px] font-bold bg-violet-500/20 text-violet-300">
                       G
                     </span>
                   )}
+                  {pl.isGuest && idx < unassigned.length - 1 ? <span>,</span> : null}
                 </span>
               );
             })}
