@@ -250,7 +250,7 @@ export default function PracticeCard({
           <div className="flex items-center gap-2 min-w-0">
             <span className="text-[13px] font-extrabold uppercase tracking-wide text-slate-50 whitespace-nowrap">
               {consolidated
-                ? '⇄ To & From Practice'
+                ? '⇄ To & From'
                 : leg === 'to'
                   ? '→ To Practice'
                   : '← From Practice'}
