@@ -108,9 +108,9 @@ export default function PracticeCard({
   const fromSum = getLegSummary(practice, 'from', effectivePlayers);
   const isSatisfied =
     !isCancelled &&
-    hasAnyCarpool &&
-    (!toEnabled || toSum.tone === 'success') &&
-    (!fromEnabled || fromSum.tone === 'success');
+    (!hasAnyCarpool ||
+      ((!toEnabled || toSum.tone === 'success') &&
+        (!fromEnabled || fromSum.tone === 'success')));
 
   const drivesTo =
     toEnabled && (practice.legs?.to || []).some((c) => c.driverParentId === myParentId);
@@ -414,7 +414,7 @@ export default function PracticeCard({
               {isSatisfied && (
                 <span
                   className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-emerald-400 text-slate-950 flex items-center justify-center"
-                  title="Both ways covered"
+                  title={hasAnyCarpool ? "Carpool covered" : "No carpool needed"}
                 >
                   <Check className="w-2.5 h-2.5" strokeWidth={3.5} />
                 </span>

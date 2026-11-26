@@ -181,9 +181,9 @@ export default function PracticeQuickScan({
                   (toSum?.text === 'Needs Sub' || fromSum?.text === 'Needs Sub');
                 const isAllSet =
                   !isCancelled &&
-                  hasCarpool &&
-                  (!toEnabled || toSum?.tone === 'success') &&
-                  (!fromEnabled || fromSum?.tone === 'success');
+                  (!hasCarpool ||
+                    ((!toEnabled || toSum?.tone === 'success') &&
+                      (!fromEnabled || fromSum?.tone === 'success')));
 
                 const drivePref =
                   toNeedsDriver && !fromNeedsDriver
