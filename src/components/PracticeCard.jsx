@@ -425,8 +425,7 @@ export default function PracticeCard({
         isFirstUpcoming && !isCancelled ? 'border-blue-500/55' : 'border-slate-700/80'
       } p-3.5 sm:p-4 space-y-3 min-w-0 overflow-hidden`}
     >
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5">
-        <div className="flex items-start justify-between gap-2 min-w-0">
+      <div className="-mx-3.5 -mt-3.5 sm:-mx-4 sm:-mt-4 px-3.5 sm:px-4 py-3 bg-slate-950/60 border-b border-slate-800/80 flex items-start justify-between gap-2 min-w-0">
           <div className="flex items-start gap-3 min-w-0 flex-1">
             <div
               className={`relative w-11 h-11 rounded-xl ${
@@ -498,10 +497,14 @@ export default function PracticeCard({
               </div>
             </div>
           </div>
-          <div className="sm:hidden shrink-0">{adminPracticeActions}</div>
-        </div>
+          {adminPracticeActions}
+      </div>
 
-        <div className="flex flex-wrap items-center justify-start sm:justify-end gap-2 min-w-0">
+      {((!isCancelled && myPlayer) ||
+        (!isCancelled && !isReadOnly && hasAnyCarpool && canDrive && !drivesAllActive && (!isSatisfied || isAdmin)) ||
+        (!isCancelled && !isReadOnly && hasAnyCarpool && isAdmin && (!canDrive || drivesAllActive))) && (
+        <div className="flex flex-wrap items-center justify-between gap-2 min-w-0">
+          <div className="flex flex-wrap items-center gap-2 min-w-0">
           {!isCancelled &&
             myPlayer && (
               <>
@@ -549,25 +552,27 @@ export default function PracticeCard({
                 )}
               </>
             )}
-          {!isCancelled && !isReadOnly && hasAnyCarpool && canDrive && !drivesAllActive && (!isSatisfied || isAdmin) && (
-            <button
-              onClick={() => onOpenDriveModal(practice.id, defaultDriveDir)}
-              className={`${isAdmin ? 'inline-flex' : 'hidden md:inline-flex'} items-center whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-semibold bg-blue-600 hover:bg-blue-500 text-white transition`}
-            >
-              + I can drive
-            </button>
-          )}
-          {!isCancelled && !isReadOnly && hasAnyCarpool && isAdmin && (!canDrive || drivesAllActive) && (
-            <button
-              onClick={() => onOpenDriveModal(practice.id, defaultDriveDir)}
-              className="inline-flex items-center whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-semibold bg-slate-700/75 hover:bg-slate-700 text-slate-100 transition"
-            >
-              + Assign driver
-            </button>
-          )}
-          <div className="hidden sm:flex">{adminPracticeActions}</div>
+          </div>
+          <div className="flex flex-wrap items-center gap-2 shrink-0">
+            {!isCancelled && !isReadOnly && hasAnyCarpool && canDrive && !drivesAllActive && (!isSatisfied || isAdmin) && (
+              <button
+                onClick={() => onOpenDriveModal(practice.id, defaultDriveDir)}
+                className={`${isAdmin ? 'inline-flex' : 'hidden md:inline-flex'} items-center whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-semibold bg-blue-600 hover:bg-blue-500 text-white transition`}
+              >
+                + I can drive
+              </button>
+            )}
+            {!isCancelled && !isReadOnly && hasAnyCarpool && isAdmin && (!canDrive || drivesAllActive) && (
+              <button
+                onClick={() => onOpenDriveModal(practice.id, defaultDriveDir)}
+                className="inline-flex items-center whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-semibold bg-slate-700/75 hover:bg-slate-700 text-slate-100 transition"
+              >
+                + Assign driver
+              </button>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       {isCancelled && (
         <div className="rounded-xl bg-rose-500/10 border border-rose-500/30 px-3 py-1.5 text-xs font-semibold text-rose-300">
