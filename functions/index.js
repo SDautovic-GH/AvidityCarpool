@@ -9,7 +9,7 @@ const db = admin.firestore();
 const messaging = admin.messaging();
 
 const TIME_ZONE = 'America/New_York';
-const APP_URL = 'https://carpool.dautovic.com/';
+const APP_URL = 'https://aviditycarpool.dautovic.com/';
 
 function getIsoDateInTimeZone(date, timeZone = TIME_ZONE) {
   const parts = new Intl.DateTimeFormat('en-CA', {

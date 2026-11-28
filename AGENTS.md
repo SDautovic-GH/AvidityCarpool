@@ -73,5 +73,4 @@ Concise operating guide and durable project knowledge for AI assistants working 
 
 ## 5. Current Open Items / Minor Follow-Ups
 
-- [ ] **Align `APP_URL` in `functions/index.js`:** Line 12 currently points to `https://carpool.dautovic.com/` while `public/CNAME` is `aviditycarpool.dautovic.com`. Update to `https://aviditycarpool.dautovic.com/` and redeploy Functions on the next backend release.
-- [ ] **Add `VITE_FIREBASE_VAPID_KEY` placeholder to `.env.example`** so fresh local clones include all 7 env vars.
+- *(None currently open.)*
