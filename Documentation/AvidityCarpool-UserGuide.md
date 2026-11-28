@@ -46,7 +46,7 @@ If your player is missing practice, tap the **`[Player Name]: Going`** button on
 ## 4. Claiming a Ride for Your Player
 
 1. Find a car with open seats (for example, `2 open`).
-2. Tap **Join** to claim a seat for that direction—or tap **Both Ways** (when shown) to put your player in the same driver's car both to and from practice in one tap.
+2. Tap **Join To** / **Join From** to claim a seat for that direction—or tap **Both Ways** (when shown) to put your player in the same driver's car both to and from practice in one tap.
 3. Need to change plans? Tap the **`×`** next to your player's name to leave that car.
 4. **Guest Riders (`G`):** Riders marked with a **`G`** badge are approved guest or sibling riders for that practice and count toward seat capacity and **Stops**. To request a guest rider, please reach out to **Lee-Anne**.
 

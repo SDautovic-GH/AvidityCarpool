@@ -117,7 +117,8 @@ export default function UserGuideModal({ isAdmin = false, onClose }) {
                   </li>
                   <li>
                     <strong className="text-slate-100">Joining a car:</strong> Tap{' '}
-                    <strong className="text-slate-100">Join</strong> on a car with open seats (or{' '}
+                    <strong className="text-slate-100">Join To</strong> /{' '}
+                    <strong className="text-slate-100">Join From</strong> on a car with open seats (or{' '}
                     <strong className="text-slate-100">Both Ways</strong> when available). Tap{' '}
                     <strong className="text-slate-100">×</strong> next to your player&apos;s name to leave a car.
                   </li>
