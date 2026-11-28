@@ -86,14 +86,14 @@ export default function CarRow({
           : 'py-2.5 first:pt-1.5 last:pb-1'
       }
     >
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex items-start gap-2.5 min-w-0 flex-1">
+      <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-2">
+        <div className="flex items-start gap-2.5 min-w-0 max-w-full">
           <div
             className={`w-8 h-8 rounded-full ${getAvatarColor(car.driverName)} flex items-center justify-center text-xs font-bold shrink-0`}
           >
             {getInitials(car.driverName)}
           </div>
-          <div className="min-w-0 flex-1">
+          <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
               <span className="font-semibold text-[15px] whitespace-nowrap">{car.driverName}</span>
               {isMyDrive && (
@@ -163,19 +163,19 @@ export default function CarRow({
 
         {((!isReadOnly && !isNeedsSub && !isDrivingThisLeg && isMyKidGoing && !myKidCurrentCar && !isFull) ||
           (!isReadOnly && !isMyDrive && isNeedsSub && canDrive && currentParent)) && (
-          <div className="flex items-center gap-1.5 shrink-0">
+          <div className="flex items-center gap-1.5 shrink-0 ml-auto">
             {!isReadOnly && !isNeedsSub && !isDrivingThisLeg && isMyKidGoing && !myKidCurrentCar && !isFull && (
               <>
                 <button
                   onClick={() => onJoin(practice.id, leg, car.id)}
-                  className="px-4 py-1.5 rounded-full text-sm font-semibold bg-blue-600 hover:bg-blue-500 text-white transition"
+                  className="px-4 py-1.5 rounded-full text-sm font-semibold bg-blue-600 hover:bg-blue-500 text-white transition whitespace-nowrap"
                 >
                   Join
                 </button>
                 {canRideBoth && (
                   <button
                     onClick={() => onJoinBoth(practice.id, car.driverParentId)}
-                    className="px-4 py-1.5 rounded-full text-sm font-medium bg-slate-700/75 hover:bg-slate-700 text-slate-100 transition"
+                    className="px-4 py-1.5 rounded-full text-sm font-medium bg-slate-700/75 hover:bg-slate-700 text-slate-100 transition whitespace-nowrap"
                   >
                     Both Ways
                   </button>
@@ -186,7 +186,7 @@ export default function CarRow({
             {!isReadOnly && !isMyDrive && isNeedsSub && canDrive && currentParent && (
               <button
                 onClick={() => onTakeOver(practice.id, leg, car.id)}
-                className="px-4 py-1.5 rounded-full text-sm font-semibold bg-amber-400 hover:bg-amber-300 text-slate-950 transition"
+                className="px-4 py-1.5 rounded-full text-sm font-semibold bg-amber-400 hover:bg-amber-300 text-slate-950 transition whitespace-nowrap"
               >
                 Take Over
               </button>
