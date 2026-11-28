@@ -170,7 +170,7 @@ export default function CarRow({
                   onClick={() => onJoin(practice.id, leg, car.id)}
                   className="px-4 py-1.5 rounded-full text-sm font-semibold bg-blue-600 hover:bg-blue-500 text-white transition whitespace-nowrap"
                 >
-                  Join
+                  {leg === 'to' ? 'Join To' : 'Join From'}
                 </button>
                 {canRideBoth && (
                   <button
